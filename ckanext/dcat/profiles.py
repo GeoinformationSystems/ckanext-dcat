@@ -1451,25 +1451,13 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
 
             #  Simple values
             items = [
-                ('name', DCT.title, None, Literal),
-                ('description', DCT.description, None, Literal),
-                ('status', ADMS.status, None, URIRefOrLiteral),
-                ('rights', DCT.rights, None, URIRefOrLiteral),
                 ('license', DCT.license, None, URIRefOrLiteral),
-                ('access_url', DCAT.accessURL, None, URIRef),
-                ('download_url', DCAT.downloadURL, None, URIRef),
+                ('access_url', DCAT.accessURL, None, URIRef)
             ]
 
             self._add_triples_from_dict(resource_dict, distribution, items)
 
-            #  Lists
-            items = [
-                ('documentation', FOAF.page, None, URIRefOrLiteral),
-                ('language', DCT.language, None, URIRefOrLiteral),
-                ('conforms_to', DCT.conformsTo, None, Literal),
-            ]
-            self._add_list_triples_from_dict(
-                resource_dict, distribution, items)
+
 
             # Format
             mimetype = resource_dict.get('mimetype')
@@ -1496,22 +1484,12 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
                 g.add((distribution, DCT['format'],
                        URIRefOrLiteral(fmt)))
 
-            # URL fallback and old behavior
-            url = resource_dict.get('url')
-            download_url = resource_dict.get('download_url')
-            access_url = resource_dict.get('access_url')
-            # Use url as fallback for access_url if access_url is not set and download_url is not equal
-            if url and not access_url:
-                if (not download_url) or (download_url and url != download_url):
-                    self._add_triple_from_dict(
-                        resource_dict, distribution, DCAT.accessURL, 'url', _type=URIRef)
 
             # Dates
             items = [
                 ('issued', DCT.issued, None, Literal),
                 ('modified', DCT.modified, None, Literal),
             ]
-
             self._add_date_triples_from_dict(
                 resource_dict, distribution, items)
 
