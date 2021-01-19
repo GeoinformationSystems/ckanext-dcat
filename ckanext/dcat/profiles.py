@@ -1488,6 +1488,7 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
             else:
                 spatial_ref = BNode()
 
+            g.add((dataset_ref, RDF.type, URIRef("http://www.ex.org/test")))
             g.add((spatial_ref, RDF.type, DCT.Location))
             g.add((dataset_ref, DCT.spatial, spatial_ref))
 
