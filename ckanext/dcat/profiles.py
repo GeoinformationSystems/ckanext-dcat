@@ -1450,19 +1450,19 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
 
         # other resolution types(provided as tuple(value, type))
         spatial_resolution_tuple = self._get_dataset_value(
-            dataset_dict, 'spatial_resolution_comment')
+            dataset_dict, u'spatial_resolution_comment')
         if spatial_resolution_tuple:
             val, res_type = spatial_resolution_tuple.split(',')
-            if res_type == 'as angular distance':
+            if res_type == u'as angular distance':
                 g.add(
-                    (dataset_dict, GEODCAT.spatialResolutionAsAngularDistance, Literal(val)))
-            if res_type == 'as distance':
-                g.add((dataset_dict, GEODCAT.spatialResolutionAsDistance, Literal(val)))
-            if res_type == 'as scale':
-                g.add((dataset_dict, GEODCAT.spatialResolutionAsScale, Literal(val)))
-            if res_type == 'as vertical distance':
+                    (dataset_ref, GEODCAT.spatialResolutionAsAngularDistance, Literal(val)))
+            if res_type == u'as distance':
+                g.add((dataset_ref, GEODCAT.spatialResolutionAsDistance, Literal(val)))
+            if res_type == u'as scale':
+                g.add((dataset_ref, GEODCAT.spatialResolutionAsScale, Literal(val)))
+            if res_type == u'as vertical distance':
                 g.add(
-                    (dataset_dict, GEODCAT.spatialResolutionAsVerticalDistance, Literal(val)))
+                    (dataset_ref, GEODCAT.spatialResolutionAsVerticalDistance, Literal(val)))
 
         # Resources
         for resource_dict in dataset_dict.get('resources', []):
