@@ -1361,13 +1361,7 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
             ('title', DCT.title, None, Literal),
             ('notes', DCT.description, None, Literal),
             ('url', DCAT.landingPage, None, URIRef),
-            ('identifier', DCT.identifier, ['guid', 'id'], Literal),
-            ('version', OWL.versionInfo, ['dcat_version'], Literal),
-            ('version_notes', ADMS.versionNotes, None, Literal),
-            ('frequency', DCT.accrualPeriodicity, None, URIRefOrLiteral),
-            ('access_rights', DCT.accessRights, None, Literal),
-            ('dcat_type', DCT.type, None, Literal),
-            ('provenance', DCT.provenance, None, Literal),
+            ('identifier', DCT.identifier, ['guid', 'id'], Literal)
         ]
         self._add_triples_from_dict(dataset_dict, dataset_ref, items)
 
