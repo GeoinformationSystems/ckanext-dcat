@@ -1345,7 +1345,32 @@ class EuropeanDCATAPProfile(RDFProfile):
         if modified:
             self._add_date_triple(catalog_ref, DCT.modified, modified)
 
-# class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
+
+class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
+    def graph_from_dataset(self, dataset_dict, dataset_ref):
+
+        g = self.g
+
+        for prefix, namespace in namespaces.items():
+            g.bind(prefix, namespace)
+
+        g.add((dataset_ref, RDF.type, DCAT.Dataset))
+
+        # Basic fields
+        items = [
+            ('title', DCT.title, None, Literal),
+            ('notes', DCT.description, None, Literal),
+            ('url', DCAT.landingPage, None, URIRef),
+            ('identifier', DCT.identifier, ['guid', 'id'], Literal),
+            ('version', OWL.versionInfo, ['dcat_version'], Literal),
+            ('version_notes', ADMS.versionNotes, None, Literal),
+            ('frequency', DCT.accrualPeriodicity, None, URIRefOrLiteral),
+            ('access_rights', DCT.accessRights, None, Literal),
+            ('dcat_type', DCT.type, None, Literal),
+            ('provenance', DCT.provenance, None, Literal),
+            ('conforms_to', DCT.conformsTo, None, URIRefOrLiteral)
+        ]
+        self._add_triples_from_dict(dataset_dict, dataset_ref, items)
 
 
 class SchemaOrgProfile(RDFProfile):
