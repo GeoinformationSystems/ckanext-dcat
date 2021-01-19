@@ -1400,69 +1400,18 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
         # Contact details
         if any([
             self._get_dataset_value(dataset_dict, 'contact_uri'),
-            self._get_dataset_value(dataset_dict, 'contact_name'),
-            self._get_dataset_value(dataset_dict, 'contact_email'),
-            self._get_dataset_value(dataset_dict, 'maintainer'),
-            self._get_dataset_value(dataset_dict, 'maintainer_email'),
-            self._get_dataset_value(dataset_dict, 'author'),
-            self._get_dataset_value(dataset_dict, 'author_email'),
+            self._get_dataset_value(dataset_dict, 'contact_name')
         ]):
-
             contact_uri = self._get_dataset_value(dataset_dict, 'contact_uri')
             if contact_uri:
                 contact_details = CleanedURIRef(contact_uri)
             else:
                 contact_details = BNode()
 
-            g.add((contact_details, RDF.type, VCARD.Organization))
             g.add((dataset_ref, DCAT.contactPoint, contact_details))
-
-            self._add_triple_from_dict(
-                dataset_dict, contact_details,
-                VCARD.fn, 'contact_name', ['maintainer', 'author']
-            )
-            # Add mail address as URIRef, and ensure it has a mailto: prefix
-            self._add_triple_from_dict(
-                dataset_dict, contact_details,
-                VCARD.hasEmail, 'contact_email', ['maintainer_email',
-                                                  'author_email'],
-                _type=URIRef, value_modifier=self._add_mailto
-            )
-
-        # Publisher
-        if any([
-            self._get_dataset_value(dataset_dict, 'publisher_uri'),
-            self._get_dataset_value(dataset_dict, 'publisher_name'),
-            dataset_dict.get('organization'),
-        ]):
-
-            publisher_uri = publisher_uri_from_dataset_dict(dataset_dict)
-            if publisher_uri:
-                publisher_details = CleanedURIRef(publisher_uri)
-            else:
-                # No organization nor publisher_uri
-                publisher_details = BNode()
-
-            g.add((publisher_details, RDF.type, FOAF.Organization))
-            g.add((dataset_ref, DCT.publisher, publisher_details))
-
-            publisher_name = self._get_dataset_value(
-                dataset_dict, 'publisher_name')
-            if not publisher_name and dataset_dict.get('organization'):
-                publisher_name = dataset_dict['organization']['title']
-
-            g.add((publisher_details, FOAF.name, Literal(publisher_name)))
-            # TODO: It would make sense to fallback these to organization
-            # fields but they are not in the default schema and the
-            # `organization` object in the dataset_dict does not include
-            # custom fields
-            items = [
-                ('publisher_email', FOAF.mbox, None, Literal),
-                ('publisher_url', FOAF.homepage, None, URIRef),
-                ('publisher_type', DCT.type, None, URIRefOrLiteral),
-            ]
-
-            self._add_triples_from_dict(dataset_dict, publisher_details, items)
+            g.add((contact_details, RDF.type, VCARD.Individual))
+            g.add((contact_details, VCARD.fn, self._get_dataset_value(
+                dataset_dict, 'contact_name')))
 
         # Temporal
         start = self._get_dataset_value(dataset_dict, 'temporal_start')
@@ -1478,37 +1427,26 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
             g.add((dataset_ref, DCT.temporal, temporal_extent))
 
         # Spatial
-        spatial_uri = self._get_dataset_value(dataset_dict, 'spatial_uri')
-        spatial_text = self._get_dataset_value(dataset_dict, 'spatial_text')
         spatial_geom = self._get_dataset_value(dataset_dict, 'spatial')
 
-        if spatial_uri or spatial_text or spatial_geom:
-            if spatial_uri:
-                spatial_ref = CleanedURIRef(spatial_uri)
-            else:
-                spatial_ref = BNode()
-
-            g.add((dataset_ref, RDF.type, URIRef("http://www.ex.org/test")))
+        if spatial_geom:
+            spatial_ref = BNode()
             g.add((spatial_ref, RDF.type, DCT.Location))
             g.add((dataset_ref, DCT.spatial, spatial_ref))
 
-            if spatial_text:
-                g.add((spatial_ref, SKOS.prefLabel, Literal(spatial_text)))
-
-            if spatial_geom:
-                # GeoJSON
+            # GeoJSON
+            g.add((spatial_ref,
+                   DCAT.bbox,
+                   Literal(spatial_geom, datatype=GEOJSON_IMT)))
+            # WKT, because GeoDCAT-AP says so
+            try:
                 g.add((spatial_ref,
                        DCAT.bbox,
-                       Literal(spatial_geom, datatype=GEOJSON_IMT)))
-                # WKT, because GeoDCAT-AP says so
-                try:
-                    g.add((spatial_ref,
-                           DCAT.bbox,
-                           Literal(wkt.dumps(json.loads(spatial_geom),
-                                             decimals=4),
-                                   datatype=GSP.wktLiteral)))
-                except (TypeError, ValueError, InvalidGeoJSONException):
-                    pass
+                       Literal(wkt.dumps(json.loads(spatial_geom),
+                                         decimals=4),
+                               datatype=GSP.wktLiteral)))
+            except (TypeError, ValueError, InvalidGeoJSONException):
+                pass
 
         # Resources
         for resource_dict in dataset_dict.get('resources', []):
