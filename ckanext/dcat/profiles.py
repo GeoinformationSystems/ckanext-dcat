@@ -38,6 +38,7 @@ SPDX = Namespace('http://spdx.org/rdf/terms#')
 GEODCAT = Namespace('http://data.europa.eu/930/')
 DQV = Namespace('http://www.w3.org/ns/dqv#')
 SDMX = Namespace('http://purl.org/linked-data/sdmx/2009/attribute#')
+GKQ = Namespace("https://geokur.geo.tu-dresden.de/quality#")
 
 GEOJSON_IMT = 'https://www.iana.org/assignments/media-types/application/vnd.geo+json'
 
@@ -1481,6 +1482,26 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
                 g.add((spatial_res_ref, DQV.isMeasurementOf,
                        GEODCAT.spatialResolutionAsScale))
                 g.add((spatial_res_ref, DQV.value, Literal(val)))
+
+            # quality elements
+            quality_measure_tuple = self._get_dataset_value(
+            dataset_dict, u'has_quality_measure')
+            if quality_measure_tuple:
+                quality_measure_ref = BNode()
+                g.add((quality_measure_ref, RDF.type, DQV.QualityMeasurement))
+                g.add((dataset_ref, DQV.hasQualityMeasurement, quality_measure_ref))
+                # code
+
+            # quality elements
+            quality_annotation_tuple = self._get_dataset_value(
+            dataset_dict, u'has_quality_annotation')
+            if quality_annotation_tuple:
+                quality_measure_ref = BNode()
+                # g.add((quality_measure_ref, RDF.type, DQV.QualityMeasurement))
+                # g.add((dataset_ref, DQV.hasQualityMeasurement, quality_measure_ref))
+                # code
+
+
 
         # Resources
         for resource_dict in dataset_dict.get('resources', []):
