@@ -36,6 +36,8 @@ GSP = Namespace('http://www.opengis.net/ont/geosparql#')
 OWL = Namespace('http://www.w3.org/2002/07/owl#')
 SPDX = Namespace('http://spdx.org/rdf/terms#')
 GEODCAT = Namespace('http://data.europa.eu/930/')
+DQV = Namespace('http://www.w3.org/ns/dqv#')
+SDMX = Namespace('http://purl.org/linked-data/sdmx/2009/attribute#')
 
 GEOJSON_IMT = 'https://www.iana.org/assignments/media-types/application/vnd.geo+json'
 
@@ -1452,17 +1454,33 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
         spatial_resolution_tuple = self._get_dataset_value(
             dataset_dict, u'spatial_resolution_comment')
         if spatial_resolution_tuple:
+            spatial_res_ref = BNode()
+            g.add((spatial_res_ref, RDF.type, DQV.QualityMeasurement))
+            g.add((dataset_ref, DQV.hasQualityMeasurement, spatial_res_ref))
+
             val, res_type = spatial_resolution_tuple.split(',')
             if res_type == u'as angular distance':
-                g.add(
-                    (dataset_ref, GEODCAT.spatialResolutionAsAngularDistance, Literal(val)))
+                g.add((spatial_res_ref, DQV.isMeasurementOf,
+                       GEODCAT.spatialResolutionAsAngularDistance))
+                g.add((spatial_res_ref, SDMX.unitMeasure, URIRef(
+                    'http://www.wurvoc.org/vocabularies/om-1.8/metre')))
+                g.add((spatial_res_ref, DQV.value, Literal(val)))
             if res_type == u'as distance':
-                g.add((dataset_ref, GEODCAT.spatialResolutionAsDistance, Literal(val)))
-            if res_type == u'as scale':
-                g.add((dataset_ref, GEODCAT.spatialResolutionAsScale, Literal(val)))
+                g.add((spatial_res_ref, DQV.isMeasurementOf,
+                       GEODCAT.spatialResolutionAsDistance))
+                g.add((spatial_res_ref, SDMX.unitMeasure, URIRef(
+                    'http://www.wurvoc.org/vocabularies/om-1.8/metre')))
+                g.add((spatial_res_ref, DQV.value, Literal(val)))
             if res_type == u'as vertical distance':
-                g.add(
-                    (dataset_ref, GEODCAT.spatialResolutionAsVerticalDistance, Literal(val)))
+                g.add((spatial_res_ref, DQV.isMeasurementOf,
+                       GEODCAT.spatialResolutionAsVerticalDistance))
+                g.add((spatial_res_ref, SDMX.unitMeasure, URIRef(
+                    'http://www.wurvoc.org/vocabularies/om-1.8/metre')))
+                g.add((spatial_res_ref, DQV.value, Literal(val)))
+            if res_type == u'as scale':
+                g.add((spatial_res_ref, DQV.isMeasurementOf,
+                       GEODCAT.spatialResolutionAsScale))
+                g.add((spatial_res_ref, DQV.value, Literal(val)))
 
         # Resources
         for resource_dict in dataset_dict.get('resources', []):
