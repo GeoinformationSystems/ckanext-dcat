@@ -1421,37 +1421,19 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
         # Spatial
         spatial_geom = self._get_dataset_value(dataset_dict, 'spatial')
 
-        # if spatial_geom:
-        #     spatial_ref = BNode()
-        #     g.add((spatial_ref, RDF.type, DCT.Location))
-        #     g.add((dataset_ref, DCT.spatial, spatial_ref))
-
-        #     # GeoJSON
-        #     g.add((spatial_ref,
-        #            DCAT.bbox,
-        #            Literal(spatial_geom, datatype=GEOJSON_IMT)))
-        #     # WKT, because GeoDCAT-AP says so
-        #     try:
-        #         g.add((spatial_ref,
-        #                DCAT.bbox,
-        #                Literal(wkt.dumps(json.loads(spatial_geom),
-        #                                  decimals=4),
-        #                        datatype=GSP.wktLiteral)))
-        #     except (TypeError, ValueError, InvalidGeoJSONException):
-        #         pass
-
         if spatial_geom:
             spatial_ref = BNode()
             g.add((spatial_ref, RDF.type, DCT.Location))
             g.add((dataset_ref, DCT.spatial, spatial_ref))
+
             # GeoJSON
             g.add((spatial_ref,
-                   LOCN.geometry,
+                   DCAT.bbox,
                    Literal(spatial_geom, datatype=GEOJSON_IMT)))
             # WKT, because GeoDCAT-AP says so
             try:
                 g.add((spatial_ref,
-                       LOCN.geometry,
+                       DCAT.bbox,
                        Literal(wkt.dumps(json.loads(spatial_geom),
                                          decimals=4),
                                datatype=GSP.wktLiteral)))
