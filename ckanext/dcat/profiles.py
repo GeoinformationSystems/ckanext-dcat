@@ -827,7 +827,7 @@ class RDFProfile(object):
         pass
 
 
-# class EuropeanDCATAPProfile(RDFProfile):
+class EuropeanDCATAPProfile(RDFProfile):
     '''
     An RDF profile based on the DCAT-AP for data portals in Europe
 
