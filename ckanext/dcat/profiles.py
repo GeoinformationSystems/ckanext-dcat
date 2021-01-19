@@ -1445,7 +1445,7 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
         spatial_resolution_in_meters = self._get_dataset_value(
             dataset_dict='spatial_resolution_in_meters')
         if spatial_resolution_in_meters:
-            g.add((dataset_ref, DCAT, Literal(
+            g.add((dataset_ref, DCAT.spatialResolutionInMeters, Literal(
                 float(spatial_resolution_in_meters), datatype=XSD.decimal)))
 
         # other resolution types(provided as tuple(value, type))
