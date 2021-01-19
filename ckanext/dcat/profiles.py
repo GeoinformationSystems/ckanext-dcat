@@ -1398,52 +1398,54 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
         self._add_list_triples_from_dict(dataset_dict, dataset_ref, items)
 
         # Contact details
-        if any([
-            self._get_dataset_value(dataset_dict, 'contact_uri'),
-            self._get_dataset_value(dataset_dict, 'contact_name'),
-            self._get_dataset_value(dataset_dict, 'contact_email'),
-            self._get_dataset_value(dataset_dict, 'maintainer'),
-            self._get_dataset_value(dataset_dict, 'maintainer_email'),
-            self._get_dataset_value(dataset_dict, 'author'),
-            self._get_dataset_value(dataset_dict, 'author_email'),
-        ]):
-
-            contact_uri = self._get_dataset_value(dataset_dict, 'contact_uri')
-            if contact_uri:
-                contact_details = CleanedURIRef(contact_uri)
-            else:
-                contact_details = BNode()
-
-            g.add((contact_details, RDF.type, VCARD.Organization))
-            g.add((dataset_ref, DCAT.contactPoint, contact_details))
-
-            self._add_triple_from_dict(
-                dataset_dict, contact_details,
-                VCARD.fn, 'contact_name', ['maintainer', 'author']
-            )
-            # Add mail address as URIRef, and ensure it has a mailto: prefix
-            self._add_triple_from_dict(
-                dataset_dict, contact_details,
-                VCARD.hasEmail, 'contact_email', ['maintainer_email',
-                                                  'author_email'],
-                _type=URIRef, value_modifier=self._add_mailto
-            )
-
-        # # Contact details
         # if any([
         #     self._get_dataset_value(dataset_dict, 'contact_uri'),
-        #     self._get_dataset_value(dataset_dict, 'contact_name')
+        #     self._get_dataset_value(dataset_dict, 'contact_name'),
+        #     self._get_dataset_value(dataset_dict, 'contact_email'),
+        #     self._get_dataset_value(dataset_dict, 'maintainer'),
+        #     self._get_dataset_value(dataset_dict, 'maintainer_email'),
+        #     self._get_dataset_value(dataset_dict, 'author'),
+        #     self._get_dataset_value(dataset_dict, 'author_email'),
         # ]):
+
         #     contact_uri = self._get_dataset_value(dataset_dict, 'contact_uri')
         #     if contact_uri:
         #         contact_details = CleanedURIRef(contact_uri)
         #     else:
         #         contact_details = BNode()
 
+        #     g.add((contact_details, RDF.type, VCARD.Organization))
         #     g.add((dataset_ref, DCAT.contactPoint, contact_details))
-        #     g.add((contact_details, RDF.type, VCARD.Individual))
-        #     g.add((contact_details, VCARD.fn, self._get_dataset_value(
-        #         dataset_dict, 'contact_name')))
+
+        #     self._add_triple_from_dict(
+        #         dataset_dict, contact_details,
+        #         VCARD.fn, 'contact_name', ['maintainer', 'author']
+        #     )
+        #     # Add mail address as URIRef, and ensure it has a mailto: prefix
+        #     self._add_triple_from_dict(
+        #         dataset_dict, contact_details,
+        #         VCARD.hasEmail, 'contact_email', ['maintainer_email',
+        #                                           'author_email'],
+        #         _type=URIRef, value_modifier=self._add_mailto
+        #     )
+
+        # Contact details
+        if any([
+            self._get_dataset_value(dataset_dict, 'contact_uri'),
+            self._get_dataset_value(dataset_dict, 'contact_name')
+        ]):
+            contact_uri = self._get_dataset_value(dataset_dict, 'contact_uri')
+            if contact_uri:
+                contact_details = CleanedURIRef(contact_uri)
+            else:
+                contact_details = BNode()
+
+            g.add((dataset_ref, DCAT.contactPoint, contact_details))
+            g.add((contact_details, RDF.type, VCARD.Individual))
+            self._add_triple_from_dict(
+                dataset_dict, contact_details,
+                VCARD.fn, 'contact_name'
+            )
 
         # Temporal
         start = self._get_dataset_value(dataset_dict, 'temporal_start')
