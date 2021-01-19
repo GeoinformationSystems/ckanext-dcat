@@ -1441,28 +1441,28 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
             except (TypeError, ValueError, InvalidGeoJSONException):
                 pass
 
-        # # Additions from GeoDCAT
-        # spatial_resolution_in_meters = self._get_dataset_value(
-        #     dataset_dict='spatial_resolution_in_meters')
-        # if spatial_resolution_in_meters:
-        #     g.add((dataset_ref, DCAT, Literal(
-        #         float(spatial_resolution_in_meters), datatype=XSD.decimal)))
+        # Additions from GeoDCAT
+        spatial_resolution_in_meters = self._get_dataset_value(
+            dataset_dict='spatial_resolution_in_meters')
+        if spatial_resolution_in_meters:
+            g.add((dataset_ref, DCAT, Literal(
+                float(spatial_resolution_in_meters), datatype=XSD.decimal)))
 
-        # other resolution types (provided as tuple (value, type))
-        spatial_resolution_tuple = self._get_dataset_value(
-            dataset_dict='spatial_resolution_comment')
-        if spatial_resolution_tuple:
-            val, res_type = spatial_resolution_tuple.split(',')
-            if res_type == 'as angular distance':
-                g.add(
-                    (dataset_dict, GEODCAT.spatialResolutionAsAngularDistance, Literal(val)))
-            if res_type == 'as distance':
-                g.add((dataset_dict, GEODCAT.spatialResolutionAsDistance, Literal(val)))
-            if res_type == 'as scale':
-                g.add((dataset_dict, GEODCAT.spatialResolutionAsScale, Literal(val)))
-            if res_type == 'as vertical distance':
-                g.add(
-                    (dataset_dict, GEODCAT.spatialResolutionAsVerticalDistance, Literal(val)))
+        other resolution types(provided as tuple(value, type))
+        # spatial_resolution_tuple = self._get_dataset_value(
+        #     dataset_dict='spatial_resolution_comment')
+        # if spatial_resolution_tuple:
+        #     val, res_type = spatial_resolution_tuple.split(',')
+        #     if res_type == 'as angular distance':
+        #         g.add(
+        #             (dataset_dict, GEODCAT.spatialResolutionAsAngularDistance, Literal(val)))
+        #     if res_type == 'as distance':
+        #         g.add((dataset_dict, GEODCAT.spatialResolutionAsDistance, Literal(val)))
+        #     if res_type == 'as scale':
+        #         g.add((dataset_dict, GEODCAT.spatialResolutionAsScale, Literal(val)))
+        #     if res_type == 'as vertical distance':
+        #         g.add(
+        #             (dataset_dict, GEODCAT.spatialResolutionAsVerticalDistance, Literal(val)))
 
         # Resources
         for resource_dict in dataset_dict.get('resources', []):
