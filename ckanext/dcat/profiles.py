@@ -1457,7 +1457,7 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
                 spatial_res_ref = BNode()
                 g.add((spatial_res_ref, RDF.type, DQV.QualityMeasurement))
                 g.add((dataset_ref, DQV.hasQualityMeasurement, spatial_res_ref))
-                if spatial_resolution_type == 'scale':
+                if spatial_resolution_type == u'scale':
                     g.add((spatial_res_ref, DQV.isMeasurementOf,
                            GEODCAT.spatialResolutionAsScale))
                     g.add((spatial_res_ref, DQV.value,
@@ -1469,7 +1469,7 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
                         'http://www.wurvoc.org/vocabularies/om-1.8/metre')))
                     g.add((spatial_res_ref, DQV.value,
                            Literal(spatial_resolution)))
-                if spatial_resolution == 'vertical':
+                if spatial_resolution == u'vertical':
                     g.add((spatial_res_ref, DQV.isMeasurementOf,
                            GEODCAT.spatialResolutionAsVerticalDistance))
                     g.add((spatial_res_ref, SDMX.unitMeasure, URIRef(
