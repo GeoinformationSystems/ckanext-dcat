@@ -1450,60 +1450,50 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
         if spatial_resolution:
             spatial_resolution_type = self._get_dataset_value(
                 dataset_dict, 'spatial_resolution_type')
+            if spatial_resolution_type == u'meters':
+                g.add((dataset_ref, DCAT.spatialResolutionInMeters, Literal(
+                    float(spatial_resolution), datatype=XSD.decimal)))
+            elif spatial_resolution_type == u'scale' or u'angular' or u'vertical':
+                spatial_res_ref = BNode()
+                g.add((spatial_res_ref, RDF.type, DQV.QualityMeasurement))
+                g.add((dataset_ref, DQV.hasQualityMeasurement, spatial_res_ref))
+                if spatial_resolution_type == 'scale':
+                    g.add((spatial_res_ref, DQV.isMeasurementOf,
+                           GEODCAT.spatialResolutionAsScale))
+                    g.add((spatial_res_ref, DQV.value,
+                           Literal(spatial_resolution)))
+                if spatial_resolution_type == u'angular':
+                    g.add((spatial_res_ref, DQV.isMeasurementOf,
+                           GEODCAT.spatialResolutionAsAngularDistance))
+                    g.add((spatial_res_ref, SDMX.unitMeasure, URIRef(
+                        'http://www.wurvoc.org/vocabularies/om-1.8/metre')))
+                    g.add((spatial_res_ref, DQV.value,
+                           Literal(spatial_resolution)))
+                if spatial_resolution == 'vertical':
+                    g.add((spatial_res_ref, DQV.isMeasurementOf,
+                           GEODCAT.spatialResolutionAsVerticalDistance))
+                    g.add((spatial_res_ref, SDMX.unitMeasure, URIRef(
+                        'http://www.wurvoc.org/vocabularies/om-1.8/metre')))
+                    g.add((spatial_res_ref, DQV.value,
+                           Literal(spatial_resolution)))
 
-            g.add((dataset_ref, RDF.type, Literal(spatial_resolution_type)))
-            g.add((dataset_ref, DCAT.spatialResolutionInMeters, Literal(
-                float(spatial_resolution), datatype=XSD.decimal)))
+        # quality elements
+        quality_measure_tuple = self._get_dataset_value(
+            dataset_dict, u'has_quality_measure')
+        if quality_measure_tuple:
+            quality_measure_ref = BNode()
+            g.add((quality_measure_ref, RDF.type, DQV.QualityMeasurement))
+            g.add((dataset_ref, DQV.hasQualityMeasurement, quality_measure_ref))
+            # code
 
-        # other resolution types(provided as tuple(value, type))
-        # spatial_resolution_tuple = self._get_dataset_value(
-        #     dataset_dict, u'spatial_resolution_comment')
-        # if spatial_resolution_tuple:
-        #     spatial_res_ref = BNode()
-        #     g.add((spatial_res_ref, RDF.type, DQV.QualityMeasurement))
-        #     g.add((dataset_ref, DQV.hasQualityMeasurement, spatial_res_ref))
-
-        #     val, res_type = spatial_resolution_tuple.split(',')
-        #     if res_type == u'as angular distance':
-        #         g.add((spatial_res_ref, DQV.isMeasurementOf,
-        #                GEODCAT.spatialResolutionAsAngularDistance))
-        #         g.add((spatial_res_ref, SDMX.unitMeasure, URIRef(
-        #             'http://www.wurvoc.org/vocabularies/om-1.8/metre')))
-        #         g.add((spatial_res_ref, DQV.value, Literal(val)))
-        #     if res_type == u'as distance':
-        #         g.add((spatial_res_ref, DQV.isMeasurementOf,
-        #                GEODCAT.spatialResolutionAsDistance))
-        #         g.add((spatial_res_ref, SDMX.unitMeasure, URIRef(
-        #             'http://www.wurvoc.org/vocabularies/om-1.8/metre')))
-        #         g.add((spatial_res_ref, DQV.value, Literal(val)))
-        #     if res_type == u'as vertical distance':
-        #         g.add((spatial_res_ref, DQV.isMeasurementOf,
-        #                GEODCAT.spatialResolutionAsVerticalDistance))
-        #         g.add((spatial_res_ref, SDMX.unitMeasure, URIRef(
-        #             'http://www.wurvoc.org/vocabularies/om-1.8/metre')))
-        #         g.add((spatial_res_ref, DQV.value, Literal(val)))
-        #     if res_type == u'as scale':
-        #         g.add((spatial_res_ref, DQV.isMeasurementOf,
-        #                GEODCAT.spatialResolutionAsScale))
-        #         g.add((spatial_res_ref, DQV.value, Literal(val)))
-
-            # quality elements
-            quality_measure_tuple = self._get_dataset_value(
-                dataset_dict, u'has_quality_measure')
-            if quality_measure_tuple:
-                quality_measure_ref = BNode()
-                g.add((quality_measure_ref, RDF.type, DQV.QualityMeasurement))
-                g.add((dataset_ref, DQV.hasQualityMeasurement, quality_measure_ref))
-                # code
-
-            # quality elements
-            quality_annotation_tuple = self._get_dataset_value(
-                dataset_dict, u'has_quality_annotation')
-            if quality_annotation_tuple:
-                quality_measure_ref = BNode()
-                # g.add((quality_measure_ref, RDF.type, DQV.QualityMeasurement))
-                # g.add((dataset_ref, DQV.hasQualityMeasurement, quality_measure_ref))
-                # code
+        # quality elements
+        quality_annotation_tuple = self._get_dataset_value(
+            dataset_dict, u'has_quality_annotation')
+        if quality_annotation_tuple:
+            quality_measure_ref = BNode()
+            # g.add((quality_measure_ref, RDF.type, DQV.QualityMeasurement))
+            # g.add((dataset_ref, DQV.hasQualityMeasurement, quality_measure_ref))
+            # code
 
         # Resources
         for resource_dict in dataset_dict.get('resources', []):
