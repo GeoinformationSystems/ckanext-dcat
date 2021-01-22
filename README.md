@@ -1,3 +1,8 @@
+
+# ckanext-dcat fork --- GEOKUR
+
+_This fork of ckanext-dcat https://github.com/ckan/ckanext-dcat implemetnts the class GeokurDCATAPProfile to adjust the mapping of the metadata elements to the GeoKur project (https://geokur.geo.tu-dresden.de/) metadata scheme. The original readme begins below._
+
 # ckanext-dcat
 
 [![Build Status](https://travis-ci.org/ckan/ckanext-dcat.svg?branch=master)](https://travis-ci.org/ckan/ckanext-dcat)
