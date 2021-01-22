@@ -1491,15 +1491,15 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
         quality_annotation = self._get_dataset_value(
             dataset_dict, u'quality_annotation')
         if quality_annotation:
-            quality_annotation_motivation = self._get_dataset_value(
-                dataset_dict, u'quality_annotation_motivation')
+            quality_annotation_motivation = str(self._get_dataset_value(
+                dataset_dict, u'quality_annotation_motivation'))
             quality_annotation_ref = BNode()
             annotation_body_ref = BNode()
             g.add((quality_annotation_ref, RDF.type, DQV.QualityAnnotation))
             g.add((dataset_ref, DQV.hasQualityAnnotation, quality_annotation_ref))
             g.add((quality_annotation_ref, OA.hasTarget, dataset_ref))
             g.add((quality_annotation_ref, OA.motivatedBy,
-                   OA.eval(quality_annotation_motivation)))
+                   eval('OA.' + quality_annotation_motivation)))
             g.add((quality_annotation_ref, OA.hasBody, annotation_body_ref))
             g.add((annotation_body_ref, RDF.type, OA.TextualBody))
             g.add((annotation_body_ref, RDF.value, Literal(quality_annotation)))
