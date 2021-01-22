@@ -38,7 +38,8 @@ SPDX = Namespace('http://spdx.org/rdf/terms#')
 GEODCAT = Namespace('http://data.europa.eu/930/')
 DQV = Namespace('http://www.w3.org/ns/dqv#')
 SDMX = Namespace('http://purl.org/linked-data/sdmx/2009/attribute#')
-GKQ = Namespace("https://geokur.geo.tu-dresden.de/quality#")
+GKQ = Namespace('https://geokur.geo.tu-dresden.de/quality#')
+OA = Namespace('https://www.w3.org/TR/annotation-vocab#')
 
 GEOJSON_IMT = 'https://www.iana.org/assignments/media-types/application/vnd.geo+json'
 
@@ -1478,21 +1479,31 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
                            Literal(spatial_resolution)))
 
         # quality elements
-        quality_measure_tuple = self._get_dataset_value(
+        quality_measure = self._get_dataset_value(
             dataset_dict, u'has_quality_measure')
-        if quality_measure_tuple:
+        if quality_measure:
             quality_measure_ref = BNode()
             g.add((quality_measure_ref, RDF.type, DQV.QualityMeasurement))
             g.add((dataset_ref, DQV.hasQualityMeasurement, quality_measure_ref))
             # code
 
         # quality elements
-        quality_annotation_tuple = self._get_dataset_value(
-            dataset_dict, u'has_quality_annotation')
-        if quality_annotation_tuple:
-            quality_measure_ref = BNode()
-            # g.add((quality_measure_ref, RDF.type, DQV.QualityMeasurement))
-            # g.add((dataset_ref, DQV.hasQualityMeasurement, quality_measure_ref))
+        quality_annotation = self._get_dataset_value(
+            dataset_dict, u'quality_annotation')
+        if quality_annotation:
+            quality_annotation_motivation = self._get_dataset_value(
+                dataset_dict, u'quality_annotation_motivation')
+            quality_annotation_ref = BNode()
+            annotation_body_ref = BNode()
+            g.add((quality_annotation_ref, RDF.type, DQV.QualityAnnotation))
+            g.add((dataset_ref, DQV.hasQualityAnnotation, quality_annotation_ref))
+            g.add((quality_annotation_ref, OA.hasTarget, dataset_ref))
+            g.add((quality_annotation_ref, OA.motivatedBy,
+                   OA.eval(quality_annotation_motivation)))
+            g.add((quality_annotation_ref, OA.hasBody, annotation_body_ref))
+            g.add((annotation_body_ref, RDF.type, OA.TextualBody))
+            g.add((annotation_body_ref, RDF.value, Literal(quality_annotation)))
+
             # code
 
         # Resources
