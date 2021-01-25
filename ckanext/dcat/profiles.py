@@ -1517,11 +1517,12 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
             agent_ref = contact_uri
             g.add((agent_ref, RDF.type, PROV.Agent))
             g.add((agent_ref, PROV.wasAssociatedWith, activity_ref))
-            for entity in was_derived_from.split(','):
-                entity_ref = URIRef(entity.strip())
-                g.add((entity_ref, RDF.type, PROV.Entity))
-                g.add((dataset_ref, PROV.wasDerivedFrom, entity_ref))
-                g.add((activity_ref, PROV.used, entity_ref))
+            g.add((dataset_ref, PROV.wasAttributedTo, agent_ref))
+            # for entity in was_derived_from.split(','):
+            #     entity_ref = URIRef(entity.strip())
+            #     g.add((entity_ref, RDF.type, PROV.Entity))
+            #     g.add((dataset_ref, PROV.wasDerivedFrom, entity_ref))
+            #     g.add((activity_ref, PROV.used, entity_ref))
 
             # code
 
