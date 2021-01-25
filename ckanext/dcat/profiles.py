@@ -1513,6 +1513,7 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
             g.add((annotation_body_ref, RDF.type, OA.TextualBody))
             g.add((annotation_body_ref, RDF.value, Literal(quality_annotation)))
 
+        # provenance
         was_derived_from = self._get_dataset_value(
             dataset_dict, u'was_derived_from'
         )
@@ -1530,8 +1531,6 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
             g.add((activity_ref, PROV.wasAssociatedWith, agent_ref))
             g.add((dataset_ref, PROV.wasAttributedTo, agent_ref))
             g.add((dataset_ref, PROV.wasGeneratedBy, activity_ref))
-
-            # code
 
         # Resources
         for resource_dict in dataset_dict.get('resources', []):
