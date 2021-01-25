@@ -41,7 +41,7 @@ DQV = Namespace('http://www.w3.org/ns/dqv#')
 SDMX = Namespace('http://purl.org/linked-data/sdmx/2009/attribute#')
 GKQ = Namespace('https://geokur.geo.tu-dresden.de/quality#')
 OA = Namespace('https://www.w3.org/TR/annotation-vocab#')
-PROV = Namespace('https://www.w3.org/TR/prov-o/#')
+PROV = Namespace('http://www.w3.org/ns/prov#')
 
 GEOJSON_IMT = 'https://www.iana.org/assignments/media-types/application/vnd.geo+json'
 
