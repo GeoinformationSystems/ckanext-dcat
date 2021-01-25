@@ -58,6 +58,12 @@ namespaces = {
     'gsp': GSP,
     'owl': OWL,
     'spdx': SPDX,
+    'geodcat': GEODCAT,
+    'dqv': DQV,
+    'sdmx': SDMX,
+    'gkq': GKQ,
+    'oa': OA,
+    'prov': PROV,
 }
 
 PREFIX_MAILTO = u'mailto:'
