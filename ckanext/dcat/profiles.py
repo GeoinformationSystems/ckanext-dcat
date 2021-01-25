@@ -1400,15 +1400,16 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
         #     self._get_dataset_value(dataset_dict, 'contact_name')
         # ]):
         contact_uri = self._get_dataset_value(dataset_dict, 'contact_uri')
+        contact_ref = ''
         if contact_uri:
-            contact_details = CleanedURIRef(contact_uri)
+            contact_ref = CleanedURIRef(contact_uri)
         else:
-            contact_details = BNode()
+            contact_ref = BNode()
 
-        g.add((dataset_ref, DCAT.contactPoint, contact_details))
-        g.add((contact_details, RDF.type, VCARD.Individual))
+        g.add((dataset_ref, DCAT.contactPoint, contact_ref))
+        g.add((contact_ref, RDF.type, VCARD.Individual))
         self._add_triple_from_dict(
-            dataset_dict, contact_details,
+            dataset_dict, contact_ref,
             VCARD.fn, 'contact_name'
         )
 
@@ -1514,15 +1515,15 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
             activity_ref = BNode()
             g.add((activity_ref, RDF.type, PROV.Activity))
             g.add((dataset_ref, PROV.wasGeneratedBy, activity_ref))
-            agent_ref = contact_uri
+            agent_ref = contact_ref
             g.add((agent_ref, RDF.type, PROV.Agent))
             g.add((agent_ref, PROV.wasAssociatedWith, activity_ref))
             g.add((dataset_ref, PROV.wasAttributedTo, agent_ref))
-            # for entity in was_derived_from.split(','):
-            #     entity_ref = URIRef(entity.strip())
-            #     g.add((entity_ref, RDF.type, PROV.Entity))
-            #     g.add((dataset_ref, PROV.wasDerivedFrom, entity_ref))
-            #     g.add((activity_ref, PROV.used, entity_ref))
+            for entity in was_derived_from.split(','):
+                entity_ref = URIRef(entity.strip())
+                g.add((entity_ref, RDF.type, PROV.Entity))
+                g.add((dataset_ref, PROV.wasDerivedFrom, entity_ref))
+                g.add((activity_ref, PROV.used, entity_ref))
 
             # code
 
