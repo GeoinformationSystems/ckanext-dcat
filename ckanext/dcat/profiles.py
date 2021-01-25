@@ -1510,7 +1510,7 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
         if was_derived_from:
             datasets = was_derived_from.split(',')
             for dataset in datasets:
-                g.add(dataset_ref, RDF.type, dataset)
+                g.add((dataset_ref, RDF.type, dataset))
 
             # code
 
