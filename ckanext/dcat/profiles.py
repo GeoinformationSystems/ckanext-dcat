@@ -1504,6 +1504,14 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
             g.add((annotation_body_ref, RDF.type, OA.TextualBody))
             g.add((annotation_body_ref, RDF.value, Literal(quality_annotation)))
 
+        was_derived_from = self._get_dataset_value(
+            dataset_dict, u'was_derived_from'
+        )
+        if was_derived_from:
+            datasets = was_derived_from.split(',')
+            for dataset in datasets:
+                g.add(dataset_ref, RDF.type, dataset)
+
             # code
 
         # Resources
