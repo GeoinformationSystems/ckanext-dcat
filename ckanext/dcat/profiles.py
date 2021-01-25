@@ -1514,16 +1514,16 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
             g.add((dataset_ref, RDF.type, PROV.Entity))
             activity_ref = BNode()
             g.add((activity_ref, RDF.type, PROV.Activity))
-            g.add((dataset_ref, PROV.wasGeneratedBy, activity_ref))
             agent_ref = contact_ref
             g.add((agent_ref, RDF.type, PROV.Agent))
-            g.add((agent_ref, PROV.wasAssociatedWith, activity_ref))
-            g.add((dataset_ref, PROV.wasAttributedTo, agent_ref))
             for entity in was_derived_from.split(','):
                 entity_ref = URIRef(entity.strip())
                 g.add((entity_ref, RDF.type, PROV.Entity))
                 g.add((dataset_ref, PROV.wasDerivedFrom, entity_ref))
                 g.add((activity_ref, PROV.used, entity_ref))
+            g.add((activity_ref, PROV.wasAssociatedWith, agent_ref))
+            g.add((dataset_ref, PROV.wasAttributedTo, agent_ref))
+            g.add((dataset_ref, PROV.wasGeneratedBy, activity_ref))
 
             # code
 
