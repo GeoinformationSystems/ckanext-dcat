@@ -1,4 +1,5 @@
 from builtins import str
+from re import U
 from past.builtins import basestring
 from builtins import object
 import datetime
@@ -40,6 +41,7 @@ DQV = Namespace('http://www.w3.org/ns/dqv#')
 SDMX = Namespace('http://purl.org/linked-data/sdmx/2009/attribute#')
 GKQ = Namespace('https://geokur.geo.tu-dresden.de/quality#')
 OA = Namespace('https://www.w3.org/TR/annotation-vocab#')
+PROV = Namespace('https://www.w3.org/TR/prov-o/#')
 
 GEOJSON_IMT = 'https://www.iana.org/assignments/media-types/application/vnd.geo+json'
 
@@ -1393,22 +1395,22 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
         self._add_list_triples_from_dict(dataset_dict, dataset_ref, items)
 
         # Contact details
-        if any([
-            self._get_dataset_value(dataset_dict, 'contact_uri'),
-            self._get_dataset_value(dataset_dict, 'contact_name')
-        ]):
-            contact_uri = self._get_dataset_value(dataset_dict, 'contact_uri')
-            if contact_uri:
-                contact_details = CleanedURIRef(contact_uri)
-            else:
-                contact_details = BNode()
+        # if any([
+        #     self._get_dataset_value(dataset_dict, 'contact_uri'),
+        #     self._get_dataset_value(dataset_dict, 'contact_name')
+        # ]):
+        contact_uri = self._get_dataset_value(dataset_dict, 'contact_uri')
+        if contact_uri:
+            contact_details = CleanedURIRef(contact_uri)
+        else:
+            contact_details = BNode()
 
-            g.add((dataset_ref, DCAT.contactPoint, contact_details))
-            g.add((contact_details, RDF.type, VCARD.Individual))
-            self._add_triple_from_dict(
-                dataset_dict, contact_details,
-                VCARD.fn, 'contact_name'
-            )
+        g.add((dataset_ref, DCAT.contactPoint, contact_details))
+        g.add((contact_details, RDF.type, VCARD.Individual))
+        self._add_triple_from_dict(
+            dataset_dict, contact_details,
+            VCARD.fn, 'contact_name'
+        )
 
         # Temporal
         start = self._get_dataset_value(dataset_dict, 'temporal_start')
@@ -1508,9 +1510,18 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
             dataset_dict, u'was_derived_from'
         )
         if was_derived_from:
-
+            g.add((dataset_ref, RDF.type, PROV.Entity))
+            activity_ref = BNode()
+            g.add((activity_ref, RDF.type, PROV.Activity))
+            g.add((dataset_ref, PROV.wasGeneratedBy, activity_ref))
+            agent_ref = contact_uri
+            g.add((agent_ref, RDF.type, PROV.Agent))
+            g.add((agent_ref, PROV.wasAssociatedWith, activity_ref))
             for entity in was_derived_from.split(','):
-                g.add((dataset_ref, RDF.type, Literal(entity)))
+                entity_ref = URIRef(entity.strip())
+                g.add((entity_ref, RDF.type, PROV.Entity))
+                g.add((dataset_ref, PROV.wasDerivedFrom, entity_ref))
+                g.add((activity_ref, PROV.used, entity_ref))
 
             # code
 
