@@ -1543,8 +1543,13 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
 
             #  Simple values
             items = [
+                ('name', DCT.title, None, Literal),
+                ('description', DCT.description, None, Literal),
+                ('status', ADMS.status, None, URIRefOrLiteral),
+                ('rights', DCT.rights, None, URIRefOrLiteral),
                 ('license', DCT.license, None, URIRefOrLiteral),
-                ('url', DCAT.accessURL, None, URIRef)
+                ('access_url', DCAT.accessURL, None, URIRef),
+                ('download_url', DCAT.downloadURL, None, URIRef),
             ]
 
             self._add_triples_from_dict(resource_dict, distribution, items)
