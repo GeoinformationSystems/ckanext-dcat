@@ -1395,7 +1395,7 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
             ('conforms_to', DCT.conformsTo, None, Literal),
             ('alternate_identifier', ADMS.identifier, None, Literal),
             ('documentation', FOAF.page, None, URIRefOrLiteral),
-            ('related_resource', DCT.relation, None, URIRefOrLiteral),
+            ('is_part_of', DCT.isPartOf, None, URIRefOrLiteral),
             ('is_version_of', DCT.isVersionOf, None, URIRefOrLiteral)
         ]
         self._add_list_triples_from_dict(dataset_dict, dataset_ref, items)
