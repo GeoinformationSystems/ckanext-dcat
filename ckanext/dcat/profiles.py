@@ -1360,50 +1360,41 @@ class EuropeanDCATAPProfile(RDFProfile):
 
 
 class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
-    def _time_interval(self, subject, predicate):
+    def __spatial_quality(self, subject):
         '''
-        >> GEOKUR Profile adjustments <<
-            - changed SCHEMA.startDate to DCAT.startDate
-            - changed SCHEMA.endDate to DCAT.endDate
+        >> GEOKUR Profile method <<
 
+        Returns the type and value of the spatial resolution
 
-        Returns the start and end date for a time interval object
+        subject must be rdflib URIRef
 
-        Both subject and predicate must be rdflib URIRef or BNode objects
+        Returns a dict with the type as key and the value as value.
 
-        It checks for time intervals defined with both schema.org startDate &
-        endDate and W3C Time hasBeginning & hasEnd.
-
-        Note that partial dates will be expanded to the first month / day
-        value, eg '1904' -> '1904-01-01'.
-
-        Returns a tuple with the start and end date values, both of which
-        can be None if not found
+        the spatial res type 'in_meters' need special treatment.
         '''
 
-        start_date = end_date = None
+        key = None
+        val = None
 
-        for interval in self.g.objects(subject, predicate):
-            # Fist try the schema.org way
-            start_date = self._object_value(interval, DCAT.startDate)
-            end_date = self._object_value(interval, DCAT.endDate)
+        for quality_val in self.g.objects(subject, DCAT.spatialResolutionInMeters):
+            # there is only one triple
+            key = u'meters'
+            val = quality_val
 
-            if start_date or end_date:
-                return start_date, end_date
+        if not key and val:
+            for quality_measurement in self.g.objects(subject, DQV.hasQualityMeasurement):
+                for quality_type in self.g.objects(quality_measurement, DQV.isMeasurementOf):
+                    # only take spatial quality measures:
+                    if quality_type == GEODCAT.SpatialResolutionAsScale:
+                        key = u'scale'
+                    elif quality_type == GEODCAT.SpatialResolutionAsAngularDistance:
+                        key = u'angular'
+                    elif quality_type == GEODCAT.spatialResolutionAsVerticalDistance:
+                        key = u'vertical'
+                for quality_val in self.g.objects(quality_measurement, DQV.value):
+                    val = quality_val
 
-            # If no luck, try the w3 time way
-            start_nodes = [t for t in self.g.objects(interval,
-                                                     TIME.hasBeginning)]
-            end_nodes = [t for t in self.g.objects(interval,
-                                                   TIME.hasEnd)]
-            if start_nodes:
-                start_date = self._object_value(start_nodes[0],
-                                                TIME.inXSDDateTime)
-            if end_nodes:
-                end_date = self._object_value(end_nodes[0],
-                                              TIME.inXSDDateTime)
-
-        return start_date, end_date
+        return {key: val}
 
     def _spatial(self, subject, predicate):
         '''
@@ -1538,15 +1529,19 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
             dataset_dict['extras'].append(
                 {'key': 'spatial', 'value': spatial.get('geom')})
 
+        # Spatial resolution (spatial quality measures)
+        spatial_quality = self._spatial_quality(dataset_ref)
+        for quality_type, quality_value in spatial_quality:
+            dataset_dict['extras'].append(
+                {'key': 'spatial_resolution_type', 'value': quality_type},
+                {'key': 'spatial_resolution', 'value': quality_value},
+            )
+
         # Dataset URI (explicitly show the missing ones)
         dataset_uri = (str(dataset_ref)
                        if isinstance(dataset_ref, rdflib.term.URIRef)
                        else '')
         dataset_dict['extras'].append({'key': 'uri', 'value': dataset_uri})
-
-        # geokur additions
-
-        # Spatial resolution
 
         # access_rights
         access_rights = self._access_rights(dataset_ref, DCT.accessRights)
