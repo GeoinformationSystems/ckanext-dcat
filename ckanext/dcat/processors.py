@@ -28,8 +28,7 @@ RDF_PROFILES_ENTRY_POINT_GROUP = 'ckan.rdf.profiles'
 RDF_PROFILES_CONFIG_OPTION = 'ckanext.dcat.rdf.profiles'
 COMPAT_MODE_CONFIG_OPTION = 'ckanext.dcat.compatibility_mode'
 
-DEFAULT_RDF_PROFILES = ['euro_dcat_ap']
-
+DEFAULT_RDF_PROFILES = ['geokur_dcat_ap']
 
 
 class RDFProcessor(object):
@@ -121,7 +120,6 @@ class RDFParser(RDFProcessor):
                 return str(o)
         return None
 
-
     def parse(self, data, _format=None):
         '''
         Parses and RDF graph serialization and into the class graph
@@ -187,6 +185,7 @@ class RDFSerializer(RDFProcessor):
     Supports different profiles which are the ones that will generate
     the RDF graph.
     '''
+
     def _add_pagination_triples(self, paging_info):
         '''
         Adds pagination triples to the graph using the paging info provided
@@ -320,7 +319,8 @@ class RDFSerializer(RDFProcessor):
             for dataset_dict in dataset_dicts:
                 dataset_ref = self.graph_from_dataset(dataset_dict)
 
-                cat_ref = self._add_source_catalog(catalog_ref, dataset_dict, dataset_ref)
+                cat_ref = self._add_source_catalog(
+                    catalog_ref, dataset_dict, dataset_ref)
                 if not cat_ref:
                     self.g.add((catalog_ref, DCAT.dataset, dataset_ref))
 
@@ -371,10 +371,10 @@ class RDFSerializer(RDFProcessor):
                     g.add((catalog_ref, predicate, _type(value)))
 
             publisher_sources = (
-                                 ('name', Literal, FOAF.name, True,),
-                                 ('email', Literal, FOAF.mbox, False,),
-                                 ('url', URIRef, FOAF.homepage,False,),
-                                 ('type', Literal, DCT.type, False,))
+                ('name', Literal, FOAF.name, True,),
+                ('email', Literal, FOAF.mbox, False,),
+                ('url', URIRef, FOAF.homepage, False,),
+                ('type', Literal, DCT.type, False,))
 
             _pub = _get_from_extra('source_catalog_publisher')
             if _pub:
@@ -389,7 +389,8 @@ class RDFSerializer(RDFProcessor):
                 for src_key, _type, predicate, required in publisher_sources:
                     val = pub.get(src_key)
                     if val is None and required:
-                        raise ValueError("Value for %s (%s) is required" % (src_key, predicate))
+                        raise ValueError(
+                            "Value for %s (%s) is required" % (src_key, predicate))
                     elif val is None:
                         continue
                     g.add((agent, predicate, _type(val)))
