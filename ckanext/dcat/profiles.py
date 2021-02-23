@@ -1487,10 +1487,7 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
                 ('issued', DCT.issued),
                 ('modified', DCT.modified),
                 ('identifier', DCT.identifier),
-                # ('version_notes', ADMS.versionNotes),
-                # ('frequency', DCT.accrualPeriodicity),
-                # ('provenance', DCT.provenance),
-                # ('dcat_type', DCT.type),
+                ('temporal_resolution', DCAT.temporalResolution)
         ):
             value = self._object_value(dataset_ref, predicate)
             if value:
@@ -1548,7 +1545,6 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
         dataset_dict['extras'].append({'key': 'uri', 'value': dataset_uri})
 
         # geokur additions
-        # Temporal resolution
 
         # Spatial resolution
 
