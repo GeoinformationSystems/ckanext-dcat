@@ -1548,6 +1548,9 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
         dataset_dict['extras'].append({'key': 'uri', 'value': dataset_uri})
 
         # geokur additions
+        # Temporal resolution
+
+        # Spatial resolution
 
         # access_rights
         access_rights = self._access_rights(dataset_ref, DCT.accessRights)
@@ -1744,6 +1747,12 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
                 pass
 
         # Additions from GeoDCAT
+        temporal_resolution = self._get_dataset_value(
+            dataset_dict, 'temporal_resolution')
+        if temporal_resolution:
+            g.add((dataset_ref, DCAT.temporalResolution, Literal(
+                temporal_resolution, datatype=XSD.duration)))
+
         spatial_resolution = self._get_dataset_value(
             dataset_dict, 'spatial_resolution')
         if spatial_resolution:
