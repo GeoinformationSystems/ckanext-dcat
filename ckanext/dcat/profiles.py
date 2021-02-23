@@ -1537,9 +1537,12 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
         spatial_quality = self._spatial_quality(dataset_ref)
         if spatial_quality:
             for quality_type, quality_value in spatial_quality.items():
+                # there is only one item
                 dataset_dict['extras'].append(
-                    {'key': 'spatial_resolution_type', 'value': quality_type},
-                    {'key': 'spatial_resolution', 'value': quality_value},
+                    {'key': 'spatial_resolution_type', 'value': quality_type}
+                )
+                dataset_dict['extras'].append(
+                    {'key': 'spatial_resolution', 'value': quality_value}
                 )
 
         # Dataset URI (explicitly show the missing ones)
