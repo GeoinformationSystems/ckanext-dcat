@@ -1360,6 +1360,250 @@ class EuropeanDCATAPProfile(RDFProfile):
 
 
 class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
+    def _spatial(self, subject, predicate):
+        '''
+        >> GEOKUR Profile adjustments <<
+            - changed LOCN.geometry to DCAT.bbox 
+            - rm text and uri representations of spatial object
+
+        Returns a dict with details about the spatial location
+
+        Both subject and predicate must be rdflib URIRef or BNode objects
+
+        Returns keys for uri, text or geom with the values set to
+        None if they could not be found.
+
+        Geometries are always returned in GeoJSON. If only WKT is provided,
+        it will be transformed to GeoJSON.
+
+        Check the notes on the README for the supported formats:
+
+        https://github.com/ckan/ckanext-dcat/#rdf-dcat-to-ckan-dataset-mapping
+        '''
+
+        geom = None
+        for spatial in self.g.objects(subject, predicate):
+            if (spatial, RDF.type, DCT.Location) in self.g:
+                for geometry in self.g.objects(spatial, DCAT.bbox):
+                    if (geometry.datatype == URIRef(GEOJSON_IMT) or
+                            not geometry.datatype):
+                        try:
+                            json.loads(str(geometry))
+                            geom = str(geometry)
+                        except (ValueError, TypeError):
+                            pass
+                    if not geom and geometry.datatype == GSP.wktLiteral:
+                        try:
+                            geom = json.dumps(wkt.loads(str(geometry)))
+                        except (ValueError, TypeError):
+                            pass
+                for label in self.g.objects(spatial, SKOS.prefLabel):
+                    text = str(label)
+                for label in self.g.objects(spatial, RDFS.label):
+                    text = str(label)
+
+        return {
+            'geom': geom,
+        }
+
+    def parse_dataset(self, dataset_dict, dataset_ref):
+
+        dataset_dict['extras'] = []
+        dataset_dict['resources'] = []
+
+        # Basic fields
+        for key, predicate in (
+                ('title', DCT.title),
+                ('notes', DCT.description),
+                ('url', DCAT.landingPage),
+                # ('version', OWL.versionInfo),
+        ):
+            value = self._object_value(dataset_ref, predicate)
+            if value:
+                dataset_dict[key] = value
+
+        # if not dataset_dict.get('version'):
+        #     # adms:version was supported on the first version of the DCAT-AP
+        #     value = self._object_value(dataset_ref, ADMS.version)
+        #     if value:
+        #         dataset_dict['version'] = value
+
+        # Tags
+        # replace munge_tag to noop if there's no need to clean tags
+        do_clean = toolkit.asbool(config.get(DCAT_CLEAN_TAGS, False))
+        tags_val = [
+            munge_tag(tag) if do_clean else tag for tag in self._keywords(dataset_ref)]
+        tags = [{'name': tag} for tag in tags_val]
+        dataset_dict['tags'] = tags
+
+        # Extras
+
+        #  Simple values
+        for key, predicate in (
+                ('issued', DCT.issued),
+                ('modified', DCT.modified),
+                ('identifier', DCT.identifier),
+                # ('version_notes', ADMS.versionNotes),
+                # ('frequency', DCT.accrualPeriodicity),
+                # ('provenance', DCT.provenance),
+                # ('dcat_type', DCT.type),
+        ):
+            value = self._object_value(dataset_ref, predicate)
+            if value:
+                dataset_dict['extras'].append({'key': key, 'value': value})
+
+        #  Lists
+        for key, predicate, in (
+                ('theme', DCAT.theme),
+                ('alternate_identifier', ADMS.identifier),
+                ('conforms_to', DCT.conformsTo),
+                ('documentation', FOAF.page),
+                # ('has_version', DCT.hasVersion),
+                ('is_version_of', DCT.isVersionOf),
+                ('is_part_of', DCT.isPartOf)
+        ):
+            values = self._object_value_list(dataset_ref, predicate)
+            if values:
+                dataset_dict['extras'].append({'key': key,
+                                               'value': json.dumps(values)})
+
+        # Contact details
+        contact = self._contact_details(dataset_ref, DCAT.contactPoint)
+        if not contact:
+            # adms:contactPoint was supported on the first version of DCAT-AP
+            contact = self._contact_details(dataset_ref, ADMS.contactPoint)
+
+        if contact:
+            for key in ('uri', 'name'):
+                if contact.get(key):
+                    dataset_dict['extras'].append(
+                        # contact_{0} seems overly complicated just to save three times 'contact_' in the keylist...
+                        {'key': 'contact_{0}'.format(key),
+                         'value': contact.get(key)})
+
+        # Temporal
+        start, end = self._time_interval(dataset_ref, DCT.temporal)
+        if start:
+            dataset_dict['extras'].append(
+                {'key': 'temporal_start', 'value': start})
+        if end:
+            dataset_dict['extras'].append(
+                {'key': 'temporal_end', 'value': end})
+
+        # Spatial
+        spatial = self._spatial(dataset_ref, DCT.spatial)
+
+        if spatial.get('geom'):
+            dataset_dict['extras'].append(
+                {'key': 'spatial', 'value': spatial.get('spatial')})
+
+        # Dataset URI (explicitly show the missing ones)
+        dataset_uri = (str(dataset_ref)
+                       if isinstance(dataset_ref, rdflib.term.URIRef)
+                       else '')
+        dataset_dict['extras'].append({'key': 'uri', 'value': dataset_uri})
+
+        # geokur additions
+
+        # access_rights
+        access_rights = self._access_rights(dataset_ref, DCT.accessRights)
+        if access_rights:
+            dataset_dict['extras'].append(
+                {'key': 'access_rights', 'value': access_rights})
+
+        # License
+        if 'license_id' not in dataset_dict:
+            dataset_dict['license_id'] = self._license(dataset_ref)
+
+        # Source Catalog
+        if toolkit.asbool(config.get(DCAT_EXPOSE_SUBCATALOGS, False)):
+            catalog_src = self._get_source_catalog(dataset_ref)
+            if catalog_src is not None:
+                src_data = self._extract_catalog_dict(catalog_src)
+                dataset_dict['extras'].extend(src_data)
+
+        # Resources
+        for distribution in self._distributions(dataset_ref):
+
+            resource_dict = {}
+
+            #  Simple values
+            for key, predicate in (
+                    ('name', DCT.title),
+                    ('description', DCT.description),
+                    ('access_url', DCAT.accessURL),
+                    ('download_url', DCAT.downloadURL),
+                    ('issued', DCT.issued),
+                    ('modified', DCT.modified),
+                    ('status', ADMS.status),
+                    ('license', DCT.license),
+            ):
+                value = self._object_value(distribution, predicate)
+                if value:
+                    resource_dict[key] = value
+
+            resource_dict['url'] = (self._object_value(distribution,
+                                                       DCAT.downloadURL) or
+                                    self._object_value(distribution,
+                                                       DCAT.accessURL))
+
+            # rights
+            rights = self._access_rights(distribution, DCT.rights)
+            if rights:
+                resource_dict['rights'] = rights
+
+            # Format and media type
+            normalize_ckan_format = toolkit.asbool(config.get(
+                'ckanext.dcat.normalize_ckan_format', True))
+            imt, label = self._distribution_format(distribution,
+                                                   normalize_ckan_format)
+
+            if imt:
+                resource_dict['mimetype'] = imt
+
+            if label:
+                resource_dict['format'] = label
+            elif imt:
+                resource_dict['format'] = imt
+
+            # Size
+            size = self._object_value_int(distribution, DCAT.byteSize)
+            if size is not None:
+                resource_dict['size'] = size
+
+            # Checksum
+            for checksum in self.g.objects(distribution, SPDX.checksum):
+                algorithm = self._object_value(checksum, SPDX.algorithm)
+                checksum_value = self._object_value(
+                    checksum, SPDX.checksumValue)
+                if algorithm:
+                    resource_dict['hash_algorithm'] = algorithm
+                if checksum_value:
+                    resource_dict['hash'] = checksum_value
+
+            # Distribution URI (explicitly show the missing ones)
+            resource_dict['uri'] = (str(distribution)
+                                    if isinstance(distribution,
+                                                  rdflib.term.URIRef)
+                                    else '')
+
+            dataset_dict['resources'].append(resource_dict)
+
+        if self.compatibility_mode:
+            # Tweak the resulting dict to make it compatible with previous
+            # versions of the ckanext-dcat parsers
+            for extra in dataset_dict['extras']:
+                if extra['key'] in ('issued', 'modified', 'publisher_name',
+                                    'publisher_email',):
+
+                    extra['key'] = 'dcat_' + extra['key']
+
+                if extra['key'] == 'language':
+                    extra['value'] = ','.join(
+                        sorted(json.loads(extra['value'])))
+
+        return dataset_dict
+
     def graph_from_dataset(self, dataset_dict, dataset_ref):
 
         g = self.g
@@ -1374,7 +1618,8 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
             ('title', DCT.title, None, Literal),
             ('notes', DCT.description, None, Literal),
             ('url', DCAT.landingPage, None, URIRef),
-            ('identifier', DCT.identifier, ['guid', 'id'], Literal)
+            ('identifier', DCT.identifier, ['guid', 'id'], Literal),
+            ('access_rights', DCT.accessRights, None, Literal),
         ]
         self._add_triples_from_dict(dataset_dict, dataset_ref, items)
 
