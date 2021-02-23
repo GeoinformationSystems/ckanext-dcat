@@ -1381,7 +1381,7 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
             key = u'meters'
             val = quality_val
 
-        if not key and val:
+        if not key and not val:
             print(key, val)
             for quality_measurement in self.g.objects(subject, DQV.hasQualityMeasurement):
                 for quality_type in self.g.objects(quality_measurement, DQV.isMeasurementOf):
