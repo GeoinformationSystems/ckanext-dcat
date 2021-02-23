@@ -1394,6 +1394,7 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
                 for quality_val in self.g.objects(quality_measurement, DQV.value):
                     val = quality_val
 
+        print(key, val)
         return {key: val}
 
     def _spatial(self, subject, predicate):
