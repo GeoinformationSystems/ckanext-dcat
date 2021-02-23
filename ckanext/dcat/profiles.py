@@ -1380,7 +1380,7 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
 
         https://github.com/ckan/ckanext-dcat/#rdf-dcat-to-ckan-dataset-mapping
         '''
-
+        print("test")
         geom = None
         for spatial in self.g.objects(subject, predicate):
             if (spatial, RDF.type, DCT.Location) in self.g:
