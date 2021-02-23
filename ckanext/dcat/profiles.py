@@ -1382,10 +1382,11 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
             val = quality_val
 
         if not key and not val:
-            print(key, val)
+
             for quality_measurement in self.g.objects(subject, DQV.hasQualityMeasurement):
                 for quality_type in self.g.objects(quality_measurement, DQV.isMeasurementOf):
                     # only take spatial quality measures:
+                    print(key, val)
                     if quality_type == GEODCAT.SpatialResolutionAsScale:
                         key = u'scale'
                     elif quality_type == GEODCAT.SpatialResolutionAsAngularDistance:
