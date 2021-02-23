@@ -1387,14 +1387,12 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
                 for geometry in self.g.objects(spatial, DCAT.bbox):
                     if (geometry.datatype == URIRef(GEOJSON_IMT) or
                             not geometry.datatype):
-                        print('test json')
                         try:
                             json.loads(str(geometry))
                             geom = str(geometry)
                         except (ValueError, TypeError):
                             pass
                     if not geom and geometry.datatype == GSP.wktLiteral:
-                        print('test wkt')
                         try:
                             geom = json.dumps(wkt.loads(str(geometry)))
                         except (ValueError, TypeError):
@@ -1403,7 +1401,6 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
                     text = str(label)
                 for label in self.g.objects(spatial, RDFS.label):
                     text = str(label)
-        print(geom)
         return {
             'geom': geom,
         }
@@ -1494,7 +1491,7 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
 
         # Spatial
         spatial = self._spatial(dataset_ref, DCT.spatial)
-
+        print(spatial)
         if spatial.get('geom'):
             dataset_dict['extras'].append(
                 {'key': 'spatial', 'value': spatial.get('spatial')})
