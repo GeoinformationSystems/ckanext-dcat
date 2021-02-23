@@ -1363,8 +1363,8 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
     def _time_interval(self, subject, predicate):
         '''
         >> GEOKUR Profile adjustments <<
-            - changed SCHEMA.startDate to DCT.startDate
-            - changed SCHEMA.endDate to DCT.endDate
+            - changed SCHEMA.startDate to DCAT.startDate
+            - changed SCHEMA.endDate to DCAT.endDate
 
 
         Returns the start and end date for a time interval object
@@ -1385,8 +1385,8 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
 
         for interval in self.g.objects(subject, predicate):
             # Fist try the schema.org way
-            start_date = self._object_value(interval, DCT.startDate)
-            end_date = self._object_value(interval, DCT.endDate)
+            start_date = self._object_value(interval, DCAT.startDate)
+            end_date = self._object_value(interval, DCAT.endDate)
 
             if start_date or end_date:
                 return start_date, end_date
