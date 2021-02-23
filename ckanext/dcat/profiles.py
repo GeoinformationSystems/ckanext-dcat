@@ -1385,7 +1385,7 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
         for spatial in self.g.objects(subject, predicate):
             if (spatial, RDF.type, DCT.Location) in self.g:
                 for geometry in self.g.objects(spatial, DCAT.bbox):
-                    print("test")
+                    print(geometry)
                     if (geometry.datatype == URIRef(GEOJSON_IMT) or
                             not geometry.datatype):
                         try:
