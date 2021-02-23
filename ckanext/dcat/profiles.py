@@ -14,7 +14,7 @@ from ckantoolkit import config
 
 import rdflib
 from rdflib import URIRef, BNode, Literal
-from rdflib.namespace import Namespace, RDF, XSD, SKOS, RDFS
+from rdflib.namespace import Namespace, RDF, SPLIT_START_CATEGORIES, XSD, SKOS, RDFS
 
 from geomet import wkt, InvalidGeoJSONException
 
@@ -1395,7 +1395,10 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
                 for quality_val in self.g.objects(quality_measurement, DQV.value):
                     val = quality_val
 
-        return {key: val}
+        if key and val:
+            return {key: val}
+        else:
+            return None
 
     def _spatial(self, subject, predicate):
         '''
@@ -1532,11 +1535,12 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
 
         # Spatial resolution (spatial quality measures)
         spatial_quality = self._spatial_quality(dataset_ref)
-        for quality_type, quality_value in spatial_quality:
-            dataset_dict['extras'].append(
-                {'key': 'spatial_resolution_type', 'value': quality_type},
-                {'key': 'spatial_resolution', 'value': quality_value},
-            )
+        if spatial_quality:
+            for quality_type, quality_value in spatial_quality.items():
+                dataset_dict['extras'].append(
+                    {'key': 'spatial_resolution_type', 'value': quality_type},
+                    {'key': 'spatial_resolution', 'value': quality_value},
+                )
 
         # Dataset URI (explicitly show the missing ones)
         dataset_uri = (str(dataset_ref)
