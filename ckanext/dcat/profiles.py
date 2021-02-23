@@ -14,7 +14,7 @@ from ckantoolkit import config
 
 import rdflib
 from rdflib import URIRef, BNode, Literal
-from rdflib.namespace import Namespace, RDF, SPLIT_START_CATEGORIES, XSD, SKOS, RDFS
+from rdflib.namespace import Namespace, RDF, XSD, SKOS, RDFS
 
 from geomet import wkt, InvalidGeoJSONException
 
