@@ -1491,10 +1491,9 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
 
         # Spatial
         spatial = self._spatial(dataset_ref, DCT.spatial)
-        print(spatial)
         if spatial.get('geom'):
             dataset_dict['extras'].append(
-                {'key': 'spatial', 'value': spatial.get('spatial')})
+                {'key': 'spatial', 'value': spatial.get('geom')})
 
         # Dataset URI (explicitly show the missing ones)
         dataset_uri = (str(dataset_ref)
