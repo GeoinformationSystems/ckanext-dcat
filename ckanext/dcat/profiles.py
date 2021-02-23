@@ -1360,6 +1360,51 @@ class EuropeanDCATAPProfile(RDFProfile):
 
 
 class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
+    def _time_interval(self, subject, predicate):
+        '''
+        >> GEOKUR Profile adjustments <<
+            - changed SCHEMA.startDate to DCT.startDate
+            - changed SCHEMA.endDate to DCT.endDate
+
+
+        Returns the start and end date for a time interval object
+
+        Both subject and predicate must be rdflib URIRef or BNode objects
+
+        It checks for time intervals defined with both schema.org startDate &
+        endDate and W3C Time hasBeginning & hasEnd.
+
+        Note that partial dates will be expanded to the first month / day
+        value, eg '1904' -> '1904-01-01'.
+
+        Returns a tuple with the start and end date values, both of which
+        can be None if not found
+        '''
+
+        start_date = end_date = None
+
+        for interval in self.g.objects(subject, predicate):
+            # Fist try the schema.org way
+            start_date = self._object_value(interval, DCT.startDate)
+            end_date = self._object_value(interval, DCT.endDate)
+
+            if start_date or end_date:
+                return start_date, end_date
+
+            # If no luck, try the w3 time way
+            start_nodes = [t for t in self.g.objects(interval,
+                                                     TIME.hasBeginning)]
+            end_nodes = [t for t in self.g.objects(interval,
+                                                   TIME.hasEnd)]
+            if start_nodes:
+                start_date = self._object_value(start_nodes[0],
+                                                TIME.inXSDDateTime)
+            if end_nodes:
+                end_date = self._object_value(end_nodes[0],
+                                              TIME.inXSDDateTime)
+
+        return start_date, end_date
+
     def _spatial(self, subject, predicate):
         '''
         >> GEOKUR Profile adjustments <<
@@ -1367,50 +1412,6 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
             - rm text and uri representations of spatial object
 
         Returns a dict with details about the spatial location
-
-        Both subject and predicate must be rdflib URIRef or BNode objects
-
-        Returns keys for uri, text or geom with the values set to
-        None if they could not be found.
-
-        Geometries are always returned in GeoJSON. If only WKT is provided,
-        it will be transformed to GeoJSON.
-
-        Check the notes on the README for the supported formats:
-
-        https://github.com/ckan/ckanext-dcat/#rdf-dcat-to-ckan-dataset-mapping
-        '''
-
-        geom = None
-        for spatial in self.g.objects(subject, predicate):
-            if (spatial, RDF.type, DCT.Location) in self.g:
-                for geometry in self.g.objects(spatial, DCAT.bbox):
-                    if (geometry.datatype == URIRef(GEOJSON_IMT) or
-                            not geometry.datatype):
-                        try:
-                            json.loads(str(geometry))
-                            geom = str(geometry)
-                        except (ValueError, TypeError):
-                            pass
-                    if not geom and geometry.datatype == GSP.wktLiteral:
-                        try:
-                            geom = json.dumps(wkt.loads(str(geometry)))
-                        except (ValueError, TypeError):
-                            pass
-                for label in self.g.objects(spatial, SKOS.prefLabel):
-                    text = str(label)
-                for label in self.g.objects(spatial, RDFS.label):
-                    text = str(label)
-        return {
-            'geom': geom,
-        }
-
-    def _prov(self, subject, predicate):
-        '''
-        >> GEOKUR Profile method <<
-
-
-        Returns a dict with details about the provenance
 
         Both subject and predicate must be rdflib URIRef or BNode objects
 
@@ -1547,11 +1548,6 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
         dataset_dict['extras'].append({'key': 'uri', 'value': dataset_uri})
 
         # geokur additions
-        # provenance = self._provenace(dataset_ref, PROV.wasGeneratedBy)
-        # if provenance.get('prov'):
-        #     dataset_dict['extras'].append(
-        #         {'key': 'was_derived_from', 'value': provenance.get('prov')}
-        #     )
 
         # access_rights
         access_rights = self._access_rights(dataset_ref, DCT.accessRights)
