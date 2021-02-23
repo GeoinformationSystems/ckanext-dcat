@@ -1360,7 +1360,7 @@ class EuropeanDCATAPProfile(RDFProfile):
 
 
 class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
-    def __spatial_quality(self, subject):
+    def _spatial_quality(self, subject):
         '''
         >> GEOKUR Profile method <<
 
