@@ -1405,6 +1405,50 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
             'geom': geom,
         }
 
+    def _prov(self, subject, predicate):
+        '''
+        >> GEOKUR Profile method <<
+
+
+        Returns a dict with details about the provenance
+
+        Both subject and predicate must be rdflib URIRef or BNode objects
+
+        Returns keys for uri, text or geom with the values set to
+        None if they could not be found.
+
+        Geometries are always returned in GeoJSON. If only WKT is provided,
+        it will be transformed to GeoJSON.
+
+        Check the notes on the README for the supported formats:
+
+        https://github.com/ckan/ckanext-dcat/#rdf-dcat-to-ckan-dataset-mapping
+        '''
+
+        geom = None
+        for spatial in self.g.objects(subject, predicate):
+            if (spatial, RDF.type, DCT.Location) in self.g:
+                for geometry in self.g.objects(spatial, DCAT.bbox):
+                    if (geometry.datatype == URIRef(GEOJSON_IMT) or
+                            not geometry.datatype):
+                        try:
+                            json.loads(str(geometry))
+                            geom = str(geometry)
+                        except (ValueError, TypeError):
+                            pass
+                    if not geom and geometry.datatype == GSP.wktLiteral:
+                        try:
+                            geom = json.dumps(wkt.loads(str(geometry)))
+                        except (ValueError, TypeError):
+                            pass
+                for label in self.g.objects(spatial, SKOS.prefLabel):
+                    text = str(label)
+                for label in self.g.objects(spatial, RDFS.label):
+                    text = str(label)
+        return {
+            'geom': geom,
+        }
+
     def parse_dataset(self, dataset_dict, dataset_ref):
 
         dataset_dict['extras'] = []
@@ -1459,7 +1503,8 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
                 ('documentation', FOAF.page),
                 # ('has_version', DCT.hasVersion),
                 ('is_version_of', DCT.isVersionOf),
-                ('is_part_of', DCT.isPartOf)
+                ('is_part_of', DCT.isPartOf),
+                ('was_derived_from', PROV.wasDerivedFrom)
         ):
             values = self._object_value_list(dataset_ref, predicate)
             if values:
@@ -1502,6 +1547,11 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
         dataset_dict['extras'].append({'key': 'uri', 'value': dataset_uri})
 
         # geokur additions
+        # provenance = self._provenace(dataset_ref, PROV.wasGeneratedBy)
+        # if provenance.get('prov'):
+        #     dataset_dict['extras'].append(
+        #         {'key': 'was_derived_from', 'value': provenance.get('prov')}
+        #     )
 
         # access_rights
         access_rights = self._access_rights(dataset_ref, DCT.accessRights)
