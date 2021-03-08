@@ -67,7 +67,7 @@ namespaces = {
     'sdmx': SDMX,
     'gkq': GKQ,
     'gqc': GKC,
-    'gqP': GQP,
+    'gqp': GKP,
     'oa': OA,
     'prov': PROV,
 }
