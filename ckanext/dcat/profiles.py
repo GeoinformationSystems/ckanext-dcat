@@ -1823,8 +1823,7 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
         if was_derived_from:
             activity_name = self._get_dataset_value(
                 dataset_dict, u'was_generated_by')
-            activity_ref = URIRef(eval(
-                'GKP.' + activity_name.replace(' ', '-')))
+            activity_ref = GKP.clu-mundo
             process_types = self._get_dataset_value(
                 dataset_dict, u'process_type')
             g.add((dataset_ref, RDF.type, PROV.Entity))
