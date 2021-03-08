@@ -4,6 +4,7 @@ from past.builtins import basestring
 from builtins import object
 import datetime
 import json
+import urllib
 
 import six
 from six.moves.urllib.parse import quote
@@ -65,6 +66,8 @@ namespaces = {
     'dqv': DQV,
     'sdmx': SDMX,
     'gkq': GKQ,
+    'gqc': GKC,
+    'gqP': GQP,
     'oa': OA,
     'prov': PROV,
 }
@@ -1820,8 +1823,10 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
         if was_derived_from:
             activity_ref = self._get_dataset_value(
                 dataset_dict, u'was_generated_by')
-            process_type_ref = self._get_dataset_value(
+            process_type_name = self._get_dataset_value(
                 dataset_dict, u'process_type')
+            process_type_ref = eval(
+                'GKC.' + urllib.parse(process_type_name.replace(' ', '-')))
             g.add((dataset_ref, RDF.type, PROV.Entity))
             g.add((activity_ref, RDF.type, PROV.Activity))
             g.add((activity_ref, GKC.hasGeooperatorCategory, process_type_ref))
