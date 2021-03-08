@@ -39,7 +39,10 @@ SPDX = Namespace('http://spdx.org/rdf/terms#')
 GEODCAT = Namespace('http://data.europa.eu/930/')
 DQV = Namespace('http://www.w3.org/ns/dqv#')
 SDMX = Namespace('http://purl.org/linked-data/sdmx/2009/attribute#')
-GKQ = Namespace('https://geokur.geo.tu-dresden.de/quality#')
+GKQ = Namespace('https://geokur-dmp.geo.tu-dresden.de/pages/quality-elements#')
+GKC = Namespace(
+    'https://geokur-dmp.geo.tu-dresden.de/pages/geospatial-categories-register#')
+GKP = Namespace('https://geokur-dmp.geo.tu-dresden.de/pages/processes#')
 OA = Namespace('https://www.w3.org/TR/annotation-vocab#')
 PROV = Namespace('http://www.w3.org/ns/prov#')
 
@@ -1794,30 +1797,34 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
             # code
 
         # quality elements
-        quality_annotation = self._get_dataset_value(
-            dataset_dict, u'quality_annotation')
-        if quality_annotation:
-            quality_annotation_motivation = str(self._get_dataset_value(
-                dataset_dict, u'quality_annotation_motivation'))
-            quality_annotation_ref = BNode()
-            annotation_body_ref = BNode()
-            g.add((quality_annotation_ref, RDF.type, DQV.QualityAnnotation))
-            g.add((dataset_ref, DQV.hasQualityAnnotation, quality_annotation_ref))
-            g.add((quality_annotation_ref, OA.hasTarget, dataset_ref))
-            g.add((quality_annotation_ref, OA.motivatedBy,
-                   eval('OA.' + quality_annotation_motivation)))
-            g.add((quality_annotation_ref, OA.hasBody, annotation_body_ref))
-            g.add((annotation_body_ref, RDF.type, OA.TextualBody))
-            g.add((annotation_body_ref, RDF.value, Literal(quality_annotation)))
+        # quality_annotation = self._get_dataset_value(
+        #     dataset_dict, u'quality_annotation')
+        # if quality_annotation:
+        #     quality_annotation_motivation = str(self._get_dataset_value(
+        #         dataset_dict, u'quality_annotation_motivation'))
+        #     quality_annotation_ref = BNode()
+        #     annotation_body_ref = BNode()
+        #     g.add((quality_annotation_ref, RDF.type, DQV.QualityAnnotation))
+        #     g.add((dataset_ref, DQV.hasQualityAnnotation, quality_annotation_ref))
+        #     g.add((quality_annotation_ref, OA.hasTarget, dataset_ref))
+        #     g.add((quality_annotation_ref, OA.motivatedBy,
+        #            eval('OA.' + quality_annotation_motivation)))
+        #     g.add((quality_annotation_ref, OA.hasBody, annotation_body_ref))
+        #     g.add((annotation_body_ref, RDF.type, OA.TextualBody))
+        #     g.add((annotation_body_ref, RDF.value, Literal(quality_annotation)))
 
         # provenance
         was_derived_from = self._get_dataset_value(
             dataset_dict, u'was_derived_from'
         )
         if was_derived_from:
+            activity_ref = self._get_dataset_value(
+                dataset_dict, u'was_generated_by')
+            process_type_ref = self._get_dataset_value(
+                dataset_dict, u'process_type')
             g.add((dataset_ref, RDF.type, PROV.Entity))
-            activity_ref = BNode()
             g.add((activity_ref, RDF.type, PROV.Activity))
+            g.add((activity_ref, GKC.hasGeooperatorCategory, process_type_ref))
             agent_ref = contact_ref
             g.add((agent_ref, RDF.type, PROV.Agent))
             for entity in was_derived_from.split(','):
