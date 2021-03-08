@@ -1824,7 +1824,7 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
             activity_name = self._get_dataset_value(
                 dataset_dict, u'was_generated_by')
             activity_ref = eval(
-                'GKP.' + urllib.quote(activity_name))
+                'GKP.' + str(urllib.quote(activity_name)))
             process_types = self._get_dataset_value(
                 dataset_dict, u'process_type')
             g.add((dataset_ref, RDF.type, PROV.Entity))
