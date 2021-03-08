@@ -1825,11 +1825,12 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
                 dataset_dict, u'was_generated_by')
             process_type_name = self._get_dataset_value(
                 dataset_dict, u'process_type')
-            process_type_ref = eval(
-                'GKC.' + urllib.quote(process_type_name.replace(' ', '-')))
+            # process_type_ref = eval(
+            # 'GKC.' + urllib.quote(process_type_name.replace(' ', '-')))
             g.add((dataset_ref, RDF.type, PROV.Entity))
             g.add((activity_ref, RDF.type, PROV.Activity))
-            g.add((activity_ref, GKC.hasGeooperatorCategory, process_type_ref))
+            g.add((activity_ref, GKC.hasGeooperatorCategory,
+                   Literal(process_type_name)))
             agent_ref = contact_ref
             g.add((agent_ref, RDF.type, PROV.Agent))
             for entity in was_derived_from.split(','):
