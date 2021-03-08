@@ -1826,7 +1826,7 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
             process_type_name = self._get_dataset_value(
                 dataset_dict, u'process_type')
             process_type_ref = eval(
-                'GKC.' + urllib.parse(process_type_name.replace(' ', '-')))
+                'GKC.' + urllib.quote(process_type_name.replace(' ', '-')))
             g.add((dataset_ref, RDF.type, PROV.Entity))
             g.add((activity_ref, RDF.type, PROV.Activity))
             g.add((activity_ref, GKC.hasGeooperatorCategory, process_type_ref))
