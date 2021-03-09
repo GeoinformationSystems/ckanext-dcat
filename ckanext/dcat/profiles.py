@@ -1791,15 +1791,33 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
                            Literal(spatial_resolution)))
 
         # quality elements
-        quality_measure = self._get_dataset_value(
-            dataset_dict, u'has_quality_measure')
-        if quality_measure:
-            quality_measure_ref = BNode()
-            g.add((quality_measure_ref, RDF.type, DQV.QualityMeasurement))
-            g.add((dataset_ref, DQV.hasQualityMeasurement, quality_measure_ref))
-            # code
+        quality_measure_identifieres = [
+            u'aepa',
+            u'gdpa',
+            u'tcc',
+            u'qaa',
+            u'c',
+            u'o',
+            u'r'
+        ]
 
-        # quality elements
+        for qm_id in quality_measure_identifieres:
+            quality_measure = self._get_dataset_value(
+            dataset_dict, qm_id)
+            if quality_measure:
+                qm_info_id = qm_id + '_source'
+                qm_ground_truth_val_id = qm_id + '_ground_truth_value'
+                qm_ground_truth_ds_id = qm_id + '_ground_truth_dataset'
+                quality_measure_ref = BNode()
+                g.add((quality_measure_ref, RDF.type, DQV.QualityMeasurement))
+                g.add((dataset_ref, DQV.hasQualityMeasurement, quality_measure_ref))
+
+                g.add((quality_measure_ref, RDFS.label, Literal(qm_info_id)))
+                g.add((quality_measure_ref, RDFS.label, Literal(qm_ground_truth_val_id)))
+                g.add((quality_measure_ref, RDFS.label, Literal(qm_ground_truth_ds_id)))
+                # code
+
+        
         # quality_annotation = self._get_dataset_value(
         #     dataset_dict, u'quality_annotation')
         # if quality_annotation:
