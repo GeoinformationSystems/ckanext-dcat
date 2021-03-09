@@ -1815,7 +1815,10 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
                 quality_measure_ref = BNode()
                 g.add((quality_measure_ref, RDF.type, DQV.QualityMeasurement))
                 g.add((dataset_ref, DQV.hasQualityMeasurement, quality_measure_ref))
+                if qm_id == u'qaa':
+                    g.add((quality_measure_ref, RDF.type, DQV.QualityMeasurement))
 
+                g.add((quality_measure_ref, RDFS.label, Literal(quality_measure)))
                 g.add((quality_measure_ref, RDFS.label, Literal(qm_info)))
                 g.add((quality_measure_ref, RDFS.label, Literal(qm_ground_truth_val)))
                 g.add((quality_measure_ref, RDFS.label, Literal(qm_ground_truth_ds)))
