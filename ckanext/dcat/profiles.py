@@ -1806,15 +1806,19 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
             dataset_dict, qm_id)
             if quality_measure:
                 qm_info_id = qm_id + '_source'
+                qm_info = self._get_dataset_value(dataset_dict, qm_info_id)
                 qm_ground_truth_val_id = qm_id + '_ground_truth_value'
+                qm_ground_truth_val = self._get_dataset_value(dataset_dict, qm_ground_truth_val_id)
                 qm_ground_truth_ds_id = qm_id + '_ground_truth_dataset'
+                qm_ground_truth_ds = self._get_dataset_value(dataset_dict, qm_ground_truth_ds_id)
+                
                 quality_measure_ref = BNode()
                 g.add((quality_measure_ref, RDF.type, DQV.QualityMeasurement))
                 g.add((dataset_ref, DQV.hasQualityMeasurement, quality_measure_ref))
 
-                g.add((quality_measure_ref, RDFS.label, Literal(qm_info_id)))
-                g.add((quality_measure_ref, RDFS.label, Literal(qm_ground_truth_val_id)))
-                g.add((quality_measure_ref, RDFS.label, Literal(qm_ground_truth_ds_id)))
+                g.add((quality_measure_ref, RDFS.label, Literal(qm_info)))
+                g.add((quality_measure_ref, RDFS.label, Literal(qm_ground_truth_val)))
+                g.add((quality_measure_ref, RDFS.label, Literal(qm_ground_truth_ds)))
                 # code
 
         
