@@ -1839,9 +1839,9 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
                 # geokur ground truth and source addition
                 g.add((quality_measure_ref,
                        GKQ.hasGroundTruthDataset, URIRef(qm_ground_truth_ds)))
-                # for source in qm_info.split(','):
-                g.add((quality_measure_ref,
-                       GKQ.hasInformationSource, Literal(qm_info)))
+                for source in qm_info.split(','):
+                    g.add((quality_measure_ref,
+                           GKQ.hasInformationSource, URIRef(source.strip())))
 
                 # code
 
