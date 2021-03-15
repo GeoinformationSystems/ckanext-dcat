@@ -1822,9 +1822,24 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
                 if qm_id == u'aepa':
                     g.add((quality_measure_ref, DQV.isMeasurementOf,
                            GKQ.absoluteExternalPositionalAccuracyAsEuclidieanDistance))
+                if qm_id == u'gdpa':
+                    g.add((quality_measure_ref, DQV.isMeasurementOf,
+                           GKQ.griddedDataPositionalAccuracy))
+                if qm_id == u'tcc':
+                    g.add((quality_measure_ref, DQV.isMeasurementOf,
+                           GKQ.thematicClassificationCorrecness))
                 if qm_id == u'qaa':
                     g.add((quality_measure_ref, DQV.isMeasurementOf,
                            GKQ.quantitativeAttributeAccuracyWith3SigmaConfidence))
+                if qm_id == u'c':
+                    g.add((quality_measure_ref, DQV.isMeasurementOf,
+                           GKQ.commssion))
+                if qm_id == u'o':
+                    g.add((quality_measure_ref, DQV.isMeasurementOf,
+                           GKQ.omission))
+                if qm_id == u'r':
+                    g.add((quality_measure_ref, DQV.isMeasurementOf,
+                           GKQ.representativity))
 
                 # metric datatype, all decimal
                 if qm_id in [u'aepa', u'gdpa', u'tcc', u'qaa', u'c', u'o', u'r']:
