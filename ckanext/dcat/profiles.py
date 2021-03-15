@@ -1892,7 +1892,7 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
             g.add((activity_ref, RDF.type, PROV.Activity))
             g.add((activity_ref, RDFS.label,
                    Literal(activity_name)))
-            for process_type in process_types:
+            for process_type in list(process_types[0]):
                 if process_type != 'None':
                     g.add((activity_ref, GKC.hasGeooperatorCategory,
                            Literal(process_type)))
