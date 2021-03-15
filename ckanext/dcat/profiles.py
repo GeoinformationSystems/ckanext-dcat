@@ -1838,15 +1838,11 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
 
                 # geokur ground truth and source addition
                 g.add((quality_measure_ref,
-                       GKQ.hasGroundTruthDataset, Literal(qm_ground_truth_ds)))
-                g.add((quality_measure_ref, GKQ.hasInformationSource, Literal(qm_info)))
+                       GKQ.hasGroundTruthDataset, URIRef(qm_ground_truth_ds)))
+                for source in qm_info.split(','):
+                    g.add((quality_measure_ref,
+                           GKQ.hasInformationSource, URIRef(source)))
 
-                g.add((quality_measure_ref, RDFS.label, Literal(quality_measure)))
-                g.add((quality_measure_ref, RDFS.label, Literal(qm_info)))
-                g.add((quality_measure_ref, RDFS.label,
-                       Literal(qm_ground_truth_val)))
-                g.add((quality_measure_ref, RDFS.label,
-                       Literal(qm_ground_truth_ds)))
                 # code
 
         # quality_annotation = self._get_dataset_value(
