@@ -44,8 +44,10 @@ GKQ = Namespace('https://geokur-dmp.geo.tu-dresden.de/pages/quality-elements#')
 GKC = Namespace(
     'https://geokur-dmp.geo.tu-dresden.de/pages/geospatial-categories-register#')
 GKP = Namespace('https://geokur-dmp.geo.tu-dresden.de/pages/processes#')
+GEOKURCKAN = Namespace('https://geokur-dmp.geo.tu-dresden.de/dataset/')
 OA = Namespace('https://www.w3.org/TR/annotation-vocab#')
 PROV = Namespace('http://www.w3.org/ns/prov#')
+
 
 GEOJSON_IMT = 'https://www.iana.org/assignments/media-types/application/vnd.geo+json'
 
@@ -63,6 +65,7 @@ namespaces = {
     'owl': OWL,
     'spdx': SPDX,
     'geodcat': GEODCAT,
+    'geokur': GEOKURCKAN,
     'dqv': DQV,
     'sdmx': SDMX,
     'gkq': GKQ,
