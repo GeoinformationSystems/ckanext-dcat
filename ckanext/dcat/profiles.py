@@ -1803,28 +1803,52 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
 
         for qm_id in quality_measure_identifieres:
             quality_measure = self._get_dataset_value(
-            dataset_dict, qm_id)
+                dataset_dict, qm_id)
             if quality_measure:
                 qm_info_id = qm_id + '_source'
                 qm_info = self._get_dataset_value(dataset_dict, qm_info_id)
                 qm_ground_truth_val_id = qm_id + '_ground_truth_value'
-                qm_ground_truth_val = self._get_dataset_value(dataset_dict, qm_ground_truth_val_id)
+                qm_ground_truth_val = self._get_dataset_value(
+                    dataset_dict, qm_ground_truth_val_id)
                 qm_ground_truth_ds_id = qm_id + '_ground_truth_dataset'
-                qm_ground_truth_ds = self._get_dataset_value(dataset_dict, qm_ground_truth_ds_id)
-                
+                qm_ground_truth_ds = self._get_dataset_value(
+                    dataset_dict, qm_ground_truth_ds_id)
+
                 quality_measure_ref = BNode()
                 g.add((quality_measure_ref, RDF.type, DQV.QualityMeasurement))
                 g.add((dataset_ref, DQV.hasQualityMeasurement, quality_measure_ref))
+
+                # metric id
+                if qm_id == u'aepa':
+                    g.add((quality_measure_ref, DQV.isMeasurementOf,
+                           GKQ.absoluteExternalPositionalAccuracyAsEuclidieanDistance))
                 if qm_id == u'qaa':
-                    g.add((quality_measure_ref, RDF.type, DQV.QualityMeasurement))
+                    g.add((quality_measure_ref, DQV.isMeasurementOf,
+                           GKQ.quantitativeAttributeAccuracyWith3SigmaConfidence))
+
+                # metric datatype, all decimal
+                if qm_id in [u'aepa', u'gdpa', u'tcc', u'qaa', u'c', u'o', u'r']:
+                    g.add((quality_measure_ref, DQV.value, Literal(
+                        float(quality_measure), datatype=XSD.decimal)))
+                    # geokur ground truth val has the same metric as measured val
+                    g.add((quality_measure_ref, GKQ.groundTruthValue, Literal(
+                        float(qm_ground_truth_val), datatype=XSD.decimal)))
+                # if qm_id in [u'r']:
+                #     g.add((quality_measure_ref, DQV.value, Literal(quality_measure, datatype = XSD.string)))
+
+                # geokur ground truth and source addition
+                g.add((quality_measure_ref,
+                       GKQ.hasGroundTruthDataset, qm_ground_truth_ds))
+                g.add((quality_measure_ref, GKQ.hasInformationSource, qm_info))
 
                 g.add((quality_measure_ref, RDFS.label, Literal(quality_measure)))
                 g.add((quality_measure_ref, RDFS.label, Literal(qm_info)))
-                g.add((quality_measure_ref, RDFS.label, Literal(qm_ground_truth_val)))
-                g.add((quality_measure_ref, RDFS.label, Literal(qm_ground_truth_ds)))
+                g.add((quality_measure_ref, RDFS.label,
+                       Literal(qm_ground_truth_val)))
+                g.add((quality_measure_ref, RDFS.label,
+                       Literal(qm_ground_truth_ds)))
                 # code
 
-        
         # quality_annotation = self._get_dataset_value(
         #     dataset_dict, u'quality_annotation')
         # if quality_annotation:
