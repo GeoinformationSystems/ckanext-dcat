@@ -44,7 +44,6 @@ GKQ = Namespace('https://geokur-dmp.geo.tu-dresden.de/pages/quality-elements#')
 GKC = Namespace(
     'https://geokur-dmp.geo.tu-dresden.de/pages/geospatial-categories-register#')
 GKP = Namespace('https://geokur-dmp.geo.tu-dresden.de/pages/processes#')
-GEOKURCKAN = Namespace('https://geokur-dmp.geo.tu-dresden.de/dataset')
 OA = Namespace('https://www.w3.org/TR/annotation-vocab#')
 PROV = Namespace('http://www.w3.org/ns/prov#')
 
@@ -65,7 +64,6 @@ namespaces = {
     'owl': OWL,
     'spdx': SPDX,
     'geodcat': GEODCAT,
-    'geokur': GEOKURCKAN,
     'dqv': DQV,
     'sdmx': SDMX,
     'gkq': GKQ,
@@ -1897,7 +1895,8 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
             for process_type in process_types:
                 if process_type != 'None':
                     g.add((activity_ref, GKC.hasGeooperatorCategory,
-                           URIRef(process_type)))
+                           Literal(process_type)))
+            g.add((activity_ref, GKQ.test, Literal(process_types)))
             agent_ref = contact_ref
             g.add((agent_ref, RDF.type, PROV.Agent))
             for entity in was_derived_from.split(','):
