@@ -1819,7 +1819,14 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
                 g.add((quality_measure_ref, RDF.type, DQV.QualityMeasurement))
                 g.add((dataset_ref, DQV.hasQualityMeasurement, quality_measure_ref))
 
-                # metric id
+                # geokur ground truth and source addition
+                g.add((quality_measure_ref,
+                       GKQ.hasGroundTruthDataset, URIRef(qm_ground_truth_ds)))
+                for source in qm_info.split(','):
+                    g.add((quality_measure_ref,
+                           DQV.hasQualityMetadata, URIRef(source.strip())))
+
+                # differentiate by metric id
                 if qm_id == u'aepa':
                     g.add((quality_measure_ref, DQV.isMeasurementOf,
                            GKQ.absoluteExternalPositionalAccuracyAsEuclidieanDistance))
@@ -1842,7 +1849,7 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
                     g.add((quality_measure_ref, DQV.isMeasurementOf,
                            GKQ.representativity))
 
-                # metric datatype, all decimal
+                # metric datatype, all decimal in this case
                 if qm_id in [u'aepa', u'gdpa', u'tcc', u'qaa', u'c', u'o', u'r']:
                     g.add((quality_measure_ref, DQV.value, Literal(
                         float(quality_measure), datatype=XSD.decimal)))
@@ -1851,13 +1858,6 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
                         float(qm_ground_truth_val), datatype=XSD.decimal)))
                 # if qm_id in [u'r']:
                 #     g.add((quality_measure_ref, DQV.value, Literal(quality_measure, datatype = XSD.string)))
-
-                # geokur ground truth and source addition
-                g.add((quality_measure_ref,
-                       GKQ.hasGroundTruthDataset, URIRef(qm_ground_truth_ds)))
-                for source in qm_info.split(','):
-                    g.add((quality_measure_ref,
-                           GKQ.hasInformationSource, URIRef(source.strip())))
 
                 # code
 
@@ -1890,7 +1890,7 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
                 dataset_dict, u'process_type')
             g.add((dataset_ref, RDF.type, PROV.Entity))
             g.add((activity_ref, RDF.type, PROV.Activity))
-            g.add((activity_ref, RDFS.label,
+            g.add((activity_ref, DCT.title,
                    Literal(activity_name)))
             for process_type in process_types:
                 if process_type != 'None':
