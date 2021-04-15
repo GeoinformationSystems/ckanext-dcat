@@ -1878,6 +1878,8 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
         #     g.add((annotation_body_ref, RDF.value, Literal(quality_annotation)))
 
         # provenance
+        #
+        g.add((dataset_ref, RDF.type, PROV.Entity))
         was_derived_from = self._get_dataset_value(
             dataset_dict, u'was_derived_from'
         )
@@ -1888,7 +1890,6 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
                 GKP+urllib.quote(activity_name.replace(' ', '-')))
             process_types = self._get_dataset_value(
                 dataset_dict, u'process_type')
-            g.add((dataset_ref, RDF.type, PROV.Entity))
             g.add((activity_ref, RDF.type, PROV.Activity))
             g.add((activity_ref, DCT.title,
                    Literal(activity_name)))
