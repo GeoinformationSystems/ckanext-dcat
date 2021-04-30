@@ -1908,8 +1908,8 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
                     g.add((activity_ref, PROV.used, entity_ref))
             if activity_ref:
                 g.add((activity_ref, PROV.wasAssociatedWith, agent_ref))
+                g.add((dataset_ref, PROV.wasGeneratedBy, activity_ref))
             g.add((dataset_ref, PROV.wasAttributedTo, agent_ref))
-            g.add((dataset_ref, PROV.wasGeneratedBy, activity_ref))
 
         # Resources
         for resource_dict in dataset_dict.get('resources', []):
