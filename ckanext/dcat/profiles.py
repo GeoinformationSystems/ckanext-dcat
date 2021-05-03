@@ -1386,6 +1386,7 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
         internal_identifier = result['id']
         id = ckan_uri + '/dataset/' + internal_identifier
         return CleanedURIRef(id)
+
     def _spatial_quality(self, subject):
         '''
         >> GEOKUR Profile method <<
@@ -1712,8 +1713,7 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
             ('conforms_to', DCT.conformsTo, None, URIRef),
             ('alternate_identifier', ADMS.identifier, None, URIRef),
             ('documentation', FOAF.page, None, URIRefOrLiteral),
-            ('is_part_of', DCT.isPartOf, None, URIRefOrLiteral),
-            ('is_version_of', DCT.isVersionOf, None, URIRefOrLiteral)
+            ('is_part_of', DCT.isPartOf, None, URIRefOrLiteral)
         ]
         self._add_list_triples_from_dict(dataset_dict, dataset_ref, items)
 
@@ -1722,8 +1722,13 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
         #     self._get_dataset_value(dataset_dict, 'contact_uri'),
         #     self._get_dataset_value(dataset_dict, 'contact_name')
         # ]):
+        is_version_of = self._get_dataset_value(dataset_dict, 'is_version_of')
+        if is_version_of:
+            is_version_of_ref = self._convert_ds_slug_to_ds_identifier(is_version_of)
+            g.add((dataset_ref, DCT.isVersionOf, is_version_of_ref))
+
         contact_uri = self._get_dataset_value(dataset_dict, 'contact_uri')
-        contact_ref = ''
+        contact_ref = None
         if contact_uri:
             contact_ref = CleanedURIRef(contact_uri)
         else:
