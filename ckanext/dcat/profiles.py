@@ -5,6 +5,7 @@ from builtins import object
 import datetime
 import json
 import urllib
+import requests
 
 import six
 from six.moves.urllib.parse import quote
@@ -1367,6 +1368,8 @@ class EuropeanDCATAPProfile(RDFProfile):
 
 
 class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
+    def _convert_ds_slug_to_ds_identifier(self, slug):
+        pass
     def _spatial_quality(self, subject):
         '''
         >> GEOKUR Profile method <<
@@ -1902,7 +1905,7 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
             agent_ref = contact_ref
             g.add((agent_ref, RDF.type, PROV.Agent))
             for entity in was_derived_from.split(','):
-                entity_ref = dataset_uri(entity.strip())
+                entity_ref = URIRef(entity.strip())
                 g.add((entity_ref, RDF.type, PROV.Entity))
                 g.add((dataset_ref, PROV.wasDerivedFrom, entity_ref))
                 if activity_ref:
