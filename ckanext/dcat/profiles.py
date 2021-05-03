@@ -1370,7 +1370,7 @@ class EuropeanDCATAPProfile(RDFProfile):
 class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
     def _convert_ds_slug_to_ds_identifier(self, slug):
         ckan_uri = catalog_uri()
-        id = ckan_uri + '/' + slug
+        id = ckan_uri + '/dataset/' + slug
         return CleanedURIRef(id)
     def _spatial_quality(self, subject):
         '''
@@ -1695,8 +1695,8 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
         #  Lists
         items = [
             ('theme', DCAT.theme, None, URIRef),
-            ('conforms_to', DCT.conformsTo, None, Literal),
-            ('alternate_identifier', ADMS.identifier, None, Literal),
+            ('conforms_to', DCT.conformsTo, None, URIRef),
+            ('alternate_identifier', ADMS.identifier, None, URIRef),
             ('documentation', FOAF.page, None, URIRefOrLiteral),
             ('is_part_of', DCT.isPartOf, None, URIRefOrLiteral),
             ('is_version_of', DCT.isVersionOf, None, URIRefOrLiteral)
