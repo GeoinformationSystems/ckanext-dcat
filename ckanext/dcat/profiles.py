@@ -1369,7 +1369,7 @@ class EuropeanDCATAPProfile(RDFProfile):
 
 class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
     def _convert_ds_slug_to_ds_identifier(self, slug):
-        ckan_uri =catalog_uri
+        ckan_uri = catalog_uri()
         id = ckan_uri + '/' + slug
         return id
     def _spatial_quality(self, subject):
