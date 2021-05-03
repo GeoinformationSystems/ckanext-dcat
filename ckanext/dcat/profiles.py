@@ -1383,12 +1383,9 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
         result = toolkit.get_action('package_show')(context, {
             'id': slug
         })
-        return Literal(result)
-        # if result and result.get('results'):
-        #     return result['results'][0]['metadata_modified']
-        # internal_identifier = json.loads(response.content.decode())['result']['id']
-        # id = ckan_uri + '/dataset/' + internal_identifier
-        # return CleanedURIRef(id)
+        internal_identifier = result['id']
+        id = ckan_uri + '/dataset/' + internal_identifier
+        return CleanedURIRef(id)
     def _spatial_quality(self, subject):
         '''
         >> GEOKUR Profile method <<
