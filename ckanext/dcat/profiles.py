@@ -1369,8 +1369,19 @@ class EuropeanDCATAPProfile(RDFProfile):
 
 class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
     def _convert_ds_slug_to_ds_identifier(self, slug):
+        '''
+        >> GEOKUR Profile method <<
+
+        Returns the internal dataset id for a given dataset slug.
+
+        Existence of a dataset with the given slug is validated 
+        on slug input form.
+        '''
         ckan_uri = catalog_uri()
-        id = ckan_uri + '/dataset/' + slug
+        request = ckan_uri + '/api/action/package_show?id=' + slug
+        response = requests.post(request)
+        internal_identifier = json.loads(response.content.decode())['result']['id']
+        id = ckan_uri + '/dataset/' + internal_identifier
         return CleanedURIRef(id)
     def _spatial_quality(self, subject):
         '''
