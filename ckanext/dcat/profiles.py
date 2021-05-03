@@ -24,7 +24,7 @@ from ckan.plugins import toolkit
 from ckan.lib.munge import munge_tag
 from ckan.lib.helpers import url_for
 
-from ckanext.dcat.utils import resource_uri, publisher_uri_from_dataset_dict, DCAT_EXPOSE_SUBCATALOGS, DCAT_CLEAN_TAGS
+from ckanext.dcat.utils import resource_uri,catalog_uri, dataset_uri, publisher_uri_from_dataset_dict, DCAT_EXPOSE_SUBCATALOGS, DCAT_CLEAN_TAGS
 
 DCT = Namespace("http://purl.org/dc/terms/")
 DCAT = Namespace("http://www.w3.org/ns/dcat#")
@@ -1884,6 +1884,7 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
             dataset_dict, u'was_derived_from'
         )
         if was_derived_from:
+
             activity_name = self._get_dataset_value(
                 dataset_dict, u'was_generated_by')
             activity_ref = None
@@ -1901,7 +1902,7 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
             agent_ref = contact_ref
             g.add((agent_ref, RDF.type, PROV.Agent))
             for entity in was_derived_from.split(','):
-                entity_ref = URIRef(entity.strip())
+                entity_ref = dataset_uri(entity.strip())
                 g.add((entity_ref, RDF.type, PROV.Entity))
                 g.add((dataset_ref, PROV.wasDerivedFrom, entity_ref))
                 if activity_ref:
