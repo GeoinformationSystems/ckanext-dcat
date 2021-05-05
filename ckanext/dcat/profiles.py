@@ -24,7 +24,7 @@ from ckan.plugins import toolkit
 from ckan.lib.munge import munge_tag
 from ckan.lib.helpers import url_for
 
-from ckanext.dcat.utils import resource_uri,catalog_uri, dataset_uri, publisher_uri_from_dataset_dict, DCAT_EXPOSE_SUBCATALOGS, DCAT_CLEAN_TAGS
+from ckanext.dcat.utils import resource_uri, catalog_uri, dataset_uri, publisher_uri_from_dataset_dict, DCAT_EXPOSE_SUBCATALOGS, DCAT_CLEAN_TAGS
 
 DCT = Namespace("http://purl.org/dc/terms/")
 DCAT = Namespace("http://www.w3.org/ns/dcat#")
@@ -1909,13 +1909,12 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
         )
         if was_derived_from:
 
-            activity_name = self._get_dataset_value(
-                dataset_dict, u'was_generated_by')
-            activity_ref = None
+            activity_ref = BNode()
+            activity_name = self._get_dataset_value(dataset_dict, u'was_generated_by')
             if activity_name:
                 activity_ref = URIRef(GKP+urllib.quote(activity_name.replace(' ', '-')))
-                g.add((activity_ref, RDF.type, PROV.Activity))
-                g.add((activity_ref, DCT.title, Literal(activity_name)))
+            g.add((activity_ref, RDF.type, PROV.Activity))
+            g.add((activity_ref, DCT.title, Literal(activity_name)))
             process_types = self._get_dataset_value(dataset_dict, u'process_type')
             if process_types:
                 for process_type in process_types:
@@ -1929,11 +1928,9 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
                 entity_ref = self._convert_ds_slug_to_ds_identifier(entity.strip())
                 g.add((entity_ref, RDF.type, PROV.Entity))
                 g.add((dataset_ref, PROV.wasDerivedFrom, entity_ref))
-                if activity_ref:
-                    g.add((activity_ref, PROV.used, entity_ref))
-            if activity_ref:
-                g.add((activity_ref, PROV.wasAssociatedWith, agent_ref))
-                g.add((dataset_ref, PROV.wasGeneratedBy, activity_ref))
+                g.add((activity_ref, PROV.used, entity_ref))
+            g.add((activity_ref, PROV.wasAssociatedWith, agent_ref))
+            g.add((dataset_ref, PROV.wasGeneratedBy, activity_ref))
             g.add((dataset_ref, PROV.wasAttributedTo, agent_ref))
 
         # Resources
