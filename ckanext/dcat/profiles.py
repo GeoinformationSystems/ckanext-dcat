@@ -1913,8 +1913,8 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
             activity_name = self._get_dataset_value(dataset_dict, u'was_generated_by')
             if activity_name:
                 activity_ref = URIRef(GKP+urllib.quote(activity_name.replace(' ', '-')))
+                g.add((activity_ref, DCT.title, Literal(activity_name)))
             g.add((activity_ref, RDF.type, PROV.Activity))
-            g.add((activity_ref, DCT.title, Literal(activity_name)))
             process_types = self._get_dataset_value(dataset_dict, u'process_type')
             if process_types:
                 for process_type in process_types:
