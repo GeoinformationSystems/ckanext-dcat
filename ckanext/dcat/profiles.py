@@ -1373,7 +1373,7 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
 
         Returns the internal dataset id for a given dataset slug.
 
-        Existence of a dataset with the given slug is validated 
+        Existence of a dataset with the given slug is validated
         on slug input form.
         '''
         ckan_uri = catalog_uri()
@@ -1430,7 +1430,7 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
     def _spatial(self, subject, predicate):
         '''
         >> GEOKUR Profile adjustments <<
-            - changed LOCN.geometry to DCAT.bbox 
+            - changed LOCN.geometry to DCAT.bbox
             - rm text and uri representations of spatial object
 
         Returns a dict with details about the spatial location
@@ -1819,7 +1819,7 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
         quality_metrics = self._get_dataset_value(dataset_dict, 'quality_metrics')
         if quality_metrics:
             quality_metrics_dict = json.loads(quality_metrics)
-            g.add((dataset_ref, GKQ.quali, quality_metrics_dict))
+            g.add((dataset_ref, GKQ.quali, Literal(quality_metrics_dict))
 
         # quality_annotation = self._get_dataset_value(
         #     dataset_dict, u'quality_annotation')
@@ -1839,28 +1839,28 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
 
         # provenance
         g.add((dataset_ref, RDF.type, PROV.Entity))
-        was_derived_from = self._get_dataset_value(
+        was_derived_from=self._get_dataset_value(
             dataset_dict, u'was_derived_from'
         )
         if was_derived_from:
 
-            activity_ref = BNode()
-            activity_name = self._get_dataset_value(dataset_dict, u'was_generated_by')
+            activity_ref=BNode()
+            activity_name=self._get_dataset_value(dataset_dict, u'was_generated_by')
             if activity_name:
-                activity_ref = URIRef(GKP+urllib.quote(activity_name.replace(' ', '-')))
+                activity_ref=URIRef(GKP+urllib.quote(activity_name.replace(' ', '-')))
                 g.add((activity_ref, DCT.title, Literal(activity_name)))
             g.add((activity_ref, RDF.type, PROV.Activity))
-            process_types = self._get_dataset_value(dataset_dict, u'process_type')
+            process_types=self._get_dataset_value(dataset_dict, u'process_type')
             if process_types:
                 for process_type in process_types:
                     if process_type != 'None':
                         g.add((activity_ref, GKC.hasGeooperatorCategory,
                                URIRef(process_type)))
             # contact ref is mandatory
-            agent_ref = contact_ref
+            agent_ref=contact_ref
             g.add((agent_ref, RDF.type, PROV.Agent))
             for entity in was_derived_from.split(','):
-                entity_ref = self._get_ds_identifier_from_ds_slug(entity.strip())
+                entity_ref=self._get_ds_identifier_from_ds_slug(entity.strip())
                 g.add((entity_ref, RDF.type, PROV.Entity))
                 g.add((dataset_ref, PROV.wasDerivedFrom, entity_ref))
                 g.add((activity_ref, PROV.used, entity_ref))
@@ -1871,14 +1871,14 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
         # Resources
         for resource_dict in dataset_dict.get('resources', []):
 
-            distribution = CleanedURIRef(resource_uri(resource_dict))
+            distribution=CleanedURIRef(resource_uri(resource_dict))
 
             g.add((dataset_ref, DCAT.distribution, distribution))
 
             g.add((distribution, RDF.type, DCAT.Distribution))
 
             #  Simple values
-            items = [
+            items=[
                 ('name', DCT.title, None, Literal),
                 ('description', DCT.description, None, Literal),
                 ('status', ADMS.status, None, URIRefOrLiteral),
@@ -1891,8 +1891,8 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
             self._add_triples_from_dict(resource_dict, distribution, items)
 
             # Format
-            mimetype = resource_dict.get('mimetype')
-            fmt = resource_dict.get('format')
+            mimetype=resource_dict.get('mimetype')
+            fmt=resource_dict.get('format')
 
             # IANA media types (either URI or Literal) should be mapped as mediaType.
             # In case format is available and mimetype is not set or identical to format,
@@ -1901,11 +1901,11 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
                 if ('iana.org/assignments/media-types' in fmt
                         or not fmt.startswith('http') and '/' in fmt):
                     # output format value as dcat:mediaType instead of dct:format
-                    mimetype = fmt
-                    fmt = None
+                    mimetype=fmt
+                    fmt=None
                 else:
                     # Use dct:format
-                    mimetype = None
+                    mimetype=None
 
             if mimetype:
                 g.add((distribution, DCAT.mediaType,
@@ -1916,7 +1916,7 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
                        URIRefOrLiteral(fmt)))
 
             # Dates
-            items = [
+            items=[
                 ('issued', DCT.issued, None, Literal),
                 ('modified', DCT.modified, None, Literal),
             ]
@@ -1934,7 +1934,7 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
                            Literal(resource_dict['size'])))
             # Checksum
             if resource_dict.get('hash'):
-                checksum = BNode()
+                checksum=BNode()
                 g.add((checksum, RDF.type, SPDX.Checksum))
                 g.add((checksum, SPDX.checksumValue,
                        Literal(resource_dict['hash'],
@@ -1962,7 +1962,7 @@ class SchemaOrgProfile(RDFProfile):
 
     def graph_from_dataset(self, dataset_dict, dataset_ref):
 
-        g = self.g
+        g=self.g
 
         # Namespaces
         self._bind_namespaces()
@@ -2020,8 +2020,8 @@ class SchemaOrgProfile(RDFProfile):
         if not value:
             return
         try:
-            default_datetime = datetime.datetime(1, 1, 1, 0, 0, 0)
-            _date = parse_date(value, default=default_datetime)
+            default_datetime=datetime.datetime(1, 1, 1, 0, 0, 0)
+            _date=parse_date(value, default=default_datetime)
 
             self.g.add((subject, predicate, _type(_date.isoformat())))
         except ValueError:
@@ -2031,7 +2031,7 @@ class SchemaOrgProfile(RDFProfile):
         self.g.bind('schema', namespaces['schema'])
 
     def _basic_fields_graph(self, dataset_ref, dataset_dict):
-        items = [
+        items=[
             ('identifier', SCHEMA.identifier, None, Literal),
             ('title', SCHEMA.name, None, Literal),
             ('notes', SCHEMA.description, None, Literal),
@@ -2043,7 +2043,7 @@ class SchemaOrgProfile(RDFProfile):
         ]
         self._add_triples_from_dict(dataset_dict, dataset_ref, items)
 
-        items = [
+        items=[
             ('issued', SCHEMA.datePublished, ['metadata_created'], Literal),
             ('modified', SCHEMA.dateModified, ['metadata_modified'], Literal),
         ]
@@ -2051,13 +2051,13 @@ class SchemaOrgProfile(RDFProfile):
         self._add_date_triples_from_dict(dataset_dict, dataset_ref, items)
 
         # Dataset URL
-        dataset_url = url_for('dataset_read',
+        dataset_url=url_for('dataset_read',
                               id=dataset_dict['name'],
                               qualified=True)
         self.g.add((dataset_ref, SCHEMA.url, Literal(dataset_url)))
 
     def _catalog_graph(self, dataset_ref, dataset_dict):
-        data_catalog = BNode()
+        data_catalog=BNode()
         self.g.add((dataset_ref, SCHEMA.includedInDataCatalog, data_catalog))
         self.g.add((data_catalog, RDF.type, SCHEMA.DataCatalog))
         self.g.add((data_catalog, SCHEMA.name, Literal(
@@ -2069,11 +2069,11 @@ class SchemaOrgProfile(RDFProfile):
 
     def _groups_graph(self, dataset_ref, dataset_dict):
         for group in dataset_dict.get('groups', []):
-            group_url = url_for(controller='group',
+            group_url=url_for(controller='group',
                                 action='read',
                                 id=group.get('id'),
                                 qualified=True)
-            about = BNode()
+            about=BNode()
 
             self.g.add((about, RDF.type, SCHEMA.Thing))
 
@@ -2087,7 +2087,7 @@ class SchemaOrgProfile(RDFProfile):
             self.g.add((dataset_ref, SCHEMA.keywords, Literal(tag['name'])))
 
     def _list_fields_graph(self, dataset_ref, dataset_dict):
-        items = [
+        items=[
             ('language', SCHEMA.inLanguage, None, Literal),
         ]
         self._add_list_triples_from_dict(dataset_dict, dataset_ref, items)
@@ -2099,38 +2099,38 @@ class SchemaOrgProfile(RDFProfile):
             dataset_dict.get('organization'),
         ]):
 
-            publisher_uri = publisher_uri_from_dataset_dict(dataset_dict)
+            publisher_uri=publisher_uri_from_dataset_dict(dataset_dict)
             if publisher_uri:
-                publisher_details = URIRef(publisher_uri)
+                publisher_details=URIRef(publisher_uri)
             else:
                 # No organization nor publisher_uri
-                publisher_details = BNode()
+                publisher_details=BNode()
 
             self.g.add((publisher_details, RDF.type, SCHEMA.Organization))
             self.g.add((dataset_ref, SCHEMA.publisher, publisher_details))
 
-            publisher_name = self._get_dataset_value(
+            publisher_name=self._get_dataset_value(
                 dataset_dict, 'publisher_name')
             if not publisher_name and dataset_dict.get('organization'):
-                publisher_name = dataset_dict['organization']['title']
+                publisher_name=dataset_dict['organization']['title']
             self.g.add((publisher_details, SCHEMA.name,
                         Literal(publisher_name)))
 
-            contact_point = BNode()
+            contact_point=BNode()
             self.g.add((contact_point, RDF.type, SCHEMA.ContactPoint))
             self.g.add((publisher_details, SCHEMA.contactPoint, contact_point))
 
             self.g.add((contact_point, SCHEMA.contactType,
                         Literal('customer service')))
 
-            publisher_url = self._get_dataset_value(
+            publisher_url=self._get_dataset_value(
                 dataset_dict, 'publisher_url')
             if not publisher_url and dataset_dict.get('organization'):
-                publisher_url = dataset_dict['organization'].get(
+                publisher_url=dataset_dict['organization'].get(
                     'url') or config.get('ckan.site_url')
 
             self.g.add((contact_point, SCHEMA.url, Literal(publisher_url)))
-            items = [
+            items=[
                 ('publisher_email', SCHEMA.email, [
                  'contact_email', 'maintainer_email', 'author_email'], Literal),
                 ('publisher_name', SCHEMA.name, [
@@ -2140,8 +2140,8 @@ class SchemaOrgProfile(RDFProfile):
             self._add_triples_from_dict(dataset_dict, contact_point, items)
 
     def _temporal_graph(self, dataset_ref, dataset_dict):
-        start = self._get_dataset_value(dataset_dict, 'temporal_start')
-        end = self._get_dataset_value(dataset_dict, 'temporal_end')
+        start=self._get_dataset_value(dataset_dict, 'temporal_start')
+        end=self._get_dataset_value(dataset_dict, 'temporal_end')
         if start or end:
             if start and end:
                 self.g.add((dataset_ref, SCHEMA.temporalCoverage,
@@ -2154,15 +2154,15 @@ class SchemaOrgProfile(RDFProfile):
                     dataset_ref, SCHEMA.temporalCoverage, end)
 
     def _spatial_graph(self, dataset_ref, dataset_dict):
-        spatial_uri = self._get_dataset_value(dataset_dict, 'spatial_uri')
-        spatial_text = self._get_dataset_value(dataset_dict, 'spatial_text')
-        spatial_geom = self._get_dataset_value(dataset_dict, 'spatial')
+        spatial_uri=self._get_dataset_value(dataset_dict, 'spatial_uri')
+        spatial_text=self._get_dataset_value(dataset_dict, 'spatial_text')
+        spatial_geom=self._get_dataset_value(dataset_dict, 'spatial')
 
         if spatial_uri or spatial_text or spatial_geom:
             if spatial_uri:
-                spatial_ref = URIRef(spatial_uri)
+                spatial_ref=URIRef(spatial_uri)
             else:
-                spatial_ref = BNode()
+                spatial_ref=BNode()
 
             self.g.add((spatial_ref, RDF.type, SCHEMA.Place))
             self.g.add((dataset_ref, SCHEMA.spatialCoverage, spatial_ref))
@@ -2172,7 +2172,7 @@ class SchemaOrgProfile(RDFProfile):
                     (spatial_ref, SCHEMA.description, Literal(spatial_text)))
 
             if spatial_geom:
-                geo_shape = BNode()
+                geo_shape=BNode()
                 self.g.add((geo_shape, RDF.type, SCHEMA.GeoShape))
                 self.g.add((spatial_ref, SCHEMA.geo, geo_shape))
 
@@ -2182,9 +2182,9 @@ class SchemaOrgProfile(RDFProfile):
                             Literal(spatial_geom)))
 
     def _resources_graph(self, dataset_ref, dataset_dict):
-        g = self.g
+        g=self.g
         for resource_dict in dataset_dict.get('resources', []):
-            distribution = URIRef(resource_uri(resource_dict))
+            distribution=URIRef(resource_uri(resource_dict))
             g.add((dataset_ref, SCHEMA.distribution, distribution))
             g.add((distribution, RDF.type, SCHEMA.DataDownload))
 
@@ -2207,7 +2207,7 @@ class SchemaOrgProfile(RDFProfile):
         self._distribution_numbers_graph(distribution, resource_dict)
 
     def _distribution_basic_fields_graph(self, distribution, resource_dict):
-        items = [
+        items=[
             ('name', SCHEMA.name, None, Literal),
             ('description', SCHEMA.description, None, Literal),
             ('license', SCHEMA.license, ['rights'], Literal),
@@ -2215,7 +2215,7 @@ class SchemaOrgProfile(RDFProfile):
 
         self._add_triples_from_dict(resource_dict, distribution, items)
 
-        items = [
+        items=[
             ('issued', SCHEMA.datePublished, None, Literal),
             ('modified', SCHEMA.dateModified, None, Literal),
         ]
@@ -2223,7 +2223,7 @@ class SchemaOrgProfile(RDFProfile):
         self._add_date_triples_from_dict(resource_dict, distribution, items)
 
     def _distribution_list_fields_graph(self, distribution, resource_dict):
-        items = [
+        items=[
             ('language', SCHEMA.inLanguage, None, Literal),
         ]
         self._add_list_triples_from_dict(resource_dict, distribution, items)
@@ -2237,8 +2237,8 @@ class SchemaOrgProfile(RDFProfile):
                         Literal(resource_dict['mimetype'])))
 
     def _distribution_url_graph(self, distribution, resource_dict):
-        url = resource_dict.get('url')
-        download_url = resource_dict.get('download_url')
+        url=resource_dict.get('url')
+        download_url=resource_dict.get('download_url')
         if download_url:
             self.g.add((distribution, SCHEMA.contentUrl, Literal(download_url)))
         if (url and not download_url) or (url and url != download_url):
