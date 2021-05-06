@@ -1819,7 +1819,11 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
         quality_metrics = self._get_dataset_value(dataset_dict, 'quality_metrics')
         if quality_metrics:
             quality_metrics_dict = json.loads(quality_metrics)
-            g.add((dataset_ref, GKQ.quali, Literal(quality_metrics_dict)))
+            for key, val in quality_metrics_dict.items():
+                current_quality_metric_ref = BNode()
+                g.add((dataset_ref, DQV.hasQualityMeasurement, current_quality_metric_ref))
+                g.add((current_quality_metric_ref, RDF.type, CleanedURIRef(GKQ.key)))
+                g.add((current_quality_metric_ref, GKQ.test, Literal(val)))
 
         # quality_annotation = self._get_dataset_value(
         #     dataset_dict, u'quality_annotation')
