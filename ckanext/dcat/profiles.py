@@ -1844,14 +1844,14 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
                 g.add((confidence_ref, DQV.value, Literal(confidence_value)))
 
                 representativity_ref = BNode()
-                g.add((dataset_ref, GKQ.hasRepresentativity, representativity_ref))
+                g.add((current_quality_metric_ref, GKQ.hasRepresentativity, representativity_ref))
                 g.add((representativity_ref, RDF.type, DQV.QualityMetadata))
                 g.add((representativity_ref, GKQ.hasThematicRepresentativity, Literal(thematic_representativity)))
                 g.add((representativity_ref, GKQ.hasSpatialRepresentativity, Literal(spatial_representativity)))
                 g.add((representativity_ref, GKQ.hasTemporalRepresentativity, Literal(temporal_representativity)))
 
                 source_ref = BNode()
-                g.add((dataset_ref, GKQ.hasSource, source_ref))
+                g.add((current_quality_metric_ref, GKQ.hasSource, source_ref))
                 g.add((source_ref, RDFS.label, Literal(name_of_quality_source)))
                 g.add((source_ref, RDFS.comment, Literal(type_of_quality_source)))
                 g.add((source_ref, FOAF.page, CleanedURIRef(link_to_quality_source)))
