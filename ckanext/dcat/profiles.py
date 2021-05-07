@@ -1826,7 +1826,7 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
                 thematic_representativity = quality_metric_values['values']['thematic representativity']
                 spatial_representativity = quality_metric_values['values']['spatial representativity']
                 temporal_representativity = quality_metric_values['values']['temporal representativity']
-                name_of_quality_source = quality_metric_values['values']['name_of quality source']
+                name_of_quality_source = quality_metric_values['values']['name of quality source']
                 type_of_quality_source = quality_metric_values['values']['type of quality source']
                 link_to_quality_source = quality_metric_values['values']['link to quality source']
 
