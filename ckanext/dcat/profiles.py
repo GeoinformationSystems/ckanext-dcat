@@ -1835,26 +1835,26 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
 
                 g.add((current_quality_metric_ref, RDF.type, DQV.QualityMeasurement))
                 g.add((current_quality_metric_ref, DQV.isMeasurementOf, CleanedURIRef(quality_metric)))
-                g.add((current_quality_metric_ref, DQV.value, Literal(value_of_quality_metric)))
+                if value_of_quality_metric: g.add((current_quality_metric_ref, DQV.value, Literal(value_of_quality_metric)))
 
                 confidence_ref = BNode()
                 g.add((current_quality_metric_ref, GKQ.hasConfidence, confidence_ref))
                 g.add((confidence_ref, RDF.type, DQV.QualityMetadata))
-                g.add((confidence_ref, RDFS.label, Literal(confidence_term)))
-                g.add((confidence_ref, DQV.value, Literal(confidence_value)))
+                if confidence_term: g.add((confidence_ref, RDFS.label, Literal(confidence_term)))
+                if confidence_value: g.add((confidence_ref, DQV.value, Literal(confidence_value)))
 
                 representativity_ref = BNode()
                 g.add((current_quality_metric_ref, GKQ.hasRepresentativity, representativity_ref))
                 g.add((representativity_ref, RDF.type, DQV.QualityMetadata))
-                g.add((representativity_ref, GKQ.hasThematicRepresentativity, Literal(thematic_representativity)))
-                g.add((representativity_ref, GKQ.hasSpatialRepresentativity, Literal(spatial_representativity)))
-                g.add((representativity_ref, GKQ.hasTemporalRepresentativity, Literal(temporal_representativity)))
+                if thematic_representativity: g.add((representativity_ref, GKQ.hasThematicRepresentativity, Literal(thematic_representativity)))
+                if spatial_representativity: g.add((representativity_ref, GKQ.hasSpatialRepresentativity, Literal(spatial_representativity)))
+                if temporal_representativity: g.add((representativity_ref, GKQ.hasTemporalRepresentativity, Literal(temporal_representativity)))
 
                 source_ref = BNode()
                 g.add((current_quality_metric_ref, GKQ.hasSource, source_ref))
-                g.add((source_ref, RDFS.label, Literal(name_of_quality_source)))
-                g.add((source_ref, RDFS.comment, Literal(type_of_quality_source)))
-                g.add((source_ref, FOAF.page, CleanedURIRef(link_to_quality_source)))
+                if name_of_quality_source: g.add((source_ref, RDFS.label, Literal(name_of_quality_source)))
+                if type_of_quality_source: g.add((source_ref, RDFS.comment, Literal(type_of_quality_source)))
+                if link_to_quality_source: g.add((source_ref, FOAF.page, CleanedURIRef(link_to_quality_source)))
 
 
                 
