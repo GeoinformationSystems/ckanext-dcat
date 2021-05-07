@@ -1820,10 +1820,44 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
         if quality_metrics:
             quality_metrics_dict = json.loads(quality_metrics)
             for quality_metric, quality_metric_values in quality_metrics_dict.items():
+                value_of_quality_metric = quality_metric_values['values']['value of quality metric']
+                confidence_term = quality_metric_values['values']['confidence term']
+                confidence_value = quality_metric_values['values']['confidence value']
+                thematic_representativity = quality_metric_values['values']['thematic representativity']
+                spatial_representativity = quality_metric_values['values']['spatial representativity']
+                temporal_representativity = quality_metric_values['values']['temporal representativity']
+                name_of_quality_source = quality_metric_values['values']['name_of quality source']
+                type_of_quality_source = quality_metric_values['values']['type of quality source']
+                link_to_quality_source = quality_metric_values['values']['link to quality source']
+
                 current_quality_metric_ref = BNode()
                 g.add((dataset_ref, DQV.hasQualityMeasurement, current_quality_metric_ref))
-                g.add((current_quality_metric_ref, RDF.type, CleanedURIRef(quality_metric)))
-                g.add((current_quality_metric_ref, GKQ.test, Literal(quality_metric_values['values'])))
+
+                g.add((current_quality_metric_ref, RDF.type, DQV.QualityMeasurement))
+                g.add((current_quality_metric_ref, DQV.isMeasurementOf, CleanedURIRef(quality_metric)))
+                g.add((current_quality_metric_ref, DQV.value, value_of_quality_metric))
+
+                confidence_ref = BNode()
+                g.add((current_quality_metric_ref, GKQ.hasConfidence, confidence_ref))
+                g.add((confidence_ref, RDF.type, DQV.QualityMetadata))
+                g.add((confidence_ref, RDFS.label, Literal(confidence_term)))
+                g.add((confidence_ref, DQV.value, Literal(confidence_value)))
+
+                representativity_ref = BNode()
+                g.add((dataset_ref, GKQ.hasRepresentativity, representativity_ref))
+                g.add((representativity_ref, RDF.type, DQV.QualityMetadata))
+                g.add((representativity_ref, GKQ.hasThematicRepresentativity, Literal(thematic_representativity)))
+                g.add((representativity_ref, GKQ.hasSpatialRepresentativity, Literal(spatial_representativity)))
+                g.add((representativity_ref, GKQ.hasTemporalRepresentativity, Literal(temporal_representativity)))
+
+                source_ref = BNode()
+                g.add((dataset_ref, GKQ.hasSource, source_ref))
+                g.add((source_ref, RDFS.label, Literal(name_of_quality_source)))
+                g.add((source_ref, RDFS.comment, Literal(type_of_quality_source)))
+                g.add((source_ref, FOAF.page, CleanedURIRef(link_to_quality_source)))
+
+
+                
 
         # quality_annotation = self._get_dataset_value(
         #     dataset_dict, u'quality_annotation')
