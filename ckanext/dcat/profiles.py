@@ -1835,7 +1835,7 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
 
                 g.add((current_quality_metric_ref, RDF.type, DQV.QualityMeasurement))
                 g.add((current_quality_metric_ref, DQV.isMeasurementOf, CleanedURIRef(quality_metric)))
-                g.add((current_quality_metric_ref, DQV.value, value_of_quality_metric))
+                g.add((current_quality_metric_ref, DQV.value, Literal(value_of_quality_metric)))
 
                 confidence_ref = BNode()
                 g.add((current_quality_metric_ref, GKQ.hasConfidence, confidence_ref))
