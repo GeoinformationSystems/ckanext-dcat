@@ -1,0 +1,85 @@
+@prefix adms: <http://www.w3.org/ns/adms#> .
+@prefix dcat: <http://www.w3.org/ns/dcat#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix dqv: <http://www.w3.org/ns/dqv#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix geodcat: <http://data.europa.eu/930/> .
+@prefix gkq: <https://geokur.geo.tu-dresden.de/quality#> .
+@prefix gsp: <http://www.opengis.net/ont/geosparql#> .
+@prefix locn: <http://www.w3.org/ns/locn#> .
+@prefix oa: <https://www.w3.org/TR/annotation-vocab#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix schema: <http://schema.org/> .
+@prefix sdmx: <http://purl.org/linked-data/sdmx/2009/attribute#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix spdx: <http://spdx.org/rdf/terms#> .
+@prefix time: <http://www.w3.org/2006/time> .
+@prefix vcard: <http://www.w3.org/2006/vcard/ns#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://172.26.62.253/dataset/0b729b94-dd7b-463f-81f7-9536edc87bb5> a dcat:Dataset,
+        prov:Entity ;
+    dct:conformsTo "http://www.opengis.net/def/crs/EPSG/0/4326" ;
+    dct:description "test data lorem ipsum lorem ipsum lorem ipsum lorem ipsum" ;
+    dct:identifier "0b729b94-dd7b-463f-81f7-9536edc87bb5" ;
+    dct:isVersionOf "test1" ;
+    dct:issued "2021-01-19T11:49:22.323699"^^xsd:dateTime ;
+    dct:modified "2021-02-05T15:10:56.279876"^^xsd:dateTime ;
+    dcat:temporalResolution "P2Y3M20D"^^xsd:duration ;
+    dct:spatial [ a dct:Location ;
+            dcat:bbox "POLYGON ((-30.0000 -30.0000, 30.0000 -30.0000, 30.0000 30.0000, -30.0000 30.0000))"^^gsp:wktLiteral,
+                """{ "type": "Polygon", "coordinates": [[\r
+  [-30,-30],\r
+  [30,-30],\r
+  [30,30],\r
+  [-30,30]\r
+ ]]\r
+}"""^^<https://www.iana.org/assignments/media-types/application/vnd.geo+json> ] ;
+    dct:temporal [ a dct:PeriodOfTime ;
+            dcat:endDate "2021-02-06T00:00:00"^^xsd:dateTime ;
+            dcat:startDate "2021-01-19T00:00:00"^^xsd:dateTime ] ;
+    dct:title "dcat test data" ;
+    adms:identifier "https://doi.org/10.7283/T5MW2F2D" ;
+    dcat:contactPoint <https://orcid.org/0000-0001-8637-9071> ;
+    dcat:distribution <http://172.26.62.253/dataset/0b729b94-dd7b-463f-81f7-9536edc87bb5/resource/5fc226f1-8969-41d3-9bf3-7c195eb5b0a9>,
+        <http://172.26.62.253/dataset/0b729b94-dd7b-463f-81f7-9536edc87bb5/resource/919316bf-20d5-4a80-a9fe-563ae3c04225> ;
+    dcat:keyword "ckan",
+        "data",
+        "test" ;
+    dcat:landingPage <https://geokur.geo.tu-dresden.de/> ;
+    dcat:theme <http://inspire.ec.europa.eu/theme/af>,
+        <http://inspire.ec.europa.eu/theme/cp>,
+        <http://inspire.ec.europa.eu/theme/ef>,
+        <http://inspire.ec.europa.eu/theme/mr> ;
+
+    prov:wasAttributedTo <https://orcid.org/0000-0001-8637-9071> ;
+    prov:wasDerivedFrom <http://172.26.62.253/dataset/test1>, <http://172.26.62.253/dataset/shapefiel>;
+    prov:wasGeneratedBy [ a prov:Activity ;
+            prov:used <http://172.26.62.253/dataset/shapefiel>,
+            	<http://172.26.62.253/dataset/test1> ;
+            prov:wasAssociatedWith <https://orcid.org/0000-0001-8637-9071> ] ;
+    foaf:page <https://www.w3.org/2016/11/sdsvoc/SDSVoc16_paper_16> .
+
+<http://172.26.62.253/dataset/0b729b94-dd7b-463f-81f7-9536edc87bb5/resource/5fc226f1-8969-41d3-9bf3-7c195eb5b0a9> a dcat:Distribution ;
+    dct:description "Coverage pollinator dependent crops (% * 100)" ;
+    dct:format "TIFF" ;
+    dct:license <http://creativecommons.org/licenses/> ;
+    dct:title "pollinator dependent crops" ;
+    dcat:byteSize 31498439.0 ;
+    dcat:mediaType "image/tiff" .
+
+<http://172.26.62.253/dataset/0b729b94-dd7b-463f-81f7-9536edc87bb5/resource/919316bf-20d5-4a80-a9fe-563ae3c04225> a dcat:Distribution ;
+    dct:license <https://creativecommons.org/licenses/by-nc/4.0/legalcode> ;
+    dct:title "http://172.26.62.253/dataset/0b729b94-dd7b-463f-81f7-9536edc87bb5/resource/919316bf-20d5-4a80-a9fe-563ae3c04225/download/dresden15km.sbx" ;
+    dcat:byteSize 116.0 .
+
+<http://172.26.62.253/dataset/test1> a prov:Entity .
+
+<https://orcid.org/0000-0001-8637-9071> a vcard:Individual,
+        prov:Agent ;
+    vcard:fn "Arne RÃ¼mmler" .
+

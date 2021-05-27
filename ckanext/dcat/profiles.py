@@ -1876,35 +1876,35 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
         #     g.add((annotation_body_ref, RDF.value, Literal(quality_annotation)))
 
         # provenance
+        agent_ref = contact_ref
+        g.add((agent_ref, RDF.type, PROV.Agent))
+        g.add((dataset_ref, PROV.wasAttributedTo, agent_ref))
+
         g.add((dataset_ref, RDF.type, PROV.Entity))
         was_derived_from = self._get_dataset_value(
             dataset_dict, u'was_derived_from'
         )
         if was_derived_from:
-
-            activity_ref = BNode()
-            activity_name = self._get_dataset_value(dataset_dict, u'was_generated_by')
-            if activity_name:
-                activity_ref = URIRef(GKP+urllib.quote(activity_name.replace(' ', '-')))
-                g.add((activity_ref, DCT.title, Literal(activity_name)))
-            g.add((activity_ref, RDF.type, PROV.Activity))
-            process_types = self._get_dataset_value(dataset_dict, u'process_type')
-            if process_types:
-                for process_type in process_types:
-                    if process_type != 'None':
-                        g.add((activity_ref, GKC.hasGeooperatorCategory,
-                               URIRef(process_type)))
-            # contact ref is mandatory
-            agent_ref = contact_ref
-            g.add((agent_ref, RDF.type, PROV.Agent))
             for entity in was_derived_from.split(','):
                 entity_ref = self._get_ds_identifier_from_ds_slug(entity.strip())
                 g.add((entity_ref, RDF.type, PROV.Entity))
                 g.add((dataset_ref, PROV.wasDerivedFrom, entity_ref))
-                g.add((activity_ref, PROV.used, entity_ref))
-            g.add((activity_ref, PROV.wasAssociatedWith, agent_ref))
-            g.add((dataset_ref, PROV.wasGeneratedBy, activity_ref))
-            g.add((dataset_ref, PROV.wasAttributedTo, agent_ref))
+        
+        was_generated_by = self._get_dataset_value(dataset_dict, u'was_generated_by')
+        if was_generated_by:
+            activity = json.loads(was_generated_by)            
+            if activity['label'] != u'<choose process>':
+                activity_ref = URIRef(activity['uri'])
+                activity_label = Literal(activity['label'])
+                g.add((activity_ref, RDF.type, PROV.Activity))
+                g.add((activity_ref, PROV.wasAssociatedWith, agent_ref))
+                g.add((activity_ref, RDFS.label, activity_label))
+                g.add((dataset_ref, PROV.wasGeneratedBy, activity_ref))
+                if was_derived_from:
+                    for entity in was_derived_from.split(','):
+                        entity_ref = self._get_ds_identifier_from_ds_slug(entity.strip())
+                        g.add((activity_ref, PROV.used, entity_ref))
+        
 
         # Resources
         for resource_dict in dataset_dict.get('resources', []):
