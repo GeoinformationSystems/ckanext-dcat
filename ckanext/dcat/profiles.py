@@ -1758,23 +1758,26 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
         spatial_geom = self._get_dataset_value(dataset_dict, 'spatial')
 
         if spatial_geom:
-            spatial_ref = BNode()
-            g.add((spatial_ref, RDF.type, DCT.Location))
-            g.add((dataset_ref, DCT.spatial, spatial_ref))
-
-            # GeoJSON
-            g.add((spatial_ref,
-                   DCAT.bbox,
-                   Literal(spatial_geom, datatype=GEOJSON_IMT)))
-            # WKT, because GeoDCAT-AP says so
             try:
+                spatial_ref = BNode()
+                g.add((spatial_ref, RDF.type, DCT.Location))
+                g.add((dataset_ref, DCT.spatial, spatial_ref))
+
+                # GeoJSON
                 g.add((spatial_ref,
-                       DCAT.bbox,
-                       Literal(wkt.dumps(json.loads(spatial_geom),
-                                         decimals=4),
-                               datatype=GSP.wktLiteral)))
-            except (TypeError, ValueError, InvalidGeoJSONException):
-                pass
+                    DCAT.bbox,
+                    Literal(spatial_geom, datatype=GEOJSON_IMT)))
+                # WKT, because GeoDCAT-AP says so
+                try:
+                    g.add((spatial_ref,
+                        DCAT.bbox,
+                        Literal(wkt.dumps(json.loads(spatial_geom),
+                                            decimals=4),
+                                datatype=GSP.wktLiteral)))
+                except (TypeError, ValueError, InvalidGeoJSONException):
+                    pass
+            except:
+                ("Error in Spatial Field")
 
         # Additions from GeoDCAT
         temporal_resolution = self._get_dataset_value(
@@ -1786,75 +1789,83 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
         spatial_resolution = self._get_dataset_value(
             dataset_dict, 'spatial_resolution')
         if spatial_resolution:
-            spatial_resolution_type = self._get_dataset_value(
-                dataset_dict, 'spatial_resolution_type')
-            if spatial_resolution_type == u'meters':
-                g.add((dataset_ref, DCAT.spatialResolutionInMeters, Literal(
-                    float(spatial_resolution), datatype=XSD.decimal)))
-            elif spatial_resolution_type == u'scale' or u'angular' or u'vertical':
-                spatial_res_ref = BNode()
-                g.add((spatial_res_ref, RDF.type, DQV.QualityMeasurement))
-                g.add((dataset_ref, DQV.hasQualityMeasurement, spatial_res_ref))
-                if spatial_resolution_type == u'scale':
-                    g.add((spatial_res_ref, DQV.isMeasurementOf,
-                           GEODCAT.spatialResolutionAsScale))
-                    g.add((spatial_res_ref, DQV.value,
-                           Literal(spatial_resolution)))
-                if spatial_resolution_type == u'angular':
-                    g.add((spatial_res_ref, DQV.isMeasurementOf,
-                           GEODCAT.spatialResolutionAsAngularDistance))
-                    g.add((spatial_res_ref, SDMX.unitMeasure, URIRef(
-                        'http://www.wurvoc.org/vocabularies/om-1.8/metre')))
-                    g.add((spatial_res_ref, DQV.value,
-                           Literal(spatial_resolution)))
-                if spatial_resolution_type == u'vertical':
-                    g.add((spatial_res_ref, DQV.isMeasurementOf,
-                           GEODCAT.spatialResolutionAsVerticalDistance))
-                    g.add((spatial_res_ref, SDMX.unitMeasure, URIRef(
-                        'http://www.wurvoc.org/vocabularies/om-1.8/metre')))
-                    g.add((spatial_res_ref, DQV.value,
-                           Literal(spatial_resolution)))
+            try:
+                spatial_resolution_type = self._get_dataset_value(
+                    dataset_dict, 'spatial_resolution_type')
+                if spatial_resolution_type == u'meters':
+                    g.add((dataset_ref, DCAT.spatialResolutionInMeters, Literal(
+                        float(spatial_resolution), datatype=XSD.decimal)))
+                elif spatial_resolution_type == u'scale' or u'angular' or u'vertical':
+                    spatial_res_ref = BNode()
+                    g.add((spatial_res_ref, RDF.type, DQV.QualityMeasurement))
+                    g.add((dataset_ref, DQV.hasQualityMeasurement, spatial_res_ref))
+                    if spatial_resolution_type == u'scale':
+                        g.add((spatial_res_ref, DQV.isMeasurementOf,
+                            GEODCAT.spatialResolutionAsScale))
+                        g.add((spatial_res_ref, DQV.value,
+                            Literal(spatial_resolution)))
+                    if spatial_resolution_type == u'angular':
+                        g.add((spatial_res_ref, DQV.isMeasurementOf,
+                            GEODCAT.spatialResolutionAsAngularDistance))
+                        g.add((spatial_res_ref, SDMX.unitMeasure, URIRef(
+                            'http://www.wurvoc.org/vocabularies/om-1.8/metre')))
+                        g.add((spatial_res_ref, DQV.value,
+                            Literal(spatial_resolution)))
+                    if spatial_resolution_type == u'vertical':
+                        g.add((spatial_res_ref, DQV.isMeasurementOf,
+                            GEODCAT.spatialResolutionAsVerticalDistance))
+                        g.add((spatial_res_ref, SDMX.unitMeasure, URIRef(
+                            'http://www.wurvoc.org/vocabularies/om-1.8/metre')))
+                        g.add((spatial_res_ref, DQV.value,
+                            Literal(spatial_resolution)))
+            except:
+                print("Error in Spatial Resolution Block")
 
         # quality elements
         quality_metrics = self._get_dataset_value(dataset_dict, 'quality_metrics')
         if quality_metrics:
-            quality_metrics_dict = json.loads(quality_metrics)
-            for quality_metric, quality_metric_values in quality_metrics_dict.items():
-                value_of_quality_metric = quality_metric_values['values']['value of quality metric']
-                confidence_term = quality_metric_values['values']['confidence term']
-                confidence_value = quality_metric_values['values']['confidence value']
-                thematic_representativity = quality_metric_values['values']['thematic representativity']
-                spatial_representativity = quality_metric_values['values']['spatial representativity']
-                temporal_representativity = quality_metric_values['values']['temporal representativity']
-                name_of_quality_source = quality_metric_values['values']['name of quality source']
-                type_of_quality_source = quality_metric_values['values']['type of quality source']
-                link_to_quality_source = quality_metric_values['values']['link to quality source']
+            try:
+                quality_metrics_dict = json.loads(quality_metrics)
+                for quality_metric, quality_metric_values in quality_metrics_dict.items():
+                    value_of_quality_metric = quality_metric_values['values']['value of quality metric']
+                    ground_truth_dataset = quality_metric_values['values']['ground truth dataset']
+                    confidence_term = quality_metric_values['values']['confidence term']
+                    confidence_value = quality_metric_values['values']['confidence value']
+                    thematic_representativity = quality_metric_values['values']['thematic representativity']
+                    spatial_representativity = quality_metric_values['values']['spatial representativity']
+                    temporal_representativity = quality_metric_values['values']['temporal representativity']
+                    name_of_quality_source = quality_metric_values['values']['name of quality source']
+                    type_of_quality_source = quality_metric_values['values']['type of quality source']
+                    link_to_quality_source = quality_metric_values['values']['link to quality source']
 
-                current_quality_metric_ref = BNode()
-                g.add((dataset_ref, DQV.hasQualityMeasurement, current_quality_metric_ref))
+                    current_quality_metric_ref = BNode()
+                    g.add((dataset_ref, DQV.hasQualityMeasurement, current_quality_metric_ref))
 
-                g.add((current_quality_metric_ref, RDF.type, DQV.QualityMeasurement))
-                g.add((current_quality_metric_ref, DQV.isMeasurementOf, CleanedURIRef(quality_metric)))
-                if value_of_quality_metric: g.add((current_quality_metric_ref, DQV.value, Literal(value_of_quality_metric)))
+                    g.add((current_quality_metric_ref, RDF.type, DQV.QualityMeasurement))
+                    g.add((current_quality_metric_ref, DQV.isMeasurementOf, CleanedURIRef(quality_metric)))
+                    if value_of_quality_metric: g.add((current_quality_metric_ref, DQV.value, Literal(value_of_quality_metric)))
+                    if ground_truth_dataset: g.add((current_quality_metric_ref, GKQ.hasGroundTruth, URIRef(ground_truth_dataset)))
 
-                confidence_ref = BNode()
-                g.add((current_quality_metric_ref, GKQ.hasConfidence, confidence_ref))
-                g.add((confidence_ref, RDF.type, DQV.QualityMetadata))
-                if confidence_term: g.add((confidence_ref, RDFS.label, Literal(confidence_term)))
-                if confidence_value: g.add((confidence_ref, DQV.value, Literal(confidence_value)))
+                    confidence_ref = BNode()
+                    g.add((current_quality_metric_ref, GKQ.hasConfidence, confidence_ref))
+                    g.add((confidence_ref, RDF.type, DQV.QualityMetadata))
+                    if confidence_term: g.add((confidence_ref, RDFS.label, Literal(confidence_term)))
+                    if confidence_value: g.add((confidence_ref, DQV.value, Literal(confidence_value)))
 
-                representativity_ref = BNode()
-                g.add((current_quality_metric_ref, GKQ.hasRepresentativity, representativity_ref))
-                g.add((representativity_ref, RDF.type, DQV.QualityMetadata))
-                if thematic_representativity: g.add((representativity_ref, GKQ.hasThematicRepresentativity, Literal(thematic_representativity)))
-                if spatial_representativity: g.add((representativity_ref, GKQ.hasSpatialRepresentativity, Literal(spatial_representativity)))
-                if temporal_representativity: g.add((representativity_ref, GKQ.hasTemporalRepresentativity, Literal(temporal_representativity)))
+                    representativity_ref = BNode()
+                    g.add((current_quality_metric_ref, GKQ.hasRepresentativity, representativity_ref))
+                    g.add((representativity_ref, RDF.type, DQV.QualityMetadata))
+                    if thematic_representativity: g.add((representativity_ref, GKQ.hasThematicRepresentativity, Literal(thematic_representativity)))
+                    if spatial_representativity: g.add((representativity_ref, GKQ.hasSpatialRepresentativity, Literal(spatial_representativity)))
+                    if temporal_representativity: g.add((representativity_ref, GKQ.hasTemporalRepresentativity, Literal(temporal_representativity)))
 
-                source_ref = BNode()
-                g.add((current_quality_metric_ref, GKQ.hasSource, source_ref))
-                if name_of_quality_source: g.add((source_ref, RDFS.label, Literal(name_of_quality_source)))
-                if type_of_quality_source: g.add((source_ref, RDFS.comment, Literal(type_of_quality_source)))
-                if link_to_quality_source: g.add((source_ref, FOAF.page, CleanedURIRef(link_to_quality_source)))
+                    source_ref = BNode()
+                    g.add((current_quality_metric_ref, GKQ.hasSource, source_ref))
+                    if name_of_quality_source: g.add((source_ref, RDFS.label, Literal(name_of_quality_source)))
+                    if type_of_quality_source: g.add((source_ref, RDFS.comment, Literal(type_of_quality_source)))
+                    if link_to_quality_source: g.add((source_ref, FOAF.page, CleanedURIRef(link_to_quality_source)))
+            except:
+                print("Error in Quality Block")
 
 
                 
@@ -1885,25 +1896,31 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
             dataset_dict, u'was_derived_from'
         )
         if was_derived_from:
-            for entity in was_derived_from.split(','):
-                entity_ref = self._get_ds_identifier_from_ds_slug(entity.strip())
-                g.add((entity_ref, RDF.type, PROV.Entity))
-                g.add((dataset_ref, PROV.wasDerivedFrom, entity_ref))
+            try:
+                for entity in was_derived_from.split(','):
+                    entity_ref = self._get_ds_identifier_from_ds_slug(entity.strip())
+                    g.add((entity_ref, RDF.type, PROV.Entity))
+                    g.add((dataset_ref, PROV.wasDerivedFrom, entity_ref))
+            except:
+                print("Error in Was Derived From Field")
         
         was_generated_by = self._get_dataset_value(dataset_dict, u'was_generated_by')
         if was_generated_by:
-            activity = json.loads(was_generated_by)            
-            if activity['label'] != u'<choose process>':
-                activity_ref = URIRef(activity['uri'])
-                activity_label = Literal(activity['label'])
-                g.add((activity_ref, RDF.type, PROV.Activity))
-                g.add((activity_ref, PROV.wasAssociatedWith, agent_ref))
-                g.add((activity_ref, RDFS.label, activity_label))
-                g.add((dataset_ref, PROV.wasGeneratedBy, activity_ref))
-                if was_derived_from:
-                    for entity in was_derived_from.split(','):
-                        entity_ref = self._get_ds_identifier_from_ds_slug(entity.strip())
-                        g.add((activity_ref, PROV.used, entity_ref))
+            try:
+                activity = json.loads(was_generated_by)            
+                if activity['label'] != u'<choose process>':
+                    activity_ref = URIRef(activity['uri'])
+                    activity_label = Literal(activity['label'])
+                    g.add((activity_ref, RDF.type, PROV.Activity))
+                    g.add((activity_ref, PROV.wasAssociatedWith, agent_ref))
+                    g.add((activity_ref, RDFS.label, activity_label))
+                    g.add((dataset_ref, PROV.wasGeneratedBy, activity_ref))
+                    if was_derived_from:
+                        for entity in was_derived_from.split(','):
+                            entity_ref = self._get_ds_identifier_from_ds_slug(entity.strip())
+                            g.add((activity_ref, PROV.used, entity_ref))
+            except:
+                print("error in was Generated By Field")
         
 
         # Resources
