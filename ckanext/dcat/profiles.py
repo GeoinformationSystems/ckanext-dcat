@@ -1735,7 +1735,6 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
             contact_ref = BNode()
 
         g.add((dataset_ref, DCAT.contactPoint, contact_ref))
-        g.add((contact_ref, RDF.type, VCARD.Individual))
         self._add_triple_from_dict(
             dataset_dict, contact_ref,
             VCARD.fn, 'contact_name'
