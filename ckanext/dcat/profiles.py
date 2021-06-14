@@ -1916,7 +1916,7 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
             try:
                 activity = json.loads(was_generated_by)            
                 if activity['label'] != u'<choose process>':
-                    activity_ref = URIRef(activity['uri'])
+                    activity_ref = CleanedURIRef(activity['uri'])
                     activity_label = Literal(activity['label'])
                     g.add((activity_ref, RDF.type, PROV.Activity))
                     g.add((activity_ref, PROV.wasAssociatedWith, agent_ref))
