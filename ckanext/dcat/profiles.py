@@ -1862,7 +1862,10 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
                     g.add((current_quality_metric_ref, GKQ.hasSource, source_ref))
                     if name_of_quality_source: g.add((source_ref, RDFS.label, Literal(name_of_quality_source)))
                     if type_of_quality_source: g.add((source_ref, RDFS.comment, Literal(type_of_quality_source)))
-                    if link_to_quality_source: g.add((source_ref, FOAF.page, CleanedURIRef(link_to_quality_source)))
+                    try:
+                        if link_to_quality_source: g.add((source_ref, FOAF.page, CleanedURIRef(link_to_quality_source)))
+                    except:
+                        print("no URI at link to quali source")
             except:
                 print("Error in Quality Block")
 
