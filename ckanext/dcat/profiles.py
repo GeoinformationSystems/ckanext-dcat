@@ -1843,7 +1843,11 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
                     g.add((current_quality_metric_ref, RDF.type, DQV.QualityMeasurement))
                     g.add((current_quality_metric_ref, DQV.isMeasurementOf, CleanedURIRef(quality_metric)))
                     if value_of_quality_metric: g.add((current_quality_metric_ref, DQV.value, Literal(value_of_quality_metric)))
-                    if ground_truth_dataset: g.add((current_quality_metric_ref, GKQ.hasGroundTruth, URIRef(ground_truth_dataset)))
+                    if ground_truth_dataset: 
+                        try:
+                            g.add((current_quality_metric_ref, GKQ.hasGroundTruth, URIRef(ground_truth_dataset)))
+                        except:
+                            g.add((current_quality_metric_ref, GKQ.hasGroundTruth, Literal(ground_truth_dataset)))
 
                     confidence_ref = BNode()
                     g.add((current_quality_metric_ref, GKQ.hasConfidence, confidence_ref))
@@ -1862,10 +1866,11 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
                     g.add((current_quality_metric_ref, GKQ.hasSource, source_ref))
                     if name_of_quality_source: g.add((source_ref, RDFS.label, Literal(name_of_quality_source)))
                     if type_of_quality_source: g.add((source_ref, RDFS.comment, Literal(type_of_quality_source)))
-                    try:
-                        if link_to_quality_source: g.add((source_ref, FOAF.page, CleanedURIRef(link_to_quality_source)))
-                    except:
-                        print("no URI at link to quali source")
+                    if link_to_quality_source:
+                        try:
+                            g.add((source_ref, FOAF.page, CleanedURIRef(link_to_quality_source)))
+                        except:
+                            print("no URI at link to quali source")
             except:
                 print("Error in Quality Block")
 
