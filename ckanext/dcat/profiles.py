@@ -1845,7 +1845,7 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
                     if value_of_quality_metric: g.add((current_quality_metric_ref, DQV.value, Literal(value_of_quality_metric)))
                     if ground_truth_dataset: 
                         try:
-                            g.add((current_quality_metric_ref, GKQ.hasGroundTruth, URIRef(ground_truth_dataset)))
+                            g.add((current_quality_metric_ref, GKQ.hasGroundTruth, CleanedURIRef(ground_truth_dataset)))
                         except:
                             g.add((current_quality_metric_ref, GKQ.hasGroundTruth, Literal(ground_truth_dataset)))
 
