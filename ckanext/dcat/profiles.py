@@ -24,7 +24,7 @@ from ckan.plugins import toolkit
 from ckan.lib.munge import munge_tag
 from ckan.lib.helpers import url_for
 
-from ckanext.dcat.utils import resource_uri, catalog_uri, dataset_uri, publisher_uri_from_dataset_dict, DCAT_EXPOSE_SUBCATALOGS, DCAT_CLEAN_TAGS
+from ckanext.dcat.utils import generate_static_json, resource_uri, catalog_uri, dataset_uri, publisher_uri_from_dataset_dict, DCAT_EXPOSE_SUBCATALOGS, DCAT_CLEAN_TAGS
 
 DCT = Namespace("http://purl.org/dc/terms/")
 DCAT = Namespace("http://www.w3.org/ns/dcat#")
@@ -40,10 +40,10 @@ SPDX = Namespace('http://spdx.org/rdf/terms#')
 GEODCAT = Namespace('http://data.europa.eu/930/')
 DQV = Namespace('http://www.w3.org/ns/dqv#')
 SDMX = Namespace('http://purl.org/linked-data/sdmx/2009/attribute#')
-GKQ = Namespace('https://geokur-dmp.geo.tu-dresden.de/pages/quality-elements#')
+GEOKURDCAT = Namespace('https://geokur-dmp.geo.tu-dresden.de/geokurdcat#')
+GKQ = Namespace('https://geokur-dmp.geo.tu-dresden.de/quality-register#')
 GKC = Namespace(
-    'https://geokur-dmp.geo.tu-dresden.de/pages/geospatial-categories-register#')
-GKP = Namespace('https://geokur-dmp.geo.tu-dresden.de/pages/processes#')
+    'https://geokur-dmp.geo.tu-dresden.de/category-register#')
 OA = Namespace('https://www.w3.org/TR/annotation-vocab#')
 PROV = Namespace('http://www.w3.org/ns/prov#')
 
@@ -68,7 +68,7 @@ namespaces = {
     'sdmx': SDMX,
     'gkq': GKQ,
     'gqc': GKC,
-    'gqp': GKP,
+    'geokurdcat': GEOKURDCAT,
     'oa': OA,
     'prov': PROV,
 }
@@ -1472,6 +1472,8 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
             'geom': geom,
         }
 
+    
+
     def parse_dataset(self, dataset_dict, dataset_ref):
 
         dataset_dict['extras'] = []
@@ -1521,7 +1523,6 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
                 ('alternate_identifier', ADMS.identifier),
                 ('conforms_to', DCT.conformsTo),
                 ('documentation', FOAF.page),
-                # ('has_version', DCT.hasVersion),
                 ('is_version_of', DCT.isVersionOf),
                 ('is_part_of', DCT.isPartOf),
                 ('was_derived_from', PROV.wasDerivedFrom)
@@ -1677,14 +1678,12 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
 
         return dataset_dict
 
-    def graph_from_dataset(self, dataset_dict, dataset_ref):
-
-        g = self.g
-
+    def _graph_from_data(self, g, dataset_dict, dataset_ref):
         for prefix, namespace in namespaces.items():
             g.bind(prefix, namespace)
 
-        g.add((dataset_ref, RDF.type, DCAT.Dataset))
+        # g.add((dataset_ref, RDF.type, DCAT.Dataset))
+        g.add((dataset_ref, RDF.type, GEOKURDCAT.Dataset))
 
         # Basic fields
         items = [
@@ -1692,7 +1691,9 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
             ('notes', DCT.description, None, Literal),
             ('url', DCAT.landingPage, None, URIRef),
             ('identifier', DCT.identifier, ['guid', 'id'], Literal),
-            ('access_rights', DCT.accessRights, None, Literal),
+            ('conforms_to', DCT.conformsTo, None, URIRef),
+            ('alternate_identifier', ADMS.identifier, None, URIRef),
+            ('documentation', FOAF.page, None, URIRefOrLiteral),
         ]
         self._add_triples_from_dict(dataset_dict, dataset_ref, items)
 
@@ -1710,22 +1711,11 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
         #  Lists
         items = [
             ('theme', DCAT.theme, None, URIRef),
-            ('conforms_to', DCT.conformsTo, None, URIRef),
-            ('alternate_identifier', ADMS.identifier, None, URIRef),
-            ('documentation', FOAF.page, None, URIRefOrLiteral),
-            ('is_part_of', DCT.isPartOf, None, URIRefOrLiteral)
+            ('is_part_of', DCT.isPartOf, None, URIRefOrLiteral),
+            ('is_version_of', DCT.isVersionOf, None, URIRefOrLiteral)
         ]
         self._add_list_triples_from_dict(dataset_dict, dataset_ref, items)
 
-        # Contact details
-        # if any([
-        #     self._get_dataset_value(dataset_dict, 'contact_uri'),
-        #     self._get_dataset_value(dataset_dict, 'contact_name')
-        # ]):
-        is_version_of = self._get_dataset_value(dataset_dict, 'is_version_of')
-        if is_version_of:
-            is_version_of_ref = self._get_ds_identifier_from_ds_slug(is_version_of)
-            g.add((dataset_ref, DCT.isVersionOf, is_version_of_ref))
 
         contact_uri = self._get_dataset_value(dataset_dict, 'contact_uri')
         contact_ref = None
@@ -1845,25 +1835,25 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
                     if value_of_quality_metric: g.add((current_quality_metric_ref, DQV.value, Literal(value_of_quality_metric)))
                     if ground_truth_dataset: 
                         try:
-                            g.add((current_quality_metric_ref, GKQ.hasGroundTruth, CleanedURIRef(ground_truth_dataset)))
+                            g.add((current_quality_metric_ref, GEOKURDCAT.hasGroundTruth, CleanedURIRef(ground_truth_dataset)))
                         except:
-                            g.add((current_quality_metric_ref, GKQ.hasGroundTruth, Literal(ground_truth_dataset)))
+                            g.add((current_quality_metric_ref, GEOKURDCAT.hasGroundTruth, Literal(ground_truth_dataset)))
 
                     confidence_ref = BNode()
-                    g.add((current_quality_metric_ref, GKQ.hasConfidence, confidence_ref))
+                    g.add((current_quality_metric_ref, GEOKURDCAT.hasConfidence, confidence_ref))
                     g.add((confidence_ref, RDF.type, DQV.QualityMetadata))
                     if confidence_term: g.add((confidence_ref, RDFS.label, Literal(confidence_term)))
                     if confidence_value: g.add((confidence_ref, DQV.value, Literal(confidence_value)))
 
                     representativity_ref = BNode()
-                    g.add((current_quality_metric_ref, GKQ.hasRepresentativity, representativity_ref))
+                    g.add((current_quality_metric_ref, GEOKURDCAT.hasRepresentativity, representativity_ref))
                     g.add((representativity_ref, RDF.type, DQV.QualityMetadata))
-                    if thematic_representativity: g.add((representativity_ref, GKQ.hasThematicRepresentativity, Literal(thematic_representativity)))
-                    if spatial_representativity: g.add((representativity_ref, GKQ.hasSpatialRepresentativity, Literal(spatial_representativity)))
-                    if temporal_representativity: g.add((representativity_ref, GKQ.hasTemporalRepresentativity, Literal(temporal_representativity)))
+                    if thematic_representativity: g.add((representativity_ref, GEOKURDCAT.hasThematicRepresentativity, Literal(thematic_representativity)))
+                    if spatial_representativity: g.add((representativity_ref, GEOKURDCAT.hasSpatialRepresentativity, Literal(spatial_representativity)))
+                    if temporal_representativity: g.add((representativity_ref, GEOKURDCAT.hasTemporalRepresentativity, Literal(temporal_representativity)))
 
                     source_ref = BNode()
-                    g.add((current_quality_metric_ref, GKQ.hasSource, source_ref))
+                    g.add((current_quality_metric_ref, GEOKURDCAT.hasSource, source_ref))
                     if name_of_quality_source: g.add((source_ref, RDFS.label, Literal(name_of_quality_source)))
                     if type_of_quality_source: g.add((source_ref, RDFS.comment, Literal(type_of_quality_source)))
                     if link_to_quality_source:
@@ -1873,9 +1863,6 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
                             print("no URI at link to quali source")
             except:
                 print("Error in Quality Block")
-
-
-                
 
         # quality_annotation = self._get_dataset_value(
         #     dataset_dict, u'quality_annotation')
@@ -1893,44 +1880,132 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
         #     g.add((annotation_body_ref, RDF.type, OA.TextualBody))
         #     g.add((annotation_body_ref, RDF.value, Literal(quality_annotation)))
 
+
         # provenance
         agent_ref = contact_ref
         g.add((agent_ref, RDF.type, PROV.Agent))
         g.add((dataset_ref, PROV.wasAttributedTo, agent_ref))
-
         g.add((dataset_ref, RDF.type, PROV.Entity))
+
         was_derived_from = self._get_dataset_value(
             dataset_dict, u'was_derived_from'
         )
         if was_derived_from:
-            try:
-                for entity in was_derived_from.split(','):
-                    entity_ref = self._get_ds_identifier_from_ds_slug(entity.strip())
-                    g.add((entity_ref, RDF.type, PROV.Entity))
-                    g.add((dataset_ref, PROV.wasDerivedFrom, entity_ref))
-            except:
-                print("Error in Was Derived From Field")
-        
-        was_generated_by = self._get_dataset_value(dataset_dict, u'was_generated_by')
-        if was_generated_by:
-            try:
-                activity = json.loads(was_generated_by)            
-                if activity['label'] != u'<choose process>':
-                    activity_ref = CleanedURIRef(activity['uri'])
-                    activity_label = Literal(activity['label'])
-                    g.add((activity_ref, RDF.type, PROV.Activity))
-                    g.add((activity_ref, PROV.wasAssociatedWith, agent_ref))
-                    g.add((activity_ref, RDFS.label, activity_label))
-                    g.add((dataset_ref, PROV.wasGeneratedBy, activity_ref))
-                    if was_derived_from:
-                        for entity in was_derived_from.split(','):
-                            entity_ref = self._get_ds_identifier_from_ds_slug(entity.strip())
-                            g.add((activity_ref, PROV.used, entity_ref))
-            except:
-                print("error in was Generated By Field")
+            for entity in was_derived_from.split(','):
+                g.add((CleanedURIRef(entity), RDF.type, PROV.Entity))
+                g.add((dataset_ref, PROV.wasDerivedFrom, CleanedURIRef(entity)))
         
 
-        # Resources
+        
+
+    def _graph_from_process(self, g, dataset_dict, dataset_ref):
+        
+        for prefix, namespace in namespaces.items():
+            g.bind(prefix, namespace)
+
+        g.add((dataset_ref, RDF.type, GEOKURDCAT.Process))
+        g.add((dataset_ref, RDF.type, PROV.Activity))
+
+        # Basic fields
+        items = [
+            ('title', DCT.title, None, Literal),
+            ('notes', DCT.description, None, Literal),
+            ('identifier', DCT.identifier, ['guid', 'id'], Literal),
+            ('documentation', FOAF.page, None, URIRefOrLiteral)
+        ]
+        self._add_triples_from_dict(dataset_dict, dataset_ref, items)
+
+        # Tags
+        for tag in dataset_dict.get('tags', []):
+            g.add((dataset_ref, DCAT.keyword, Literal(tag['name'])))
+
+        # Dates
+        items = [
+            ('issued', DCT.issued, ['metadata_created'], Literal),
+            ('modified', DCT.modified, ['metadata_modified'], Literal),
+        ]
+        self._add_date_triples_from_dict(dataset_dict, dataset_ref, items)
+
+        #  Lists
+        items = [
+            ('category', GEOKURDCAT.hasGeospatialCategory, None, URIRef)
+        ]
+        self._add_list_triples_from_dict(dataset_dict, dataset_ref, items)
+
+        # provenance
+        generated = self._get_dataset_value(dataset_dict, 'generated')
+        if generated:
+            generated = generated.split(',')
+            for output_data in generated:
+                g.add((CleanedURIRef(output_data), PROV.wasGeneratedBy, dataset_ref))
+                g.add((CleanedURIRef(output_data), RDF.type, PROV.Entity))
+
+        used = self._get_dataset_value(dataset_dict, 'used')
+        if used:
+            used = used.split(',')
+            for input_data in used:
+                g.add((dataset_ref, PROV.used, CleanedURIRef(input_data)))
+                g.add((CleanedURIRef(input_data), RDF.type, PROV.Entity))
+
+        if used and generated:
+            for output_data in generated:
+                for input_data in used:
+                    g.add((CleanedURIRef(output_data), PROV.wasDerivedFrom, CleanedURIRef(input_data)))
+            
+
+        
+
+    def _graph_from_workflow(self, g, dataset_dict, dataset_ref):
+        
+        for prefix, namespace in namespaces.items():
+            g.bind(prefix, namespace)
+        
+        g.add((dataset_ref, RDF.type, GEOKURDCAT.Workflow))
+
+        # Basic fields
+        items = [
+            ('title', DCT.title, None, Literal),
+            ('notes', DCT.description, None, Literal),
+            ('identifier', DCT.identifier, ['guid', 'id'], Literal),
+            ('documentation', FOAF.page, None, URIRefOrLiteral),
+            ('source_code', FOAF.page, None, URIRef)
+        ]
+        self._add_triples_from_dict(dataset_dict, dataset_ref, items)
+
+        # Tags
+        for tag in dataset_dict.get('tags', []):
+            g.add((dataset_ref, DCAT.keyword, Literal(tag['name'])))
+
+        # Dates
+        items = [
+            ('issued', DCT.issued, ['metadata_created'], Literal),
+            ('modified', DCT.modified, ['metadata_modified'], Literal),
+        ]
+        self._add_date_triples_from_dict(dataset_dict, dataset_ref, items)
+
+        #  Lists
+        items = [            
+            ('rel_datasets', GEOKURDCAT.hasRelatedDataset, None, URIRef),
+            ('rel_processes', GEOKURDCAT.hasRelatedProcess, None, URIRef),
+            ('result', GEOKURDCAT.hasResult, None, URIRef)
+        ]
+        self._add_list_triples_from_dict(dataset_dict, dataset_ref, items)
+        
+
+    def graph_from_dataset(self, dataset_dict, dataset_ref):
+        # in geokur a ckan-dataset can refer to data, a process or a workflow.
+        # each dataset type has its own metadata schema that needs to be converted
+        # accordingly.
+        g = self.g
+        dataset_type = self._get_dataset_value(dataset_dict, 'type')
+        if dataset_type == 'dataset':
+            self._graph_from_data(g, dataset_dict, dataset_ref)
+        if dataset_type == 'process':
+            self._graph_from_process(g, dataset_dict, dataset_ref)
+        if dataset_type == 'workflow':
+            self._graph_from_workflow(g, dataset_dict, dataset_ref)
+        
+        # the resouce scheme is the same for each dataset type
         for resource_dict in dataset_dict.get('resources', []):
 
             distribution = CleanedURIRef(resource_uri(resource_dict))
@@ -2007,6 +2082,8 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
                            URIRefOrLiteral(resource_dict['hash_algorithm'])))
 
                 g.add((distribution, SPDX.checksum, checksum))
+
+        
 
 
 class SchemaOrgProfile(RDFProfile):
