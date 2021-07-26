@@ -1,7 +1,9 @@
 
 # ckanext-dcat fork --- GEOKUR
 
-_This fork of ckanext-dcat https://github.com/ckan/ckanext-dcat implemetnts the class GeokurDCATAPProfile to adjust the mapping of the metadata elements to the GeoKur project (https://geokur.geo.tu-dresden.de/) metadata scheme. The original readme begins below._
+_This fork of ckanext-dcat https://github.com/ckan/ckanext-dcat implemetnts the class GeokurDCATAPProfile to adjust the mapping of the metadata elements to the GeoKur project (https://geokur.geo.tu-dresden.de/) metadata scheme. The original readme begins with the next headline._
+
+The defualt nb of datasets that is serialized with `<instance>/catalog.ttl` is 100 and can be adjusted in the `ckan.ini` with `ckanext.dcat.datasets_per_page = 2000`.
 
 # ckanext-dcat
 

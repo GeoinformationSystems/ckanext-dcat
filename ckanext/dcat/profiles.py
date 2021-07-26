@@ -1997,6 +1997,8 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
         # each dataset type has its own metadata schema that needs to be converted
         # accordingly.
         g = self.g
+        # all defined types are subclasses of DCAT.Dataset
+        g.add((dataset_ref, RDF.type, DCAT.Dataset))
         dataset_type = self._get_dataset_value(dataset_dict, 'type')
         if dataset_type == 'dataset':
             self._graph_from_data(g, dataset_dict, dataset_ref)
