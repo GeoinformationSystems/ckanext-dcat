@@ -65,7 +65,7 @@ namespaces = {
     'dqv': DQV,
     'sdmx': SDMX,
     'gkq': GKQ,
-    'gqc': GKC,
+    'gkc': GKC,
     'geokurdcat': GEOKURDCAT,
     'oa': OA,
     'prov': PROV,
