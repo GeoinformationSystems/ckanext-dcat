@@ -42,11 +42,9 @@ DQV = Namespace('http://www.w3.org/ns/dqv#')
 SDMX = Namespace('http://purl.org/linked-data/sdmx/2009/attribute#')
 GEOKURDCAT = Namespace('https://geokur-dmp.geo.tu-dresden.de/geokurdcat#')
 GKQ = Namespace('https://geokur-dmp.geo.tu-dresden.de/quality-register#')
-GKC = Namespace(
-    'https://geokur-dmp.geo.tu-dresden.de/category-register#')
+GKC = Namespace('https://geokur-dmp.geo.tu-dresden.de/category-register#')
 OA = Namespace('https://www.w3.org/TR/annotation-vocab#')
 PROV = Namespace('http://www.w3.org/ns/prov#')
-
 
 GEOJSON_IMT = 'https://www.iana.org/assignments/media-types/application/vnd.geo+json'
 
@@ -84,8 +82,8 @@ class URIRefOrLiteral(object):
     '''
     def __new__(cls, value):
         stripped_value = value.strip()
-        if (isinstance(value, basestring) and (stripped_value.startswith("http://")
-                                               or stripped_value.startswith("https://"))):
+        if (isinstance(value, basestring)
+                and (stripped_value.startswith("http://") or stripped_value.startswith("https://"))):
             uri_obj = CleanedURIRef(value)
             # although all invalid chars checked by rdflib should have been quoted, try to serialize
             # the object. If it breaks, use Literal instead.
@@ -129,7 +127,6 @@ class RDFProfile(object):
        This class should not be used directly, but rather extended to create
        custom profiles
     '''
-
     def __init__(self, graph, compatibility_mode=False):
         '''Class constructor
 
@@ -294,16 +291,12 @@ class RDFProfile(object):
                 return start_date, end_date
 
             # If no luck, try the w3 time way
-            start_nodes = [t for t in self.g.objects(interval,
-                                                     TIME.hasBeginning)]
-            end_nodes = [t for t in self.g.objects(interval,
-                                                   TIME.hasEnd)]
+            start_nodes = [t for t in self.g.objects(interval, TIME.hasBeginning)]
+            end_nodes = [t for t in self.g.objects(interval, TIME.hasEnd)]
             if start_nodes:
-                start_date = self._object_value(start_nodes[0],
-                                                TIME.inXSDDateTime)
+                start_date = self._object_value(start_nodes[0], TIME.inXSDDateTime)
             if end_nodes:
-                end_date = self._object_value(end_nodes[0],
-                                              TIME.inXSDDateTime)
+                end_date = self._object_value(end_nodes[0], TIME.inXSDDateTime)
 
         return start_date, end_date
 
@@ -346,8 +339,7 @@ class RDFProfile(object):
 
         for agent in self.g.objects(subject, predicate):
 
-            publisher['uri'] = (str(agent) if isinstance(agent,
-                                                         rdflib.term.URIRef) else '')
+            publisher['uri'] = (str(agent) if isinstance(agent, rdflib.term.URIRef) else '')
 
             publisher['name'] = self._object_value(agent, FOAF.name)
 
@@ -373,14 +365,11 @@ class RDFProfile(object):
 
         for agent in self.g.objects(subject, predicate):
 
-            contact['uri'] = (str(agent) if isinstance(agent,
-                                                       rdflib.term.URIRef) else '')
+            contact['uri'] = (str(agent) if isinstance(agent, rdflib.term.URIRef) else '')
 
-            contact['name'] = self._get_vcard_property_value(
-                agent, VCARD.hasFN, VCARD.fn)
+            contact['name'] = self._get_vcard_property_value(agent, VCARD.hasFN, VCARD.fn)
 
-            contact['email'] = self._without_mailto(
-                self._get_vcard_property_value(agent, VCARD.hasEmail))
+            contact['email'] = self._without_mailto(self._get_vcard_property_value(agent, VCARD.hasEmail))
 
         return contact
 
@@ -415,8 +404,7 @@ class RDFProfile(object):
 
             if (spatial, RDF.type, DCT.Location) in self.g:
                 for geometry in self.g.objects(spatial, LOCN.geometry):
-                    if (geometry.datatype == URIRef(GEOJSON_IMT) or
-                            not geometry.datatype):
+                    if (geometry.datatype == URIRef(GEOJSON_IMT) or not geometry.datatype):
                         try:
                             json.loads(str(geometry))
                             geom = str(geometry)
@@ -465,8 +453,7 @@ class RDFProfile(object):
                 # Try to find a matching license comparing URIs, then titles
                 license_id = license_uri2id.get(license.toPython())
                 if not license_id:
-                    license_id = license_title2id.get(
-                        self._object_value(license, DCT.title))
+                    license_id = license_title2id.get(self._object_value(license, DCT.title))
                 if license_id:
                     return license_id
         return ''
@@ -547,8 +534,7 @@ class RDFProfile(object):
                 else:
                     label = format_uri
 
-        if ((imt or label) and normalize_ckan_format and
-                toolkit.check_ckan_version(min_version='2.3')):
+        if ((imt or label) and normalize_ckan_format and toolkit.check_ckan_version(min_version='2.3')):
             import ckan.config
             from ckan.lib import helpers
 
@@ -598,25 +584,28 @@ class RDFProfile(object):
         return self._get_dict_value(resource_dict, key, default)
 
     def _add_date_triples_from_dict(self, _dict, subject, items):
-        self._add_triples_from_dict(_dict, subject, items,
-                                    date_value=True)
+        self._add_triples_from_dict(_dict, subject, items, date_value=True)
 
     def _add_list_triples_from_dict(self, _dict, subject, items):
-        self._add_triples_from_dict(_dict, subject, items,
-                                    list_value=True)
+        self._add_triples_from_dict(_dict, subject, items, list_value=True)
 
-    def _add_triples_from_dict(self, _dict, subject, items,
-                               list_value=False,
-                               date_value=False):
+    def _add_triples_from_dict(self, _dict, subject, items, list_value=False, date_value=False):
         for item in items:
             key, predicate, fallbacks, _type = item
-            self._add_triple_from_dict(_dict, subject, predicate, key,
+            self._add_triple_from_dict(_dict,
+                                       subject,
+                                       predicate,
+                                       key,
                                        fallbacks=fallbacks,
                                        list_value=list_value,
                                        date_value=date_value,
                                        _type=_type)
 
-    def _add_triple_from_dict(self, _dict, subject, predicate, key,
+    def _add_triple_from_dict(self,
+                              _dict,
+                              subject,
+                              predicate,
+                              key,
                               fallbacks=None,
                               list_value=False,
                               date_value=False,
@@ -707,8 +696,7 @@ class RDFProfile(object):
             default_datetime = datetime.datetime(1, 1, 1, 0, 0, 0)
             _date = parse_date(value, default=default_datetime)
 
-            self.g.add((subject, predicate, _type(_date.isoformat(),
-                                                  datatype=XSD.dateTime)))
+            self.g.add((subject, predicate, _type(_date.isoformat(), datatype=XSD.dateTime)))
         except ValueError:
             self.g.add((subject, predicate, _type(value)))
 
@@ -722,9 +710,7 @@ class RDFProfile(object):
         Returns a dateTime string in ISO format, or None if it could not be
         found.
         '''
-        context = {
-            'ignore_auth': True
-        }
+        context = {'ignore_auth': True}
         result = toolkit.get_action('package_search')(context, {
             'sort': 'metadata_modified desc',
             'rows': 1,
@@ -771,7 +757,10 @@ class RDFProfile(object):
             catalogs.remove(root)
         except KeyError:
             pass
-        assert len(catalogs) in (0, 1,), "len %s" % catalogs
+        assert len(catalogs) in (
+            0,
+            1,
+        ), "len %s" % catalogs
         if catalogs:
             return catalogs.pop()
         return root
@@ -804,19 +793,38 @@ class RDFProfile(object):
         '''
 
         out = []
-        sources = (('source_catalog_title', DCT.title,),
-                   ('source_catalog_description', DCT.description,),
-                   ('source_catalog_homepage', FOAF.homepage,),
-                   ('source_catalog_language', DCT.language,),
-                   ('source_catalog_modified', DCT.modified,),)
+        sources = (
+            (
+                'source_catalog_title',
+                DCT.title,
+            ),
+            (
+                'source_catalog_description',
+                DCT.description,
+            ),
+            (
+                'source_catalog_homepage',
+                FOAF.homepage,
+            ),
+            (
+                'source_catalog_language',
+                DCT.language,
+            ),
+            (
+                'source_catalog_modified',
+                DCT.modified,
+            ),
+        )
 
         for key, predicate in sources:
             val = self._object_value(catalog_ref, predicate)
             if val:
                 out.append({'key': key, 'value': val})
 
-        out.append({'key': 'source_catalog_publisher', 'value': json.dumps(
-            self._publisher(catalog_ref, DCT.publisher))})
+        out.append({
+            'key': 'source_catalog_publisher',
+            'value': json.dumps(self._publisher(catalog_ref, DCT.publisher))
+        })
         return out
 
     def graph_from_catalog(self, catalog_dict, catalog_ref):
@@ -856,7 +864,6 @@ class EuropeanDCATAPProfile(RDFProfile):
     https://joinup.ec.europa.eu/asset/dcat_application_profile
 
     '''
-
     def parse_dataset(self, dataset_dict, dataset_ref):
 
         dataset_dict['extras'] = []
@@ -864,10 +871,10 @@ class EuropeanDCATAPProfile(RDFProfile):
 
         # Basic fields
         for key, predicate in (
-                ('title', DCT.title),
-                ('notes', DCT.description),
-                ('url', DCAT.landingPage),
-                ('version', OWL.versionInfo),
+            ('title', DCT.title),
+            ('notes', DCT.description),
+            ('url', DCAT.landingPage),
+            ('version', OWL.versionInfo),
         ):
             value = self._object_value(dataset_ref, predicate)
             if value:
@@ -882,8 +889,7 @@ class EuropeanDCATAPProfile(RDFProfile):
         # Tags
         # replace munge_tag to noop if there's no need to clean tags
         do_clean = toolkit.asbool(config.get(DCAT_CLEAN_TAGS, False))
-        tags_val = [
-            munge_tag(tag) if do_clean else tag for tag in self._keywords(dataset_ref)]
+        tags_val = [munge_tag(tag) if do_clean else tag for tag in self._keywords(dataset_ref)]
         tags = [{'name': tag} for tag in tags_val]
         dataset_dict['tags'] = tags
 
@@ -891,13 +897,13 @@ class EuropeanDCATAPProfile(RDFProfile):
 
         #  Simple values
         for key, predicate in (
-                ('issued', DCT.issued),
-                ('modified', DCT.modified),
-                ('identifier', DCT.identifier),
-                ('version_notes', ADMS.versionNotes),
-                ('frequency', DCT.accrualPeriodicity),
-                ('provenance', DCT.provenance),
-                ('dcat_type', DCT.type),
+            ('issued', DCT.issued),
+            ('modified', DCT.modified),
+            ('identifier', DCT.identifier),
+            ('version_notes', ADMS.versionNotes),
+            ('frequency', DCT.accrualPeriodicity),
+            ('provenance', DCT.provenance),
+            ('dcat_type', DCT.type),
         ):
             value = self._object_value(dataset_ref, predicate)
             if value:
@@ -905,21 +911,20 @@ class EuropeanDCATAPProfile(RDFProfile):
 
         #  Lists
         for key, predicate, in (
-                ('language', DCT.language),
-                ('theme', DCAT.theme),
-                ('alternate_identifier', ADMS.identifier),
-                ('conforms_to', DCT.conformsTo),
-                ('documentation', FOAF.page),
-                ('related_resource', DCT.relation),
-                ('has_version', DCT.hasVersion),
-                ('is_version_of', DCT.isVersionOf),
-                ('source', DCT.source),
-                ('sample', ADMS.sample),
+            ('language', DCT.language),
+            ('theme', DCAT.theme),
+            ('alternate_identifier', ADMS.identifier),
+            ('conforms_to', DCT.conformsTo),
+            ('documentation', FOAF.page),
+            ('related_resource', DCT.relation),
+            ('has_version', DCT.hasVersion),
+            ('is_version_of', DCT.isVersionOf),
+            ('source', DCT.source),
+            ('sample', ADMS.sample),
         ):
             values = self._object_value_list(dataset_ref, predicate)
             if values:
-                dataset_dict['extras'].append({'key': key,
-                                               'value': json.dumps(values)})
+                dataset_dict['extras'].append({'key': key, 'value': json.dumps(values)})
 
         # Contact details
         contact = self._contact_details(dataset_ref, DCAT.contactPoint)
@@ -930,46 +935,38 @@ class EuropeanDCATAPProfile(RDFProfile):
         if contact:
             for key in ('uri', 'name', 'email'):
                 if contact.get(key):
-                    dataset_dict['extras'].append(
-                        {'key': 'contact_{0}'.format(key),
-                         'value': contact.get(key)})
+                    dataset_dict['extras'].append({'key': 'contact_{0}'.format(key), 'value': contact.get(key)})
 
         # Publisher
         publisher = self._publisher(dataset_ref, DCT.publisher)
         for key in ('uri', 'name', 'email', 'url', 'type'):
             if publisher.get(key):
-                dataset_dict['extras'].append(
-                    {'key': 'publisher_{0}'.format(key),
-                     'value': publisher.get(key)})
+                dataset_dict['extras'].append({'key': 'publisher_{0}'.format(key), 'value': publisher.get(key)})
 
         # Temporal
         start, end = self._time_interval(dataset_ref, DCT.temporal)
         if start:
-            dataset_dict['extras'].append(
-                {'key': 'temporal_start', 'value': start})
+            dataset_dict['extras'].append({'key': 'temporal_start', 'value': start})
         if end:
-            dataset_dict['extras'].append(
-                {'key': 'temporal_end', 'value': end})
+            dataset_dict['extras'].append({'key': 'temporal_end', 'value': end})
 
         # Spatial
         spatial = self._spatial(dataset_ref, DCT.spatial)
         for key in ('uri', 'text', 'geom'):
             if spatial.get(key):
-                dataset_dict['extras'].append(
-                    {'key': 'spatial_{0}'.format(key) if key != 'geom' else 'spatial',
-                     'value': spatial.get(key)})
+                dataset_dict['extras'].append({
+                    'key': 'spatial_{0}'.format(key) if key != 'geom' else 'spatial',
+                    'value': spatial.get(key)
+                })
 
         # Dataset URI (explicitly show the missing ones)
-        dataset_uri = (str(dataset_ref)
-                       if isinstance(dataset_ref, rdflib.term.URIRef)
-                       else '')
+        dataset_uri = (str(dataset_ref) if isinstance(dataset_ref, rdflib.term.URIRef) else '')
         dataset_dict['extras'].append({'key': 'uri', 'value': dataset_uri})
 
         # access_rights
         access_rights = self._access_rights(dataset_ref, DCT.accessRights)
         if access_rights:
-            dataset_dict['extras'].append(
-                {'key': 'access_rights', 'value': access_rights})
+            dataset_dict['extras'].append({'key': 'access_rights', 'value': access_rights})
 
         # License
         if 'license_id' not in dataset_dict:
@@ -989,28 +986,26 @@ class EuropeanDCATAPProfile(RDFProfile):
 
             #  Simple values
             for key, predicate in (
-                    ('name', DCT.title),
-                    ('description', DCT.description),
-                    ('access_url', DCAT.accessURL),
-                    ('download_url', DCAT.downloadURL),
-                    ('issued', DCT.issued),
-                    ('modified', DCT.modified),
-                    ('status', ADMS.status),
-                    ('license', DCT.license),
+                ('name', DCT.title),
+                ('description', DCT.description),
+                ('access_url', DCAT.accessURL),
+                ('download_url', DCAT.downloadURL),
+                ('issued', DCT.issued),
+                ('modified', DCT.modified),
+                ('status', ADMS.status),
+                ('license', DCT.license),
             ):
                 value = self._object_value(distribution, predicate)
                 if value:
                     resource_dict[key] = value
 
-            resource_dict['url'] = (self._object_value(distribution,
-                                                       DCAT.downloadURL) or
-                                    self._object_value(distribution,
-                                                       DCAT.accessURL))
+            resource_dict['url'] = (self._object_value(distribution, DCAT.downloadURL)
+                                    or self._object_value(distribution, DCAT.accessURL))
             #  Lists
             for key, predicate in (
-                    ('language', DCT.language),
-                    ('documentation', FOAF.page),
-                    ('conforms_to', DCT.conformsTo),
+                ('language', DCT.language),
+                ('documentation', FOAF.page),
+                ('conforms_to', DCT.conformsTo),
             ):
                 values = self._object_value_list(distribution, predicate)
                 if values:
@@ -1022,10 +1017,8 @@ class EuropeanDCATAPProfile(RDFProfile):
                 resource_dict['rights'] = rights
 
             # Format and media type
-            normalize_ckan_format = toolkit.asbool(config.get(
-                'ckanext.dcat.normalize_ckan_format', True))
-            imt, label = self._distribution_format(distribution,
-                                                   normalize_ckan_format)
+            normalize_ckan_format = toolkit.asbool(config.get('ckanext.dcat.normalize_ckan_format', True))
+            imt, label = self._distribution_format(distribution, normalize_ckan_format)
 
             if imt:
                 resource_dict['mimetype'] = imt
@@ -1043,18 +1036,14 @@ class EuropeanDCATAPProfile(RDFProfile):
             # Checksum
             for checksum in self.g.objects(distribution, SPDX.checksum):
                 algorithm = self._object_value(checksum, SPDX.algorithm)
-                checksum_value = self._object_value(
-                    checksum, SPDX.checksumValue)
+                checksum_value = self._object_value(checksum, SPDX.checksumValue)
                 if algorithm:
                     resource_dict['hash_algorithm'] = algorithm
                 if checksum_value:
                     resource_dict['hash'] = checksum_value
 
             # Distribution URI (explicitly show the missing ones)
-            resource_dict['uri'] = (str(distribution)
-                                    if isinstance(distribution,
-                                                  rdflib.term.URIRef)
-                                    else '')
+            resource_dict['uri'] = (str(distribution) if isinstance(distribution, rdflib.term.URIRef) else '')
 
             dataset_dict['resources'].append(resource_dict)
 
@@ -1062,14 +1051,17 @@ class EuropeanDCATAPProfile(RDFProfile):
             # Tweak the resulting dict to make it compatible with previous
             # versions of the ckanext-dcat parsers
             for extra in dataset_dict['extras']:
-                if extra['key'] in ('issued', 'modified', 'publisher_name',
-                                    'publisher_email',):
+                if extra['key'] in (
+                        'issued',
+                        'modified',
+                        'publisher_name',
+                        'publisher_email',
+                ):
 
                     extra['key'] = 'dcat_' + extra['key']
 
                 if extra['key'] == 'language':
-                    extra['value'] = ','.join(
-                        sorted(json.loads(extra['value'])))
+                    extra['value'] = ','.join(sorted(json.loads(extra['value'])))
 
         return dataset_dict
 
@@ -1125,13 +1117,13 @@ class EuropeanDCATAPProfile(RDFProfile):
 
         # Contact details
         if any([
-            self._get_dataset_value(dataset_dict, 'contact_uri'),
-            self._get_dataset_value(dataset_dict, 'contact_name'),
-            self._get_dataset_value(dataset_dict, 'contact_email'),
-            self._get_dataset_value(dataset_dict, 'maintainer'),
-            self._get_dataset_value(dataset_dict, 'maintainer_email'),
-            self._get_dataset_value(dataset_dict, 'author'),
-            self._get_dataset_value(dataset_dict, 'author_email'),
+                self._get_dataset_value(dataset_dict, 'contact_uri'),
+                self._get_dataset_value(dataset_dict, 'contact_name'),
+                self._get_dataset_value(dataset_dict, 'contact_email'),
+                self._get_dataset_value(dataset_dict, 'maintainer'),
+                self._get_dataset_value(dataset_dict, 'maintainer_email'),
+                self._get_dataset_value(dataset_dict, 'author'),
+                self._get_dataset_value(dataset_dict, 'author_email'),
         ]):
 
             contact_uri = self._get_dataset_value(dataset_dict, 'contact_uri')
@@ -1143,23 +1135,21 @@ class EuropeanDCATAPProfile(RDFProfile):
             g.add((contact_details, RDF.type, VCARD.Organization))
             g.add((dataset_ref, DCAT.contactPoint, contact_details))
 
-            self._add_triple_from_dict(
-                dataset_dict, contact_details,
-                VCARD.fn, 'contact_name', ['maintainer', 'author']
-            )
+            self._add_triple_from_dict(dataset_dict, contact_details, VCARD.fn, 'contact_name',
+                                       ['maintainer', 'author'])
             # Add mail address as URIRef, and ensure it has a mailto: prefix
-            self._add_triple_from_dict(
-                dataset_dict, contact_details,
-                VCARD.hasEmail, 'contact_email', ['maintainer_email',
-                                                  'author_email'],
-                _type=URIRef, value_modifier=self._add_mailto
-            )
+            self._add_triple_from_dict(dataset_dict,
+                                       contact_details,
+                                       VCARD.hasEmail,
+                                       'contact_email', ['maintainer_email', 'author_email'],
+                                       _type=URIRef,
+                                       value_modifier=self._add_mailto)
 
         # Publisher
         if any([
-            self._get_dataset_value(dataset_dict, 'publisher_uri'),
-            self._get_dataset_value(dataset_dict, 'publisher_name'),
-            dataset_dict.get('organization'),
+                self._get_dataset_value(dataset_dict, 'publisher_uri'),
+                self._get_dataset_value(dataset_dict, 'publisher_name'),
+                dataset_dict.get('organization'),
         ]):
 
             publisher_uri = publisher_uri_from_dataset_dict(dataset_dict)
@@ -1172,8 +1162,7 @@ class EuropeanDCATAPProfile(RDFProfile):
             g.add((publisher_details, RDF.type, FOAF.Organization))
             g.add((dataset_ref, DCT.publisher, publisher_details))
 
-            publisher_name = self._get_dataset_value(
-                dataset_dict, 'publisher_name')
+            publisher_name = self._get_dataset_value(dataset_dict, 'publisher_name')
             if not publisher_name and dataset_dict.get('organization'):
                 publisher_name = dataset_dict['organization']['title']
 
@@ -1222,16 +1211,11 @@ class EuropeanDCATAPProfile(RDFProfile):
 
             if spatial_geom:
                 # GeoJSON
-                g.add((spatial_ref,
-                       LOCN.geometry,
-                       Literal(spatial_geom, datatype=GEOJSON_IMT)))
+                g.add((spatial_ref, LOCN.geometry, Literal(spatial_geom, datatype=GEOJSON_IMT)))
                 # WKT, because GeoDCAT-AP says so
                 try:
-                    g.add((spatial_ref,
-                           LOCN.geometry,
-                           Literal(wkt.dumps(json.loads(spatial_geom),
-                                             decimals=4),
-                                   datatype=GSP.wktLiteral)))
+                    g.add((spatial_ref, LOCN.geometry,
+                           Literal(wkt.dumps(json.loads(spatial_geom), decimals=4), datatype=GSP.wktLiteral)))
                 except (TypeError, ValueError, InvalidGeoJSONException):
                     pass
 
@@ -1263,8 +1247,7 @@ class EuropeanDCATAPProfile(RDFProfile):
                 ('language', DCT.language, None, URIRefOrLiteral),
                 ('conforms_to', DCT.conformsTo, None, Literal),
             ]
-            self._add_list_triples_from_dict(
-                resource_dict, distribution, items)
+            self._add_list_triples_from_dict(resource_dict, distribution, items)
 
             # Format
             mimetype = resource_dict.get('mimetype')
@@ -1274,8 +1257,7 @@ class EuropeanDCATAPProfile(RDFProfile):
             # In case format is available and mimetype is not set or identical to format,
             # check which type is appropriate.
             if fmt and (not mimetype or mimetype == fmt):
-                if ('iana.org/assignments/media-types' in fmt
-                        or not fmt.startswith('http') and '/' in fmt):
+                if ('iana.org/assignments/media-types' in fmt or not fmt.startswith('http') and '/' in fmt):
                     # output format value as dcat:mediaType instead of dct:format
                     mimetype = fmt
                     fmt = None
@@ -1284,12 +1266,10 @@ class EuropeanDCATAPProfile(RDFProfile):
                     mimetype = None
 
             if mimetype:
-                g.add((distribution, DCAT.mediaType,
-                       URIRefOrLiteral(mimetype)))
+                g.add((distribution, DCAT.mediaType, URIRefOrLiteral(mimetype)))
 
             if fmt:
-                g.add((distribution, DCT['format'],
-                       URIRefOrLiteral(fmt)))
+                g.add((distribution, DCT['format'], URIRefOrLiteral(fmt)))
 
             # URL fallback and old behavior
             url = resource_dict.get('url')
@@ -1298,8 +1278,7 @@ class EuropeanDCATAPProfile(RDFProfile):
             # Use url as fallback for access_url if access_url is not set and download_url is not equal
             if url and not access_url:
                 if (not download_url) or (download_url and url != download_url):
-                    self._add_triple_from_dict(
-                        resource_dict, distribution, DCAT.accessURL, 'url', _type=URIRef)
+                    self._add_triple_from_dict(resource_dict, distribution, DCAT.accessURL, 'url', _type=URIRef)
 
             # Dates
             items = [
@@ -1307,29 +1286,22 @@ class EuropeanDCATAPProfile(RDFProfile):
                 ('modified', DCT.modified, None, Literal),
             ]
 
-            self._add_date_triples_from_dict(
-                resource_dict, distribution, items)
+            self._add_date_triples_from_dict(resource_dict, distribution, items)
 
             # Numbers
             if resource_dict.get('size'):
                 try:
-                    g.add((distribution, DCAT.byteSize,
-                           Literal(float(resource_dict['size']),
-                                   datatype=XSD.decimal)))
+                    g.add((distribution, DCAT.byteSize, Literal(float(resource_dict['size']), datatype=XSD.decimal)))
                 except (ValueError, TypeError):
-                    g.add((distribution, DCAT.byteSize,
-                           Literal(resource_dict['size'])))
+                    g.add((distribution, DCAT.byteSize, Literal(resource_dict['size'])))
             # Checksum
             if resource_dict.get('hash'):
                 checksum = BNode()
                 g.add((checksum, RDF.type, SPDX.Checksum))
-                g.add((checksum, SPDX.checksumValue,
-                       Literal(resource_dict['hash'],
-                               datatype=XSD.hexBinary)))
+                g.add((checksum, SPDX.checksumValue, Literal(resource_dict['hash'], datatype=XSD.hexBinary)))
 
                 if resource_dict.get('hash_algorithm'):
-                    g.add((checksum, SPDX.algorithm,
-                           URIRefOrLiteral(resource_dict['hash_algorithm'])))
+                    g.add((checksum, SPDX.algorithm, URIRefOrLiteral(resource_dict['hash_algorithm'])))
 
                 g.add((distribution, SPDX.checksum, checksum))
 
@@ -1345,11 +1317,9 @@ class EuropeanDCATAPProfile(RDFProfile):
         # Basic fields
         items = [
             ('title', DCT.title, config.get('ckan.site_title'), Literal),
-            ('description', DCT.description, config.get(
-                'ckan.site_description'), Literal),
+            ('description', DCT.description, config.get('ckan.site_description'), Literal),
             ('homepage', FOAF.homepage, config.get('ckan.site_url'), URIRef),
-            ('language', DCT.language, config.get(
-                'ckan.locale_default', 'en'), URIRefOrLiteral),
+            ('language', DCT.language, config.get('ckan.locale_default', 'en'), URIRefOrLiteral),
         ]
         for item in items:
             key, predicate, fallback, _type = item
@@ -1367,6 +1337,44 @@ class EuropeanDCATAPProfile(RDFProfile):
 
 
 class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
+    def _time_interval(self, subject, predicate):
+        '''
+        ~~~ Overload original method: replace SCHEMA with DCAT ~~~
+
+        Returns the start and end date for a time interval object
+
+        Both subject and predicate must be rdflib URIRef or BNode objects
+
+        It checks for time intervals defined with both schema.org startDate &
+        endDate and W3C Time hasBeginning & hasEnd.
+
+        Note that partial dates will be expanded to the first month / day
+        value, eg '1904' -> '1904-01-01'.
+
+        Returns a tuple with the start and end date values, both of which
+        can be None if not found
+        '''
+
+        start_date = end_date = None
+
+        for interval in self.g.objects(subject, predicate):
+            # Fist try the schema.org way
+            start_date = self._object_value(interval, DCAT.startDate)
+            end_date = self._object_value(interval, DCAT.endDate)
+
+            if start_date or end_date:
+                return start_date, end_date
+
+            # If no luck, try the w3 time way
+            start_nodes = [t for t in self.g.objects(interval, TIME.hasBeginning)]
+            end_nodes = [t for t in self.g.objects(interval, TIME.hasEnd)]
+            if start_nodes:
+                start_date = self._object_value(start_nodes[0], TIME.inXSDDateTime)
+            if end_nodes:
+                end_date = self._object_value(end_nodes[0], TIME.inXSDDateTime)
+
+        return start_date, end_date
+
     def _get_ds_identifier_from_ds_slug(self, slug):
         '''
         >> GEOKUR Profile method <<
@@ -1377,17 +1385,79 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
         on slug input form.
         '''
         ckan_uri = catalog_uri()
-        context = {
-            'ignore_auth': True
-        }
-        result = toolkit.get_action('package_show')(context, {
-            'id': slug
-        })
+        context = {'ignore_auth': True}
+        result = toolkit.get_action('package_show')(context, {'id': slug})
         internal_identifier = result['id']
         id = ckan_uri + '/dataset/' + internal_identifier
         return CleanedURIRef(id)
 
-    def _spatial_quality(self, subject):
+    def _parse_quality_measurements(self, subject):
+        '''
+        >> GEOKUR Profile method <<
+
+        Returns all available quality metrics as json string
+
+        Labels of quality measurements have to be pulled 
+        from quality register (sparql endpoint)
+        '''
+        quality_register = rdflib.Graph()
+        quality_register.parse('https://geokur-dmp2.geo.tu-dresden.de/fuseki/geokur_quality_register', format='n3')
+
+        # top level dict
+        measurement_dict = {}
+        for quality_measurement in self.g.objects(subject, DQV.hasQualityMeasurement):
+            metric = next(self.g.objects(quality_measurement, DQV.isMeasurementOf))
+            # ignore spatial quality
+            if metric not in [
+                    GEODCAT.spatialResolutionAsScale, GEODCAT.spatialResolutionAsAngularDistance,
+                    GEODCAT.spatialResolutionAsVerticalDistance
+            ]:
+                # dict with labels
+                description_dict = {}
+                for label in quality_register.objects(metric, SKOS.prefLabel):
+                    description_dict['label'] = str(label)
+
+                # value dict
+                value_dict = {}
+
+                for value in self.g.objects(quality_measurement, DQV.value):
+                    value_dict['value of quality metric'] = str(value)
+
+                for ground_truth in self.g.objects(quality_measurement, GEOKURDCAT.hasGroundTruth):
+                    value_dict['ground truth dataset'] = str(ground_truth)
+
+                # complex vals
+                for confidence_node in self.g.objects(quality_measurement, GEOKURDCAT.hasConfidence):
+                    for confidence_label in self.g.objects(confidence_node, RDFS.label):
+                        value_dict['confidence term'] = str(confidence_label)
+                    for confidence_value in self.g.objects(confidence_node, DQV.value):
+                        value_dict['confidence value'] = str(confidence_value)
+
+                for representativity_node in self.g.objects(quality_measurement, GEOKURDCAT.hasRepresentativity):
+                    for spatial_representativity in self.g.objects(representativity_node,
+                                                                   GEOKURDCAT.hasSpatialRepresentativity):
+                        value_dict['spatial representativity'] = str(spatial_representativity)
+                    for temporal_representativity in self.g.objects(representativity_node,
+                                                                    GEOKURDCAT.hasTemporalRepresentativity):
+                        value_dict['temporal representativity'] = str(temporal_representativity)
+                    for thematic_representativity in self.g.objects(representativity_node,
+                                                                    GEOKURDCAT.hasThematicRepresentativity):
+                        value_dict['thematic representativity'] = str(thematic_representativity)
+
+                for source_node in self.g.objects(quality_measurement, GEOKURDCAT.hasSource):
+                    for source_label in self.g.objects(source_node, RDFS.label):
+                        value_dict['name of quality source'] = str(source_label)
+                    for source_type in self.g.objects(source_node, RDFS.comment):
+                        value_dict['type of quality source'] = str(source_type)
+                    for source_link in self.g.objects(source_node, FOAF.page):
+                        value_dict['link to quality source'] = str(source_link)
+
+                description_dict['values'] = value_dict
+                measurement_dict[str(metric)] = description_dict
+
+        return (measurement_dict)
+
+    def _parse_spatial_quality(self, subject):
         '''
         >> GEOKUR Profile method <<
 
@@ -1404,30 +1474,32 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
         val = None
 
         for quality_val in self.g.objects(subject, DCAT.spatialResolutionInMeters):
-            # there is only one triple
             key = u'meters'
             val = quality_val
 
         if not key and not val:
+            for spatial_resolution_type_ref in self.g.subjects(DQV.isMeasurementOf, GEODCAT.spatialResolutionAsScale):
+                key = u'scale'
+                val = next(self.g.objects(spatial_resolution_type_ref, DQV.value))
 
-            for quality_measurement in self.g.objects(subject, DQV.hasQualityMeasurement):
-                for quality_type in self.g.objects(quality_measurement, DQV.isMeasurementOf):
-                    # only take spatial quality measures:
-                    if quality_type == GEODCAT.spatialResolutionAsScale:
-                        key = u'scale'
-                    elif quality_type == GEODCAT.spatialResolutionAsAngularDistance:
-                        key = u'angular'
-                    elif quality_type == GEODCAT.spatialResolutionAsVerticalDistance:
-                        key = u'vertical'
-                for quality_val in self.g.objects(quality_measurement, DQV.value):
-                    val = quality_val
+        if not key and not val:
+            for spatial_resolution_type_ref in self.g.subjects(DQV.isMeasurementOf,
+                                                               GEODCAT.spatialResolutionAsAngularDistance):
+                key = u'angular'
+                val = next(self.g.objects(spatial_resolution_type_ref, DQV.value))
+
+        if not key and not val:
+            for spatial_resolution_type_ref in self.g.subjects(DQV.isMeasurementOf,
+                                                               GEODCAT.spatialResolutionAsVerticalDistance):
+                key = u'vertical'
+                val = next(self.g.objects(spatial_resolution_type_ref, DQV.value))
 
         if key and val:
             return {key: val}
         else:
             return None
 
-    def _spatial(self, subject, predicate):
+    def _parse_spatial(self, subject, predicate):
         '''
         >> GEOKUR Profile adjustments <<
             - changed LOCN.geometry to DCAT.bbox 
@@ -1452,8 +1524,7 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
         for spatial in self.g.objects(subject, predicate):
             if (spatial, RDF.type, DCT.Location) in self.g:
                 for geometry in self.g.objects(spatial, DCAT.bbox):
-                    if (geometry.datatype == URIRef(GEOJSON_IMT) or
-                            not geometry.datatype):
+                    if (geometry.datatype == URIRef(GEOJSON_IMT) or not geometry.datatype):
                         try:
                             json.loads(str(geometry))
                             geom = str(geometry)
@@ -1472,118 +1543,77 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
             'geom': geom,
         }
 
-    
+    def _parse_inputs(self, subject):
+        '''
+        parse input data of process
+        '''
+        inputs = []
+        for input in self.g.objects(subject, PROV.used):
+            inputs.append(str(input))
+        return inputs
 
-    def parse_dataset(self, dataset_dict, dataset_ref):
+    def _parse_outputs(self, object):
+        '''
+        parse output data of process
+        '''
+        outputs = []
+        for output in self.g.subjects(PROV.wasGeneratedBy, object):
+            outputs.append(str(output))
+        return outputs
 
-        dataset_dict['extras'] = []
-        dataset_dict['resources'] = []
+    def _parse_data(self, dataset_dict, dataset_ref):
 
         # Basic fields
-        for key, predicate in (
-                ('title', DCT.title),
-                ('notes', DCT.description),
-                ('url', DCAT.landingPage),
-                # ('version', OWL.versionInfo),
-        ):
+        for key, predicate in (('url', DCAT.landingPage), ('alternate_identifier', ADMS.identifier),
+                               ('conforms_to', DCT.conformsTo), ('temporal_resolution', DCAT.temporalResolution)):
             value = self._object_value(dataset_ref, predicate)
             if value:
                 dataset_dict[key] = value
 
-        # if not dataset_dict.get('version'):
-        #     # adms:version was supported on the first version of the DCAT-AP
-        #     value = self._object_value(dataset_ref, ADMS.version)
-        #     if value:
-        #         dataset_dict['version'] = value
-
         # Tags
         # replace munge_tag to noop if there's no need to clean tags
         do_clean = toolkit.asbool(config.get(DCAT_CLEAN_TAGS, False))
-        tags_val = [
-            munge_tag(tag) if do_clean else tag for tag in self._keywords(dataset_ref)]
+        tags_val = [munge_tag(tag) if do_clean else tag for tag in self._keywords(dataset_ref)]
         tags = [{'name': tag} for tag in tags_val]
         dataset_dict['tags'] = tags
 
-        # Extras
-
-        #  Simple values
-        for key, predicate in (
-                ('issued', DCT.issued),
-                ('modified', DCT.modified),
-                ('identifier', DCT.identifier),
-                ('temporal_resolution', DCAT.temporalResolution)
-        ):
-            value = self._object_value(dataset_ref, predicate)
-            if value:
-                dataset_dict['extras'].append({'key': key, 'value': value})
-
         #  Lists
-        for key, predicate, in (
-                ('theme', DCAT.theme),
-                ('alternate_identifier', ADMS.identifier),
-                ('conforms_to', DCT.conformsTo),
-                ('documentation', FOAF.page),
-                ('is_version_of', DCT.isVersionOf),
-                ('is_part_of', DCT.isPartOf),
-                ('was_derived_from', PROV.wasDerivedFrom)
-        ):
+        for key, predicate in (('theme', DCAT.theme), ('is_version_of', DCT.isVersionOf), ('is_part_of', DCT.isPartOf),
+                               ('was_derived_from', PROV.wasDerivedFrom)):
             values = self._object_value_list(dataset_ref, predicate)
             if values:
-                dataset_dict['extras'].append({'key': key,
-                                               'value': json.dumps(values)})
+                dataset_dict[key] = ','.join(values)
 
         # Contact details
+        contact_iri = self._object(dataset_ref, DCAT.contactPoint)
         contact = self._contact_details(dataset_ref, DCAT.contactPoint)
-        if not contact:
-            # adms:contactPoint was supported on the first version of DCAT-AP
-            contact = self._contact_details(dataset_ref, ADMS.contactPoint)
 
         if contact:
-            for key in ('uri', 'name'):
-                if contact.get(key):
-                    dataset_dict['extras'].append(
-                        # contact_{0} seems overly complicated just to save three times 'contact_' in the keylist...
-                        {'key': 'contact_{0}'.format(key),
-                         'value': contact.get(key)})
+            if contact.get('name'):
+                dataset_dict['conatct_name'] = contact.get('name')
+        if not isinstance(contact_iri, BNode):
+            dataset_dict['contact_uri'] = self._object_value(dataset_ref, DCAT.contactPoint)
 
         # Temporal
         start, end = self._time_interval(dataset_ref, DCT.temporal)
         if start:
-            dataset_dict['extras'].append(
-                {'key': 'temporal_start', 'value': start})
+            dataset_dict['temporal_start'] = start
         if end:
-            dataset_dict['extras'].append(
-                {'key': 'temporal_end', 'value': end})
+            dataset_dict['temporal_end'] = end
 
         # Spatial
         spatial = self._spatial(dataset_ref, DCT.spatial)
         if spatial.get('geom'):
-            dataset_dict['extras'].append(
-                {'key': 'spatial', 'value': spatial.get('geom')})
+            dataset_dict['spatial'] = spatial.get('geom')
 
         # Spatial resolution (spatial quality measures)
-        spatial_quality = self._spatial_quality(dataset_ref)
+
+        spatial_quality = self._parse_spatial_quality(dataset_ref)
         if spatial_quality:
             for quality_type, quality_value in spatial_quality.items():
                 # there is only one item
-                dataset_dict['extras'].append(
-                    {'key': 'spatial_resolution_type', 'value': quality_type}
-                )
-                dataset_dict['extras'].append(
-                    {'key': 'spatial_resolution', 'value': quality_value}
-                )
-
-        # Dataset URI (explicitly show the missing ones)
-        dataset_uri = (str(dataset_ref)
-                       if isinstance(dataset_ref, rdflib.term.URIRef)
-                       else '')
-        dataset_dict['extras'].append({'key': 'uri', 'value': dataset_uri})
-
-        # access_rights
-        access_rights = self._access_rights(dataset_ref, DCT.accessRights)
-        if access_rights:
-            dataset_dict['extras'].append(
-                {'key': 'access_rights', 'value': access_rights})
+                dataset_dict['spatial_resolution_type'] = quality_type
+                dataset_dict['spatial_resolution'] = quality_value
 
         # License
         if 'license_id' not in dataset_dict:
@@ -1596,6 +1626,70 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
                 src_data = self._extract_catalog_dict(catalog_src)
                 dataset_dict['extras'].extend(src_data)
 
+        # quality elements
+        quality_measurements = self._parse_quality_measurements(dataset_ref)
+        if (quality_measurements):
+            dataset_dict['quality_metrics'] = json.dumps(quality_measurements)
+
+        return dataset_dict
+
+    def _parse_process(self, dataset_dict, dataset_ref):
+        inputs = self._parse_inputs(dataset_ref)
+        dataset_dict['used'] = ','.join(inputs)
+
+        outputs = self._parse_outputs(dataset_ref)
+        dataset_dict['generated'] = ','.join(outputs)
+
+        # categories
+        categories = self._object_value_list(dataset_ref, GEOKURDCAT.hasGeospatialCategory)
+        if categories:
+            dataset_dict['category'] = categories
+
+        return dataset_dict
+
+    def _parse_workflow(self, dataset_dict, dataset_ref):
+        #  Lists
+        for key, predicate in (('rel_processes', GEOKURDCAT.hasRelatedProcess), ('rel_datasets',
+                                                                                 GEOKURDCAT.hasRelatedDataset)):
+            values = self._object_value_list(dataset_ref, predicate)
+            if values:
+                dataset_dict[key] = ','.join(values)
+        result = self._object_value(dataset_ref, GEOKURDCAT.hasResult)
+        if result:
+            dataset_dict['result'] = result
+        return dataset_dict
+
+    def parse_dataset(self, dataset_dict, dataset_ref):
+
+        dataset_dict['resources'] = []
+
+        # common basic fields
+        for key, predicate in (('title', DCT.title), ('notes', DCT.description), ('identifier', DCT.identifier),
+                               ('documentation', FOAF.page)):
+            value = self._object_value(dataset_ref, predicate)
+            if value:
+                dataset_dict[key] = value
+        # metadata time stamps
+        for key, predicate in (('meatadata_created', DCT.issued), ('metadata_modified', DCT.modified)):
+            value = self._object_value(dataset_ref, predicate)
+            if value:
+                dataset_dict[key] = value
+
+        # Dataset URI
+        dataset_uri = (str(dataset_ref) if isinstance(dataset_ref, rdflib.term.URIRef) else '')
+        dataset_dict['uri'] = dataset_uri
+
+        dataset_types = self._object_value_list(dataset_ref, RDF.type)
+        if str(GEOKURDCAT.Dataset) in dataset_types:
+            dataset_dict['type'] = 'dataset'
+            dataset_dict = self._parse_data(dataset_dict, dataset_ref)
+        if str(GEOKURDCAT.Process) in dataset_types:
+            dataset_dict['type'] = 'process'
+            dataset_dict = self._parse_process(dataset_dict, dataset_ref)
+        if str(GEOKURDCAT.Workflow) in dataset_types:
+            dataset_dict['type'] = 'workflow'
+            dataset_dict = self._parse_workflow(dataset_dict, dataset_ref)
+
         # Resources
         for distribution in self._distributions(dataset_ref):
 
@@ -1603,23 +1697,21 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
 
             #  Simple values
             for key, predicate in (
-                    ('name', DCT.title),
-                    ('description', DCT.description),
-                    ('access_url', DCAT.accessURL),
-                    ('download_url', DCAT.downloadURL),
-                    ('issued', DCT.issued),
-                    ('modified', DCT.modified),
-                    ('status', ADMS.status),
-                    ('license', DCT.license),
+                ('name', DCT.title),
+                ('description', DCT.description),
+                ('access_url', DCAT.accessURL),
+                ('url', DCAT.downloadURL),
+                ('issued', DCT.issued),
+                ('modified', DCT.modified),
+                ('status', ADMS.status),
+                ('license', DCT.license),
             ):
                 value = self._object_value(distribution, predicate)
                 if value:
                     resource_dict[key] = value
 
-            resource_dict['url'] = (self._object_value(distribution,
-                                                       DCAT.downloadURL) or
-                                    self._object_value(distribution,
-                                                       DCAT.accessURL))
+            resource_dict['url'] = (self._object_value(distribution, DCAT.downloadURL)
+                                    or self._object_value(distribution, DCAT.accessURL))
 
             # rights
             rights = self._access_rights(distribution, DCT.rights)
@@ -1627,10 +1719,8 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
                 resource_dict['rights'] = rights
 
             # Format and media type
-            normalize_ckan_format = toolkit.asbool(config.get(
-                'ckanext.dcat.normalize_ckan_format', True))
-            imt, label = self._distribution_format(distribution,
-                                                   normalize_ckan_format)
+            normalize_ckan_format = toolkit.asbool(config.get('ckanext.dcat.normalize_ckan_format', True))
+            imt, label = self._distribution_format(distribution, normalize_ckan_format)
 
             if imt:
                 resource_dict['mimetype'] = imt
@@ -1648,18 +1738,14 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
             # Checksum
             for checksum in self.g.objects(distribution, SPDX.checksum):
                 algorithm = self._object_value(checksum, SPDX.algorithm)
-                checksum_value = self._object_value(
-                    checksum, SPDX.checksumValue)
+                checksum_value = self._object_value(checksum, SPDX.checksumValue)
                 if algorithm:
                     resource_dict['hash_algorithm'] = algorithm
                 if checksum_value:
                     resource_dict['hash'] = checksum_value
 
             # Distribution URI (explicitly show the missing ones)
-            resource_dict['uri'] = (str(distribution)
-                                    if isinstance(distribution,
-                                                  rdflib.term.URIRef)
-                                    else '')
+            resource_dict['uri'] = (str(distribution) if isinstance(distribution, rdflib.term.URIRef) else '')
 
             dataset_dict['resources'].append(resource_dict)
 
@@ -1667,14 +1753,17 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
             # Tweak the resulting dict to make it compatible with previous
             # versions of the ckanext-dcat parsers
             for extra in dataset_dict['extras']:
-                if extra['key'] in ('issued', 'modified', 'publisher_name',
-                                    'publisher_email',):
+                if extra['key'] in (
+                        'issued',
+                        'modified',
+                        'publisher_name',
+                        'publisher_email',
+                ):
 
                     extra['key'] = 'dcat_' + extra['key']
 
                 if extra['key'] == 'language':
-                    extra['value'] = ','.join(
-                        sorted(json.loads(extra['value'])))
+                    extra['value'] = ','.join(sorted(json.loads(extra['value'])))
 
         return dataset_dict
 
@@ -1689,8 +1778,8 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
         items = [
             ('title', DCT.title, None, Literal),
             ('notes', DCT.description, None, Literal),
-            ('url', DCAT.landingPage, None, URIRef),
             ('identifier', DCT.identifier, ['guid', 'id'], Literal),
+            ('url', DCAT.landingPage, None, URIRef),
             ('conforms_to', DCT.conformsTo, None, URIRef),
             ('alternate_identifier', ADMS.identifier, None, URIRef),
             ('documentation', FOAF.page, None, URIRefOrLiteral),
@@ -1709,13 +1798,9 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
         self._add_date_triples_from_dict(dataset_dict, dataset_ref, items)
 
         #  Lists
-        items = [
-            ('theme', DCAT.theme, None, URIRef),
-            ('is_part_of', DCT.isPartOf, None, URIRefOrLiteral),
-            ('is_version_of', DCT.isVersionOf, None, URIRefOrLiteral)
-        ]
+        items = [('theme', DCAT.theme, None, URIRef), ('is_part_of', DCT.isPartOf, None, URIRefOrLiteral),
+                 ('is_version_of', DCT.isVersionOf, None, URIRefOrLiteral)]
         self._add_list_triples_from_dict(dataset_dict, dataset_ref, items)
-
 
         contact_uri = self._get_dataset_value(dataset_dict, 'contact_uri')
         contact_ref = None
@@ -1725,10 +1810,7 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
             contact_ref = BNode()
 
         g.add((dataset_ref, DCAT.contactPoint, contact_ref))
-        self._add_triple_from_dict(
-            dataset_dict, contact_ref,
-            VCARD.fn, 'contact_name'
-        )
+        self._add_triple_from_dict(dataset_dict, contact_ref, VCARD.fn, 'contact_name')
 
         # Temporal
         start = self._get_dataset_value(dataset_dict, 'temporal_start')
@@ -1753,60 +1835,45 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
                 g.add((dataset_ref, DCT.spatial, spatial_ref))
 
                 # GeoJSON
-                g.add((spatial_ref,
-                    DCAT.bbox,
-                    Literal(spatial_geom, datatype=GEOJSON_IMT)))
+                g.add((spatial_ref, DCAT.bbox, Literal(spatial_geom, datatype=GEOJSON_IMT)))
                 # WKT, because GeoDCAT-AP says so
                 try:
-                    g.add((spatial_ref,
-                        DCAT.bbox,
-                        Literal(wkt.dumps(json.loads(spatial_geom),
-                                            decimals=4),
-                                datatype=GSP.wktLiteral)))
+                    g.add((spatial_ref, DCAT.bbox,
+                           Literal(wkt.dumps(json.loads(spatial_geom), decimals=4), datatype=GSP.wktLiteral)))
                 except (TypeError, ValueError, InvalidGeoJSONException):
                     pass
             except:
                 ("Error in Spatial Field")
 
         # Additions from GeoDCAT
-        temporal_resolution = self._get_dataset_value(
-            dataset_dict, 'temporal_resolution')
+        temporal_resolution = self._get_dataset_value(dataset_dict, 'temporal_resolution')
         if temporal_resolution:
-            g.add((dataset_ref, DCAT.temporalResolution, Literal(
-                temporal_resolution, datatype=XSD.duration)))
+            g.add((dataset_ref, DCAT.temporalResolution, Literal(temporal_resolution, datatype=XSD.duration)))
 
-        spatial_resolution = self._get_dataset_value(
-            dataset_dict, 'spatial_resolution')
+        spatial_resolution = self._get_dataset_value(dataset_dict, 'spatial_resolution')
         if spatial_resolution:
             try:
-                spatial_resolution_type = self._get_dataset_value(
-                    dataset_dict, 'spatial_resolution_type')
+                spatial_resolution_type = self._get_dataset_value(dataset_dict, 'spatial_resolution_type')
                 if spatial_resolution_type == u'meters':
-                    g.add((dataset_ref, DCAT.spatialResolutionInMeters, Literal(
-                        float(spatial_resolution), datatype=XSD.decimal)))
+                    g.add((dataset_ref, DCAT.spatialResolutionInMeters,
+                           Literal(float(spatial_resolution), datatype=XSD.decimal)))
                 elif spatial_resolution_type == u'scale' or u'angular' or u'vertical':
                     spatial_res_ref = BNode()
                     g.add((spatial_res_ref, RDF.type, DQV.QualityMeasurement))
                     g.add((dataset_ref, DQV.hasQualityMeasurement, spatial_res_ref))
                     if spatial_resolution_type == u'scale':
-                        g.add((spatial_res_ref, DQV.isMeasurementOf,
-                            GEODCAT.spatialResolutionAsScale))
-                        g.add((spatial_res_ref, DQV.value,
-                            Literal(spatial_resolution)))
+                        g.add((spatial_res_ref, DQV.isMeasurementOf, GEODCAT.spatialResolutionAsScale))
+                        g.add((spatial_res_ref, DQV.value, Literal(spatial_resolution)))
                     if spatial_resolution_type == u'angular':
-                        g.add((spatial_res_ref, DQV.isMeasurementOf,
-                            GEODCAT.spatialResolutionAsAngularDistance))
-                        g.add((spatial_res_ref, SDMX.unitMeasure, URIRef(
-                            'http://www.wurvoc.org/vocabularies/om-1.8/metre')))
-                        g.add((spatial_res_ref, DQV.value,
-                            Literal(spatial_resolution)))
+                        g.add((spatial_res_ref, DQV.isMeasurementOf, GEODCAT.spatialResolutionAsAngularDistance))
+                        g.add((spatial_res_ref, SDMX.unitMeasure,
+                               URIRef('http://www.wurvoc.org/vocabularies/om-1.8/metre')))
+                        g.add((spatial_res_ref, DQV.value, Literal(spatial_resolution)))
                     if spatial_resolution_type == u'vertical':
-                        g.add((spatial_res_ref, DQV.isMeasurementOf,
-                            GEODCAT.spatialResolutionAsVerticalDistance))
-                        g.add((spatial_res_ref, SDMX.unitMeasure, URIRef(
-                            'http://www.wurvoc.org/vocabularies/om-1.8/metre')))
-                        g.add((spatial_res_ref, DQV.value,
-                            Literal(spatial_resolution)))
+                        g.add((spatial_res_ref, DQV.isMeasurementOf, GEODCAT.spatialResolutionAsVerticalDistance))
+                        g.add((spatial_res_ref, SDMX.unitMeasure,
+                               URIRef('http://www.wurvoc.org/vocabularies/om-1.8/metre')))
+                        g.add((spatial_res_ref, DQV.value, Literal(spatial_resolution)))
             except:
                 print("Error in Spatial Resolution Block")
 
@@ -1832,30 +1899,43 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
 
                     g.add((current_quality_metric_ref, RDF.type, DQV.QualityMeasurement))
                     g.add((current_quality_metric_ref, DQV.isMeasurementOf, CleanedURIRef(quality_metric)))
-                    if value_of_quality_metric: g.add((current_quality_metric_ref, DQV.value, Literal(value_of_quality_metric)))
-                    if ground_truth_dataset: 
+                    if value_of_quality_metric:
+                        g.add((current_quality_metric_ref, DQV.value, Literal(value_of_quality_metric)))
+                    if ground_truth_dataset:
                         try:
-                            g.add((current_quality_metric_ref, GEOKURDCAT.hasGroundTruth, CleanedURIRef(ground_truth_dataset)))
+                            g.add((current_quality_metric_ref, GEOKURDCAT.hasGroundTruth,
+                                   CleanedURIRef(ground_truth_dataset)))
                         except:
-                            g.add((current_quality_metric_ref, GEOKURDCAT.hasGroundTruth, Literal(ground_truth_dataset)))
+                            g.add(
+                                (current_quality_metric_ref, GEOKURDCAT.hasGroundTruth, Literal(ground_truth_dataset)))
 
                     confidence_ref = BNode()
                     g.add((current_quality_metric_ref, GEOKURDCAT.hasConfidence, confidence_ref))
                     g.add((confidence_ref, RDF.type, DQV.QualityMetadata))
-                    if confidence_term: g.add((confidence_ref, RDFS.label, Literal(confidence_term)))
-                    if confidence_value: g.add((confidence_ref, DQV.value, Literal(confidence_value)))
+                    if confidence_term:
+                        g.add((confidence_ref, RDFS.label, Literal(confidence_term)))
+                    if confidence_value:
+                        g.add((confidence_ref, DQV.value, Literal(confidence_value)))
 
                     representativity_ref = BNode()
                     g.add((current_quality_metric_ref, GEOKURDCAT.hasRepresentativity, representativity_ref))
                     g.add((representativity_ref, RDF.type, DQV.QualityMetadata))
-                    if thematic_representativity: g.add((representativity_ref, GEOKURDCAT.hasThematicRepresentativity, Literal(thematic_representativity)))
-                    if spatial_representativity: g.add((representativity_ref, GEOKURDCAT.hasSpatialRepresentativity, Literal(spatial_representativity)))
-                    if temporal_representativity: g.add((representativity_ref, GEOKURDCAT.hasTemporalRepresentativity, Literal(temporal_representativity)))
+                    if thematic_representativity:
+                        g.add((representativity_ref, GEOKURDCAT.hasThematicRepresentativity,
+                               Literal(thematic_representativity)))
+                    if spatial_representativity:
+                        g.add((representativity_ref, GEOKURDCAT.hasSpatialRepresentativity,
+                               Literal(spatial_representativity)))
+                    if temporal_representativity:
+                        g.add((representativity_ref, GEOKURDCAT.hasTemporalRepresentativity,
+                               Literal(temporal_representativity)))
 
                     source_ref = BNode()
                     g.add((current_quality_metric_ref, GEOKURDCAT.hasSource, source_ref))
-                    if name_of_quality_source: g.add((source_ref, RDFS.label, Literal(name_of_quality_source)))
-                    if type_of_quality_source: g.add((source_ref, RDFS.comment, Literal(type_of_quality_source)))
+                    if name_of_quality_source:
+                        g.add((source_ref, RDFS.label, Literal(name_of_quality_source)))
+                    if type_of_quality_source:
+                        g.add((source_ref, RDFS.comment, Literal(type_of_quality_source)))
                     if link_to_quality_source:
                         try:
                             g.add((source_ref, FOAF.page, CleanedURIRef(link_to_quality_source)))
@@ -1880,26 +1960,20 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
         #     g.add((annotation_body_ref, RDF.type, OA.TextualBody))
         #     g.add((annotation_body_ref, RDF.value, Literal(quality_annotation)))
 
-
         # provenance
         agent_ref = contact_ref
         g.add((agent_ref, RDF.type, PROV.Agent))
         g.add((dataset_ref, PROV.wasAttributedTo, agent_ref))
         g.add((dataset_ref, RDF.type, PROV.Entity))
 
-        was_derived_from = self._get_dataset_value(
-            dataset_dict, u'was_derived_from'
-        )
+        was_derived_from = self._get_dataset_value(dataset_dict, u'was_derived_from')
         if was_derived_from:
             for entity in was_derived_from.split(','):
                 g.add((CleanedURIRef(entity), RDF.type, PROV.Entity))
                 g.add((dataset_ref, PROV.wasDerivedFrom, CleanedURIRef(entity)))
-        
-
-        
 
     def _graph_from_process(self, g, dataset_dict, dataset_ref):
-        
+
         for prefix, namespace in namespaces.items():
             g.bind(prefix, namespace)
 
@@ -1907,12 +1981,9 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
         g.add((dataset_ref, RDF.type, PROV.Activity))
 
         # Basic fields
-        items = [
-            ('title', DCT.title, None, Literal),
-            ('notes', DCT.description, None, Literal),
-            ('identifier', DCT.identifier, ['guid', 'id'], Literal),
-            ('documentation', FOAF.page, None, URIRefOrLiteral)
-        ]
+        items = [('title', DCT.title, None, Literal), ('notes', DCT.description, None, Literal),
+                 ('identifier', DCT.identifier, ['guid', 'id'], Literal),
+                 ('documentation', FOAF.page, None, URIRefOrLiteral)]
         self._add_triples_from_dict(dataset_dict, dataset_ref, items)
 
         # Tags
@@ -1927,9 +1998,7 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
         self._add_date_triples_from_dict(dataset_dict, dataset_ref, items)
 
         #  Lists
-        items = [
-            ('category', GEOKURDCAT.hasGeospatialCategory, None, URIRef)
-        ]
+        items = [('category', GEOKURDCAT.hasGeospatialCategory, None, URIRef)]
         self._add_list_triples_from_dict(dataset_dict, dataset_ref, items)
 
         # provenance
@@ -1951,25 +2020,18 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
             for output_data in generated:
                 for input_data in used:
                     g.add((CleanedURIRef(output_data), PROV.wasDerivedFrom, CleanedURIRef(input_data)))
-            
-
-        
 
     def _graph_from_workflow(self, g, dataset_dict, dataset_ref):
-        
+
         for prefix, namespace in namespaces.items():
             g.bind(prefix, namespace)
-        
+
         g.add((dataset_ref, RDF.type, GEOKURDCAT.Workflow))
 
         # Basic fields
-        items = [
-            ('title', DCT.title, None, Literal),
-            ('notes', DCT.description, None, Literal),
-            ('identifier', DCT.identifier, ['guid', 'id'], Literal),
-            ('documentation', FOAF.page, None, URIRefOrLiteral),
-            ('source_code', FOAF.page, None, URIRef)
-        ]
+        items = [('title', DCT.title, None, Literal), ('notes', DCT.description, None, Literal),
+                 ('identifier', DCT.identifier, ['guid', 'id'], Literal),
+                 ('documentation', FOAF.page, None, URIRefOrLiteral), ('source_code', FOAF.page, None, URIRef)]
         self._add_triples_from_dict(dataset_dict, dataset_ref, items)
 
         # Tags
@@ -1984,13 +2046,10 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
         self._add_date_triples_from_dict(dataset_dict, dataset_ref, items)
 
         #  Lists
-        items = [            
-            ('rel_datasets', GEOKURDCAT.hasRelatedDataset, None, URIRef),
-            ('rel_processes', GEOKURDCAT.hasRelatedProcess, None, URIRef),
-            ('result', GEOKURDCAT.hasResult, None, URIRef)
-        ]
+        items = [('rel_datasets', GEOKURDCAT.hasRelatedDataset, None, URIRef),
+                 ('rel_processes', GEOKURDCAT.hasRelatedProcess, None, URIRef),
+                 ('result', GEOKURDCAT.hasResult, None, URIRef)]
         self._add_list_triples_from_dict(dataset_dict, dataset_ref, items)
-        
 
     def graph_from_dataset(self, dataset_dict, dataset_ref):
         # in geokur a ckan-dataset can refer to data, a process or a workflow.
@@ -2006,7 +2065,7 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
             self._graph_from_process(g, dataset_dict, dataset_ref)
         if dataset_type == 'workflow':
             self._graph_from_workflow(g, dataset_dict, dataset_ref)
-        
+
         # the resouce scheme is the same for each dataset type
         for resource_dict in dataset_dict.get('resources', []):
 
@@ -2023,8 +2082,8 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
                 ('status', ADMS.status, None, URIRefOrLiteral),
                 ('rights', DCT.rights, None, URIRefOrLiteral),
                 ('license', DCT.license, None, URIRefOrLiteral),
-                ('access_url', DCAT.accessURL, None, URIRef),
-                ('download_url', DCAT.downloadURL, None, URIRef),
+                # ('access_url', DCAT.accessURL, None, URIRef),
+                ('url', DCAT.downloadURL, None, URIRef),
             ]
 
             self._add_triples_from_dict(resource_dict, distribution, items)
@@ -2037,8 +2096,7 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
             # In case format is available and mimetype is not set or identical to format,
             # check which type is appropriate.
             if fmt and (not mimetype or mimetype == fmt):
-                if ('iana.org/assignments/media-types' in fmt
-                        or not fmt.startswith('http') and '/' in fmt):
+                if ('iana.org/assignments/media-types' in fmt or not fmt.startswith('http') and '/' in fmt):
                     # output format value as dcat:mediaType instead of dct:format
                     mimetype = fmt
                     fmt = None
@@ -2047,45 +2105,34 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
                     mimetype = None
 
             if mimetype:
-                g.add((distribution, DCAT.mediaType,
-                       URIRefOrLiteral(mimetype)))
+                g.add((distribution, DCAT.mediaType, URIRefOrLiteral(mimetype)))
 
             if fmt:
-                g.add((distribution, DCT['format'],
-                       URIRefOrLiteral(fmt)))
+                g.add((distribution, DCT['format'], URIRefOrLiteral(fmt)))
 
             # Dates
             items = [
                 ('issued', DCT.issued, None, Literal),
                 ('modified', DCT.modified, None, Literal),
             ]
-            self._add_date_triples_from_dict(
-                resource_dict, distribution, items)
+            self._add_date_triples_from_dict(resource_dict, distribution, items)
 
             # Numbers
             if resource_dict.get('size'):
                 try:
-                    g.add((distribution, DCAT.byteSize,
-                           Literal(float(resource_dict['size']),
-                                   datatype=XSD.decimal)))
+                    g.add((distribution, DCAT.byteSize, Literal(float(resource_dict['size']), datatype=XSD.decimal)))
                 except (ValueError, TypeError):
-                    g.add((distribution, DCAT.byteSize,
-                           Literal(resource_dict['size'])))
+                    g.add((distribution, DCAT.byteSize, Literal(resource_dict['size'])))
             # Checksum
             if resource_dict.get('hash'):
                 checksum = BNode()
                 g.add((checksum, RDF.type, SPDX.Checksum))
-                g.add((checksum, SPDX.checksumValue,
-                       Literal(resource_dict['hash'],
-                               datatype=XSD.hexBinary)))
+                g.add((checksum, SPDX.checksumValue, Literal(resource_dict['hash'], datatype=XSD.hexBinary)))
 
                 if resource_dict.get('hash_algorithm'):
-                    g.add((checksum, SPDX.algorithm,
-                           URIRefOrLiteral(resource_dict['hash_algorithm'])))
+                    g.add((checksum, SPDX.algorithm, URIRefOrLiteral(resource_dict['hash_algorithm'])))
 
                 g.add((distribution, SPDX.checksum, checksum))
-
-        
 
 
 class SchemaOrgProfile(RDFProfile):
@@ -2100,7 +2147,6 @@ class SchemaOrgProfile(RDFProfile):
 
     https://www.w3.org/wiki/WebSchemas/Datasets
     '''
-
     def graph_from_dataset(self, dataset_dict, dataset_ref):
 
         g = self.g
@@ -2179,8 +2225,7 @@ class SchemaOrgProfile(RDFProfile):
             ('version', SCHEMA.version, ['dcat_version'], Literal),
             ('issued', SCHEMA.datePublished, ['metadata_created'], Literal),
             ('modified', SCHEMA.dateModified, ['metadata_modified'], Literal),
-            ('license', SCHEMA.license, [
-             'license_url', 'license_title'], Literal),
+            ('license', SCHEMA.license, ['license_url', 'license_title'], Literal),
         ]
         self._add_triples_from_dict(dataset_dict, dataset_ref, items)
 
@@ -2192,28 +2237,20 @@ class SchemaOrgProfile(RDFProfile):
         self._add_date_triples_from_dict(dataset_dict, dataset_ref, items)
 
         # Dataset URL
-        dataset_url = url_for('dataset_read',
-                              id=dataset_dict['name'],
-                              qualified=True)
+        dataset_url = url_for('dataset_read', id=dataset_dict['name'], qualified=True)
         self.g.add((dataset_ref, SCHEMA.url, Literal(dataset_url)))
 
     def _catalog_graph(self, dataset_ref, dataset_dict):
         data_catalog = BNode()
         self.g.add((dataset_ref, SCHEMA.includedInDataCatalog, data_catalog))
         self.g.add((data_catalog, RDF.type, SCHEMA.DataCatalog))
-        self.g.add((data_catalog, SCHEMA.name, Literal(
-            config.get('ckan.site_title'))))
-        self.g.add((data_catalog, SCHEMA.description,
-                    Literal(config.get('ckan.site_description'))))
-        self.g.add((data_catalog, SCHEMA.url,
-                    Literal(config.get('ckan.site_url'))))
+        self.g.add((data_catalog, SCHEMA.name, Literal(config.get('ckan.site_title'))))
+        self.g.add((data_catalog, SCHEMA.description, Literal(config.get('ckan.site_description'))))
+        self.g.add((data_catalog, SCHEMA.url, Literal(config.get('ckan.site_url'))))
 
     def _groups_graph(self, dataset_ref, dataset_dict):
         for group in dataset_dict.get('groups', []):
-            group_url = url_for(controller='group',
-                                action='read',
-                                id=group.get('id'),
-                                qualified=True)
+            group_url = url_for(controller='group', action='read', id=group.get('id'), qualified=True)
             about = BNode()
 
             self.g.add((about, RDF.type, SCHEMA.Thing))
@@ -2235,9 +2272,9 @@ class SchemaOrgProfile(RDFProfile):
 
     def _publisher_graph(self, dataset_ref, dataset_dict):
         if any([
-            self._get_dataset_value(dataset_dict, 'publisher_uri'),
-            self._get_dataset_value(dataset_dict, 'publisher_name'),
-            dataset_dict.get('organization'),
+                self._get_dataset_value(dataset_dict, 'publisher_uri'),
+                self._get_dataset_value(dataset_dict, 'publisher_name'),
+                dataset_dict.get('organization'),
         ]):
 
             publisher_uri = publisher_uri_from_dataset_dict(dataset_dict)
@@ -2250,32 +2287,25 @@ class SchemaOrgProfile(RDFProfile):
             self.g.add((publisher_details, RDF.type, SCHEMA.Organization))
             self.g.add((dataset_ref, SCHEMA.publisher, publisher_details))
 
-            publisher_name = self._get_dataset_value(
-                dataset_dict, 'publisher_name')
+            publisher_name = self._get_dataset_value(dataset_dict, 'publisher_name')
             if not publisher_name and dataset_dict.get('organization'):
                 publisher_name = dataset_dict['organization']['title']
-            self.g.add((publisher_details, SCHEMA.name,
-                        Literal(publisher_name)))
+            self.g.add((publisher_details, SCHEMA.name, Literal(publisher_name)))
 
             contact_point = BNode()
             self.g.add((contact_point, RDF.type, SCHEMA.ContactPoint))
             self.g.add((publisher_details, SCHEMA.contactPoint, contact_point))
 
-            self.g.add((contact_point, SCHEMA.contactType,
-                        Literal('customer service')))
+            self.g.add((contact_point, SCHEMA.contactType, Literal('customer service')))
 
-            publisher_url = self._get_dataset_value(
-                dataset_dict, 'publisher_url')
+            publisher_url = self._get_dataset_value(dataset_dict, 'publisher_url')
             if not publisher_url and dataset_dict.get('organization'):
-                publisher_url = dataset_dict['organization'].get(
-                    'url') or config.get('ckan.site_url')
+                publisher_url = dataset_dict['organization'].get('url') or config.get('ckan.site_url')
 
             self.g.add((contact_point, SCHEMA.url, Literal(publisher_url)))
             items = [
-                ('publisher_email', SCHEMA.email, [
-                 'contact_email', 'maintainer_email', 'author_email'], Literal),
-                ('publisher_name', SCHEMA.name, [
-                 'contact_name', 'maintainer', 'author'], Literal),
+                ('publisher_email', SCHEMA.email, ['contact_email', 'maintainer_email', 'author_email'], Literal),
+                ('publisher_name', SCHEMA.name, ['contact_name', 'maintainer', 'author'], Literal),
             ]
 
             self._add_triples_from_dict(dataset_dict, contact_point, items)
@@ -2285,14 +2315,11 @@ class SchemaOrgProfile(RDFProfile):
         end = self._get_dataset_value(dataset_dict, 'temporal_end')
         if start or end:
             if start and end:
-                self.g.add((dataset_ref, SCHEMA.temporalCoverage,
-                            Literal('%s/%s' % (start, end))))
+                self.g.add((dataset_ref, SCHEMA.temporalCoverage, Literal('%s/%s' % (start, end))))
             elif start:
-                self._add_date_triple(
-                    dataset_ref, SCHEMA.temporalCoverage, start)
+                self._add_date_triple(dataset_ref, SCHEMA.temporalCoverage, start)
             elif end:
-                self._add_date_triple(
-                    dataset_ref, SCHEMA.temporalCoverage, end)
+                self._add_date_triple(dataset_ref, SCHEMA.temporalCoverage, end)
 
     def _spatial_graph(self, dataset_ref, dataset_dict):
         spatial_uri = self._get_dataset_value(dataset_dict, 'spatial_uri')
@@ -2309,8 +2336,7 @@ class SchemaOrgProfile(RDFProfile):
             self.g.add((dataset_ref, SCHEMA.spatialCoverage, spatial_ref))
 
             if spatial_text:
-                self.g.add(
-                    (spatial_ref, SCHEMA.description, Literal(spatial_text)))
+                self.g.add((spatial_ref, SCHEMA.description, Literal(spatial_text)))
 
             if spatial_geom:
                 geo_shape = BNode()
@@ -2318,9 +2344,7 @@ class SchemaOrgProfile(RDFProfile):
                 self.g.add((spatial_ref, SCHEMA.geo, geo_shape))
 
                 # the spatial_geom typically contains GeoJSON
-                self.g.add((geo_shape,
-                            SCHEMA.polygon,
-                            Literal(spatial_geom)))
+                self.g.add((geo_shape, SCHEMA.polygon, Literal(spatial_geom)))
 
     def _resources_graph(self, dataset_ref, dataset_dict):
         g = self.g
@@ -2371,11 +2395,9 @@ class SchemaOrgProfile(RDFProfile):
 
     def _distribution_format_graph(self, distribution, resource_dict):
         if resource_dict.get('format'):
-            self.g.add((distribution, SCHEMA.encodingFormat,
-                        Literal(resource_dict['format'])))
+            self.g.add((distribution, SCHEMA.encodingFormat, Literal(resource_dict['format'])))
         elif resource_dict.get('mimetype'):
-            self.g.add((distribution, SCHEMA.encodingFormat,
-                        Literal(resource_dict['mimetype'])))
+            self.g.add((distribution, SCHEMA.encodingFormat, Literal(resource_dict['mimetype'])))
 
     def _distribution_url_graph(self, distribution, resource_dict):
         url = resource_dict.get('url')
@@ -2387,5 +2409,4 @@ class SchemaOrgProfile(RDFProfile):
 
     def _distribution_numbers_graph(self, distribution, resource_dict):
         if resource_dict.get('size'):
-            self.g.add((distribution, SCHEMA.contentSize,
-                        Literal(resource_dict['size'])))
+            self.g.add((distribution, SCHEMA.contentSize, Literal(resource_dict['size'])))

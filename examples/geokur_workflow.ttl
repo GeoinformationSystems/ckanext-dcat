@@ -1,0 +1,64 @@
+@prefix adms: <http://www.w3.org/ns/adms#> .
+@prefix dcat: <http://www.w3.org/ns/dcat#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix dqv: <http://www.w3.org/ns/dqv#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix geodcat: <http://data.europa.eu/930/> .
+@prefix geokurdcat: <https://geokur-dmp.geo.tu-dresden.de/geokurdcat#> .
+@prefix gkq: <https://geokur-dmp.geo.tu-dresden.de/quality-register#> .
+@prefix gqc: <https://geokur-dmp.geo.tu-dresden.de/category-register#> .
+@prefix gsp: <http://www.opengis.net/ont/geosparql#> .
+@prefix locn: <http://www.w3.org/ns/locn#> .
+@prefix oa: <https://www.w3.org/TR/annotation-vocab#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix schema: <http://schema.org/> .
+@prefix sdmx: <http://purl.org/linked-data/sdmx/2009/attribute#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix spdx: <http://spdx.org/rdf/terms#> .
+@prefix time: <http://www.w3.org/2006/time> .
+@prefix vcard: <http://www.w3.org/2006/vcard/ns#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<https://geokur-dmp.geo.tu-dresden.de/dataset/2a0aebcf-75fe-4d6f-974f-be0cb89ecd6e> a dcat:Dataset,
+        geokurdcat:Workflow ;
+    dct:description "Data on global agricultural production are usually available as statistics at administrative units, which does not give any diversity and spatial patterns; thus they are less informative for subsequent spatially explicit agricultural and environmental analyses. In the second part of the two-paper series, we introduce SPAM2010 â€“ the latest global spatially explicit datasets on agricultural production circa 2010 â€“ and elaborate on the improvement of the SPAM (Spatial Production Allocation Model) dataset family since 2000. SPAM2010 adds further methodological and data enhancements to the available crop downscaling modeling, which mainly include the update of base year, the extension of crop list, and the expansion of subnational administrative-unit coverage. Specifically, it not only applies the latest global synergy cropland layer (see Lu et al., submitted to the current journal) and other relevant data but also expands the estimates of crop area, yield, and production from 20 to 42 major crops under four farming systems across a global 5â€‰arcmin grid. All the SPAM maps are freely available at the MapSPAM website (http://mapspam.info/, last access: 11 December 2020), which not only acts as a tool for validating and improving the performance of the SPAM maps by collecting feedback from users but is also a platform providing archived global agricultural-production maps for better targeting the Sustainable Development Goals. In particular, SPAM2010 can be downloaded via an open-data repository (DOI: https://doi.org/10.7910/DVN/PRFF8V; IFPRI, 2019)." ;
+    dct:identifier "2a0aebcf-75fe-4d6f-974f-be0cb89ecd6e" ;
+    dct:issued "2021-07-28T08:30:41.165384"^^xsd:dateTime ;
+    dct:modified "2021-08-09T12:12:51.077770"^^xsd:dateTime ;
+    dct:title "MapSPAM" ;
+    foaf:page <https://essd.copernicus.org/articles/12/3545/2020/> ;
+    geokurdcat:hasRelatedDataset <https://geokur-dmp.geo.tu-dresden.de/dataset/02bc58a9-bd4f-4ba0-8988-9c6fff2eb4cc>,
+        <https://geokur-dmp.geo.tu-dresden.de/dataset/1e735936-7e10-4104-b8d9-d417f138905c>,
+        <https://geokur-dmp.geo.tu-dresden.de/dataset/26d153ba-70d4-4c4a-a1a9-988a9086a370>,
+        <https://geokur-dmp.geo.tu-dresden.de/dataset/26f4a994-ad0a-499f-bb38-223ea9bdb872>,
+        <https://geokur-dmp.geo.tu-dresden.de/dataset/300ee826-06d1-4a15-be8a-6816604c1205>,
+        <https://geokur-dmp.geo.tu-dresden.de/dataset/3b638557-27c7-4cc1-a95d-cc1c579e4ae1>,
+        <https://geokur-dmp.geo.tu-dresden.de/dataset/41c297dc-229a-476b-ba97-f4fa1f8b3336>,
+        <https://geokur-dmp.geo.tu-dresden.de/dataset/4cc5a0af-a2d9-4924-a8dd-f1ba6e382671>,
+        <https://geokur-dmp.geo.tu-dresden.de/dataset/4dced872-67ed-4de0-8533-75721351d4f3>,
+        <https://geokur-dmp.geo.tu-dresden.de/dataset/5391c402-400d-4c97-818a-10c655bdfe50>,
+        <https://geokur-dmp.geo.tu-dresden.de/dataset/754c6685-bcc2-4ed8-8110-db485d9a80e2>,
+        <https://geokur-dmp.geo.tu-dresden.de/dataset/7863fbd0-e437-4fb8-a447-7deafc11e4a4>,
+        <https://geokur-dmp.geo.tu-dresden.de/dataset/81c1734e-d2a7-4f0e-8891-260a050a4bfc>,
+        <https://geokur-dmp.geo.tu-dresden.de/dataset/84d279ad-044b-465a-ad84-96ea8c559656>,
+        <https://geokur-dmp.geo.tu-dresden.de/dataset/a98cfcf3-3e2a-4afd-84d0-5f1208a4d03a>,
+        <https://geokur-dmp.geo.tu-dresden.de/dataset/b0e5c26c-7762-4f99-8234-b793ce13d19c>,
+        <https://geokur-dmp.geo.tu-dresden.de/dataset/b26e2740-cf30-4caa-8fbe-e0d09346bf79>,
+        <https://geokur-dmp.geo.tu-dresden.de/dataset/db83bb8f-18d4-4a74-b49e-5454b59579c6>,
+        <https://geokur-dmp.geo.tu-dresden.de/dataset/e5710207-2b1f-40c9-b69e-9aa09d332a5d>,
+        <https://geokur-dmp.geo.tu-dresden.de/dataset/fc9e2daf-fbaa-4cd0-8db3-ae0779eaddd2> ;
+    geokurdcat:hasRelatedProcess <https://geokur-dmp.geo.tu-dresden.de/process/07ac0c79-0558-4595-b9ff-9c92641138c6>,
+        <https://geokur-dmp.geo.tu-dresden.de/process/20908c6a-f884-47ac-a621-cf1df1ba44cf>,
+        <https://geokur-dmp.geo.tu-dresden.de/process/22750cf5-e85e-40d0-93b9-ba6724a7e99f>,
+        <https://geokur-dmp.geo.tu-dresden.de/process/3ac6f207-94c0-41ff-9b26-d6abebc4e1ab>,
+        <https://geokur-dmp.geo.tu-dresden.de/process/6fa54ab7-d50c-4939-aead-1c0f7a17c4b3>,
+        <https://geokur-dmp.geo.tu-dresden.de/process/b7bf640c-8f4a-4336-b247-56ff4fb75066>,
+        <https://geokur-dmp.geo.tu-dresden.de/process/c8aee1bf-d088-43cf-8660-bd3c1528a7af>,
+        <https://geokur-dmp.geo.tu-dresden.de/process/cb42bd9e-6dba-49c6-b63b-75b3bd1a0906>,
+        <https://geokur-dmp.geo.tu-dresden.de/process/d63e664b-d546-43e6-b657-0cd9b556f0eb>,
+        <https://geokur-dmp.geo.tu-dresden.de/process/f1d3b0d1-39a0-4f80-aa7f-2872d42d0566> ;
+    geokurdcat:hasResult <https://geokur-dmp.geo.tu-dresden.de/dataset/b0e5c26c-7762-4f99-8234-b793ce13d19c> .

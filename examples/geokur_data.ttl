@@ -1,0 +1,167 @@
+@prefix adms: <http://www.w3.org/ns/adms#> .
+@prefix dcat: <http://www.w3.org/ns/dcat#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix dqv: <http://www.w3.org/ns/dqv#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix geodcat: <http://data.europa.eu/930/> .
+@prefix geokurdcat: <https://geokur-dmp.geo.tu-dresden.de/geokurdcat#> .
+@prefix gkq: <https://geokur-dmp.geo.tu-dresden.de/quality-register#> .
+@prefix gqc: <https://geokur-dmp.geo.tu-dresden.de/category-register#> .
+@prefix gsp: <http://www.opengis.net/ont/geosparql#> .
+@prefix locn: <http://www.w3.org/ns/locn#> .
+@prefix oa: <https://www.w3.org/TR/annotation-vocab#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix schema: <http://schema.org/> .
+@prefix sdmx: <http://purl.org/linked-data/sdmx/2009/attribute#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix spdx: <http://spdx.org/rdf/terms#> .
+@prefix time: <http://www.w3.org/2006/time> .
+@prefix vcard: <http://www.w3.org/2006/vcard/ns#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<https://geokur-dmp.geo.tu-dresden.de/dataset/a98cfcf3-3e2a-4afd-84d0-5f1208a4d03a> a dcat:Dataset,
+        prov:Entity,
+        geokurdcat:Dataset ;
+    dcat:distribution <https://geokur-dmp.geo.tu-dresden.de/dataset/a98cfcf3-3e2a-4afd-84d0-5f1208a4d03a/resource/fb849cdb-7ab7-4616-a991-6251a6312213> ;
+    dct:conformsTo <http://www.opengis.net/def/datum/EPSG/0/6326> ;
+    dct:description "The World Database on Protected Areas (WDPA) is the most comprehensive global database of marine and terrestrial protected areas. It is a joint project between UN Environment Programme and the International Union for Conservation of Nature (IUCN), and is managed by UN Environment Programme World Conservation Monitoring Centre (UNEP-WCMC), in collaboration with governments, non-governmental organisations, academia and industry.The WDPA is updated on a monthly basis." ;
+    dct:identifier "a98cfcf3-3e2a-4afd-84d0-5f1208a4d03a" ;
+    dct:isPartOf <http://172.26.62.253/dataset/testrdmo>,
+        <https://geokur-dmp.geo.tu-dresden.de/dataset/0e0ec840-77ba-4790-998f-6c6e6e7120dc> ;
+    dct:isVersionOf <https://geokur-dmp.geo.tu-dresden.de/dataset/e5710207-2b1f-40c9-b69e-9aa09d332a5d> ;
+    dct:issued "2021-05-12T13:19:48.105572"^^xsd:dateTime ;
+    dct:modified "2021-08-30T14:12:13.204398"^^xsd:dateTime ;
+    dct:temporal [ a dct:PeriodOfTime ;
+            dcat:endDate "2021-04-30T00:00:00"^^xsd:dateTime ;
+            dcat:startDate "1819-01-01T00:00:00"^^xsd:dateTime ] ;
+    dct:spatial [ a dct:Location ;
+            dcat:bbox "MULTIPOLYGON (((-171.5625 -82.0457, -171.5625 85.2152, 194.0625 85.2152, 194.0625 -82.0457, -171.5625 -82.0457)))"^^gsp:wktLiteral,
+                "{\"type\":\"MultiPolygon\",\"coordinates\":[[[[-171.5625,-82.04574006217713],[-171.5625,85.21516040755029],[194.0625,85.21516040755029],[194.0625,-82.04574006217713],[-171.5625,-82.04574006217713]]]]}"^^<https://www.iana.org/assignments/media-types/application/vnd.geo+json> ] ;
+    dct:title "WDPA World Database on Protected Areas v1.6" ;
+    dcat:contactPoint <https://thiswouldbeanorcid.org> ;
+    dcat:keyword "Areas of Biodiversity Importance",
+        "OECMs",
+        "Protected Areas",
+        "other effective area-based conservation measures" ;
+    dcat:landingPage <https://www.protectedplanet.net/en/thematic-areas/wdpa?tab=WDPA> ;
+    dcat:temporalResolution "P1M"^^xsd:duration ;
+    dcat:theme <https://inspire.ec.europa.eu/theme/ps>,
+        <https://www.protectedplanet.net/en/thematic-areas/oecms?tab=OECMs> ;
+    dqv:hasQualityMeasurement [ a dqv:QualityMeasurement ;
+            dqv:isMeasurementOf <https://geokur-dmp.geo.tu-dresden.de/quality-register#completenessCommissionAsRateOfExcessItems> ;
+            dqv:value "5.88343" ;
+            geokurdcat:hasConfidence [ a dqv:QualityMetadata ] ;
+            geokurdcat:hasRepresentativity [ a dqv:QualityMetadata ;
+                    geokurdcat:hasSpatialRepresentativity "Global" ;
+                    geokurdcat:hasTemporalRepresentativity "1819-2021" ;
+                    geokurdcat:hasThematicRepresentativity "pa_def" ] ;
+            geokurdcat:hasSource [ rdfs:label "MetadataFromGeodata Extraction Tool" ;
+                    rdfs:comment "software" ;
+                    foaf:page <https://github.com/GeoinformationSystems/MetadataFromGeodata> ] ],
+        [ a dqv:QualityMeasurement ;
+            dqv:isMeasurementOf geodcat:spatialResolutionAsAngularDistance ;
+            dqv:value "1:100" ],
+        [ a dqv:QualityMeasurement ;
+            dqv:isMeasurementOf <https://geokur-dmp.geo.tu-dresden.de/quality-register#quantitiveAttributeAccuracyAsAttributeValueUncertainityAt99SignificanceLevel> ;
+            dqv:value "RÂ² = 0.71-0.91; RMSE = 231-307" ;
+            geokurdcat:hasConfidence [ a dqv:QualityMetadata ] ;
+            geokurdcat:hasGroundTruth <CDL2010%20dataset> ;
+            geokurdcat:hasRepresentativity [ a dqv:QualityMetadata ;
+                    geokurdcat:hasSpatialRepresentativity "Global" ] ;
+            geokurdcat:hasSource [ rdfs:label "A cultivated planet in 2010 â€“ Part 2: The global gridded agricultural-production maps" ;
+                    rdfs:comment "Publication" ;
+                    foaf:page <https://doi.org/10.5194/essd-12-3545-2020> ] ],
+        [ a dqv:QualityMeasurement ;
+            dqv:isMeasurementOf <https://geokur-dmp.geo.tu-dresden.de/quality-register#thematicClassificationCorrectnessAsNumberOfIncorrectlyClassifiedFeatures> ;
+            dqv:value "All data in the WDPA have been verified either by the national authorities or by non-government expert partners" ;
+            geokurdcat:hasConfidence [ a dqv:QualityMetadata ] ;
+            geokurdcat:hasRepresentativity [ a dqv:QualityMetadata ;
+                    geokurdcat:hasSpatialRepresentativity "Global" ] ;
+            geokurdcat:hasSource [ rdfs:label "WDPA_WDOECM_Metadata_1_6" ;
+                    rdfs:comment "Metadata file" ;
+                    foaf:page <http://www.unesco-hist.org/index.php?r=article/download&id=1748#:~:text=The%20WDPA%20dataset%20is%20not%2Careas%20information%20from%20data%20holders.> ] ],
+        [ a dqv:QualityMeasurement ;
+            dqv:isMeasurementOf <https://geokur-dmp.geo.tu-dresden.de/quality-register#completenessOmmissionAsNumberOfMissingItems> ;
+            dqv:value "14" ;
+            geokurdcat:hasConfidence [ a dqv:QualityMetadata ] ;
+            geokurdcat:hasRepresentativity [ a dqv:QualityMetadata ;
+                    geokurdcat:hasSpatialRepresentativity "Global" ;
+                    geokurdcat:hasTemporalRepresentativity "1819-2021" ;
+                    geokurdcat:hasThematicRepresentativity "supp_info" ] ;
+            geokurdcat:hasSource [ rdfs:label "MetadataFromGeodata Extraction Tool" ;
+                    rdfs:comment "software" ;
+                    foaf:page <https://github.com/GeoinformationSystems/MetadataFromGeodata> ] ],
+        [ a dqv:QualityMeasurement ;
+            dqv:isMeasurementOf <https://geokur-dmp.geo.tu-dresden.de/quality-register#completenessCommissionAsNumberOfExcessItems> ;
+            dqv:value "15057" ;
+            geokurdcat:hasConfidence [ a dqv:QualityMetadata ] ;
+            geokurdcat:hasRepresentativity [ a dqv:QualityMetadata ;
+                    geokurdcat:hasSpatialRepresentativity "Global" ;
+                    geokurdcat:hasTemporalRepresentativity "1819-2021" ;
+                    geokurdcat:hasThematicRepresentativity "pa_def" ] ;
+            geokurdcat:hasSource [ rdfs:label "MetadataFromGeodata Extraction Tool" ;
+                    rdfs:comment "software" ;
+                    foaf:page <https://github.com/GeoinformationSystems/MetadataFromGeodata> ] ],
+        [ a dqv:QualityMeasurement ;
+            dqv:isMeasurementOf <https://geokur-dmp.geo.tu-dresden.de/pages/quality-elements#formatConsistencyAsPhysicalStructureConflictRate> ;
+            dqv:value "true" ;
+            geokurdcat:hasConfidence [ a dqv:QualityMetadata ;
+                    rdfs:label "lkjljlk" ;
+                    dqv:value "lkjkljl" ] ;
+            geokurdcat:hasGroundTruth <kljjlk> ;
+            geokurdcat:hasRepresentativity [ a dqv:QualityMetadata ;
+                    geokurdcat:hasSpatialRepresentativity "Global" ;
+                    geokurdcat:hasTemporalRepresentativity "1819-2021" ;
+                    geokurdcat:hasThematicRepresentativity "lkjkljljl" ] ;
+            geokurdcat:hasSource [ rdfs:label "MetadataFromGeodata Extraction Tool" ;
+                    rdfs:comment "software" ;
+                    foaf:page <https://github.com/GeoinformationSystems/MetadataFromGeodata> ] ] ,
+        [ a dqv:QualityMeasurement ;
+            dqv:isMeasurementOf <https://geokur-dmp.geo.tu-dresden.de/quality-register#temporalConsistencyAsValue> ;
+            dqv:value "not applicable" ;
+            geokurdcat:hasConfidence [ a dqv:QualityMetadata ] ;
+            geokurdcat:hasRepresentativity [ a dqv:QualityMetadata ] ;
+            geokurdcat:hasSource [ rdfs:comment "manual analysis" ] ],
+        [ a dqv:QualityMeasurement ;
+            dqv:isMeasurementOf <https://geokur-dmp.geo.tu-dresden.de/quality-register#absoluteExternalPositionalAccuracyAsBias> ;
+            dqv:value "The data in the WDPA and OECM database come from a wide range of sources, often using different scales and techniques to generate their data. This results in variation in accuracy and resolution. " ;
+            geokurdcat:hasConfidence [ a dqv:QualityMetadata ] ;
+            geokurdcat:hasRepresentativity [ a dqv:QualityMetadata ;
+                    geokurdcat:hasSpatialRepresentativity "Global" ] ;
+            geokurdcat:hasSource [ rdfs:label "WDPA_WDOECM_Manual_1_6" ;
+                    rdfs:comment "User Manual" ;
+                    foaf:page <https://wdpa.s3-eu-west-1.amazonaws.com/WDPA_Manual/English/WDPA_WDOECM_Manual_1_6.pdf> ] ],
+        [ a dqv:QualityMeasurement ;
+            dqv:isMeasurementOf <https://geokur-dmp.geo.tu-dresden.de/quality-register#completenessOmmissionAsRateOfMissingItems> ;
+            dqv:value "0.0058611" ;
+            geokurdcat:hasConfidence [ a dqv:QualityMetadata ] ;
+            geokurdcat:hasRepresentativity [ a dqv:QualityMetadata ;
+                    geokurdcat:hasSpatialRepresentativity "Global" ;
+                    geokurdcat:hasTemporalRepresentativity "1819-2021" ;
+                    geokurdcat:hasThematicRepresentativity "cons_obj" ] ;
+            geokurdcat:hasSource [ rdfs:label "MetadataFromGeodata Extraction Tool" ;
+                    rdfs:comment "software" ;
+                    foaf:page <https://github.com/GeoinformationSystems/MetadataFromGeodata> ] ] ;
+    prov:wasAttributedTo _:Ndfe6c44db64f4b9f95760c37f814a9e5 ;
+    prov:wasDerivedFrom <https://geokur-dmp.geo.tu-dresden.de/dataset/a3e268f3-adbd-4e2b-a439-049ff2fa5558>,
+        <https://geokur-dmp.geo.tu-dresden.de/dataset/e82d4431-f345-46e9-bde6-b7887a9052d2> ;
+    foaf:page <https://wdpa.s3-eu-west-1.amazonaws.com/WDPA_Manual/English/WDPA_WDOECM_Manual_1_6.pdf> .
+
+<https://geokur-dmp.geo.tu-dresden.de/dataset/a98cfcf3-3e2a-4afd-84d0-5f1208a4d03a/resource/fb849cdb-7ab7-4616-a991-6251a6312213> a dcat:Distribution ;
+    dct:description "hjklhljklh" ;
+    dct:license <https://creativecommons.org/licenses/by-nc/4.0/legalcode> ;
+    dct:title "test_res" ;
+    dcat:byteSize 3109.0 ;
+    dcat:mediaType "text/turtle" ;
+    dcat:downloadURL "https://geokur-dmp.geo.tu-dresden.de/dataset/a98cfcf3-3e2a-4afd-84d0-5f1208a4d03a/resource/f50da5a6-bc2f-4ee5-81f8-91ffbe9c9913/download/profile_ref.py".
+
+<https://geokur-dmp.geo.tu-dresden.de/dataset/a3e268f3-adbd-4e2b-a439-049ff2fa5558> a prov:Entity .
+
+<https://geokur-dmp.geo.tu-dresden.de/dataset/e82d4431-f345-46e9-bde6-b7887a9052d2> a prov:Entity .
+
+<https://thiswouldbeanorcid.org> a prov:Agent ;
+    vcard:fn "protectedareas@unep-wcmc.org" .

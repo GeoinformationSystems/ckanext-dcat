@@ -1,0 +1,62 @@
+// 20210903105149
+// https://geokur-dmp.geo.tu-dresden.de/api/action/package_show?id=mapspam-model-process
+{
+    "help": "https://geokur-dmp.geo.tu-dresden.de/api/3/action/help_show?name=package_show",
+    "success": true,
+    "result": {
+        "owner_org": "594a3901-9ffa-4e91-b828-84f89554ab4c",
+        "maintainer": null,
+        "relationships_as_object": [],
+        "private": false,
+        "maintainer_email": null,
+        "num_tags": 0,
+        "num_resources": 0,
+        "id": "d63e664b-d546-43e6-b657-0cd9b556f0eb",
+        "metadata_created": "2021-08-09T11:41:05.370557",
+        "category": [
+            "geokur:Selection",
+            "geokur:Transformation",
+            "geokur:Reclassification",
+            "geokur:Geometric",
+            "geokur:Visualization",
+            "geokur:Neighborhood",
+            "geokur:Overlay",
+            "geokur:Network",
+            "geokur:Statistics",
+            "geokur:Module"
+        ],
+        "metadata_modified": "2021-09-03T08:51:44.657470",
+        "author": null,
+        "author_email": null,
+        "state": "active",
+        "version": null,
+        "license_id": null,
+        "type": "process",
+        "resources": [],
+        "used": "https://geokur-dmp.geo.tu-dresden.de/dataset/1e735936-7e10-4104-b8d9-d417f138905c,https://geokur-dmp.geo.tu-dresden.de/dataset/4dced872-67ed-4de0-8533-75721351d4f3,https://geokur-dmp.geo.tu-dresden.de/dataset/b26e2740-cf30-4caa-8fbe-e0d09346bf79,https://geokur-dmp.geo.tu-dresden.de/dataset/300ee826-06d1-4a15-be8a-6816604c1205,https://geokur-dmp.geo.tu-dresden.de/dataset/81c1734e-d2a7-4f0e-8891-260a050a4bfc,https://geokur-dmp.geo.tu-dresden.de/dataset/db83bb8f-18d4-4a74-b49e-5454b59579c6,https://geokur-dmp.geo.tu-dresden.de/dataset/02bc58a9-bd4f-4ba0-8988-9c6fff2eb4cc,https://geokur-dmp.geo.tu-dresden.de/dataset/e5710207-2b1f-40c9-b69e-9aa09d332a5d,https://geokur-dmp.geo.tu-dresden.de/dataset/7863fbd0-e437-4fb8-a447-7deafc11e4a4",
+        "tags": [],
+        "generated": "https://geokur-dmp.geo.tu-dresden.de/dataset/b0e5c26c-7762-4f99-8234-b793ce13d19c",
+        "groups": [],
+        "creator_user_id": "d7e98e72-4b58-4da6-8b0d-6aed49d369e1",
+        "relationships_as_subject": [],
+        "license_title": null,
+        "organization": {
+            "description": "",
+            "created": "2021-01-08T11:55:37.205088",
+            "title": "TUD",
+            "name": "tud",
+            "is_organization": true,
+            "state": "active",
+            "image_url": "https://tu-dresden.de/++theme++tud.theme.webcms2/img/tud-logo.svg",
+            "type": "organization",
+            "id": "594a3901-9ffa-4e91-b828-84f89554ab4c",
+            "approval_status": "approved"
+        },
+        "name": "mapspam-model-process",
+        "isopen": false,
+        "url": null,
+        "notes": "The SPAM model process that produces global gridded maps of agricultural production at a 5 arcmin spatial resolution.",
+        "documentation": "https://www.mapspam.info/methodology/",
+        "title": "MapSPAM Model Process"
+    }
+}
