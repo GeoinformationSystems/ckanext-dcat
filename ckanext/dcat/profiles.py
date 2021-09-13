@@ -1590,7 +1590,7 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
 
         if contact:
             if contact.get('name'):
-                dataset_dict['conatct_name'] = contact.get('name')
+                dataset_dict['contact_name'] = contact.get('name')
         if not isinstance(contact_iri, BNode):
             dataset_dict['contact_uri'] = self._object_value(dataset_ref, DCAT.contactPoint)
 
