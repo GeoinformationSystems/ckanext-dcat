@@ -1665,7 +1665,7 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
 
         # common basic fields
         for key, predicate in (('title', DCT.title), ('notes', DCT.description), ('identifier', DCT.identifier),
-                               ('name', ADMS.identifier),('documentation', FOAF.page)):
+                               ('name', ADMS.identifier), ('documentation', FOAF.page)):
             value = self._object_value(dataset_ref, predicate)
             if value:
                 dataset_dict[key] = value
@@ -1781,7 +1781,7 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
             ('identifier', DCT.identifier, ['guid', 'id'], Literal),
             ('url', DCAT.landingPage, None, URIRef),
             ('conforms_to', DCT.conformsTo, None, URIRef),
-            ('name', ADMS.identifier, None, URIRef),
+            ('name', ADMS.identifier, None, Literal),
             ('documentation', FOAF.page, None, URIRefOrLiteral),
         ]
         self._add_triples_from_dict(dataset_dict, dataset_ref, items)
@@ -1982,7 +1982,7 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
 
         # Basic fields
         items = [('title', DCT.title, None, Literal), ('notes', DCT.description, None, Literal),
-                 ('identifier', DCT.identifier, ['guid', 'id'], Literal), ('name', ADMS.identifier, None, URIRef),
+                 ('identifier', DCT.identifier, ['guid', 'id'], Literal), ('name', ADMS.identifier, None, Literal),
                  ('documentation', FOAF.page, None, URIRefOrLiteral)]
         self._add_triples_from_dict(dataset_dict, dataset_ref, items)
 
@@ -2030,7 +2030,7 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
 
         # Basic fields
         items = [('title', DCT.title, None, Literal), ('notes', DCT.description, None, Literal),
-                 ('identifier', DCT.identifier, ['guid', 'id'], Literal), ('name', ADMS.identifier, None, URIRef),
+                 ('identifier', DCT.identifier, ['guid', 'id'], Literal), ('name', ADMS.identifier, None, Literal),
                  ('documentation', FOAF.page, None, URIRefOrLiteral), ('source_code', FOAF.page, None, URIRef)]
         self._add_triples_from_dict(dataset_dict, dataset_ref, items)
 
