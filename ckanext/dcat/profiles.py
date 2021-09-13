@@ -1564,8 +1564,8 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
     def _parse_data(self, dataset_dict, dataset_ref):
 
         # Basic fields
-        for key, predicate in (('url', DCAT.landingPage), ('alternate_identifier', ADMS.identifier),
-                               ('conforms_to', DCT.conformsTo), ('temporal_resolution', DCAT.temporalResolution)):
+        for key, predicate in (('url', DCAT.landingPage), ('conforms_to', DCT.conformsTo), ('temporal_resolution',
+                                                                                            DCAT.temporalResolution)):
             value = self._object_value(dataset_ref, predicate)
             if value:
                 dataset_dict[key] = value
