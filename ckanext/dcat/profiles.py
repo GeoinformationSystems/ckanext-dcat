@@ -1867,7 +1867,7 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
                     if spatial_resolution_type == u'angular':
                         g.add((spatial_res_ref, DQV.isMeasurementOf, GEODCAT.spatialResolutionAsAngularDistance))
                         g.add((spatial_res_ref, SDMX.unitMeasure,
-                               URIRef('http://www.wurvoc.org/vocabularies/om-1.8/metre')))
+                               URIRef('http://www.wurvoc.org/vocabularies/om-1.8/degree')))
                         g.add((spatial_res_ref, DQV.value, Literal(spatial_resolution)))
                     if spatial_resolution_type == u'vertical':
                         g.add((spatial_res_ref, DQV.isMeasurementOf, GEODCAT.spatialResolutionAsVerticalDistance))
