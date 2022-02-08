@@ -1412,13 +1412,28 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
                     GEODCAT.spatialResolutionAsScale, GEODCAT.spatialResolutionAsAngularDistance,
                     GEODCAT.spatialResolutionAsVerticalDistance
             ]:
-                # dict with labels
                 description_dict = {}
-                for label in quality_register.objects(metric, SKOS.prefLabel):
-                    description_dict['label'] = str(label)
+                if str(metric) not in measurement_dict.keys():
+                    # dict with labels                    
+                    for label in quality_register.objects(metric, SKOS.prefLabel):
+                        description_dict['label'] = str(label)
+                    description_dict['values'] = []
+                else: 
+                    description_dict = measurement_dict[str(metric)]
 
-                # value dict
+                    # value dict
+
                 value_dict = {}
+                value_dict["thematic representativity"] = ''
+                value_dict["confidence term"] = ''
+                value_dict["spatial representativity"] = ''
+                value_dict["value of quality metric"] = ''
+                value_dict["temporal representativity"] = ''
+                value_dict["ground truth dataset"] = ''
+                value_dict["type of quality source"] = ''
+                value_dict["name of quality source"] = ''
+                value_dict["link to quality source"] = ''
+                value_dict["confidence value"] = ''
 
                 for value in self.g.objects(quality_measurement, DQV.value):
                     value_dict['value of quality metric'] = str(value)
@@ -1435,7 +1450,7 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
 
                 for representativity_node in self.g.objects(quality_measurement, GEOKURDCAT.hasRepresentativity):
                     for spatial_representativity in self.g.objects(representativity_node,
-                                                                   GEOKURDCAT.hasSpatialRepresentativity):
+                                                                GEOKURDCAT.hasSpatialRepresentativity):
                         value_dict['spatial representativity'] = str(spatial_representativity)
                     for temporal_representativity in self.g.objects(representativity_node,
                                                                     GEOKURDCAT.hasTemporalRepresentativity):
@@ -1452,7 +1467,7 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
                     for source_link in self.g.objects(source_node, FOAF.page):
                         value_dict['link to quality source'] = str(source_link)
 
-                description_dict['values'] = value_dict
+                description_dict['values'].append(value_dict)
                 measurement_dict[str(metric)] = description_dict
 
         return (measurement_dict)
@@ -1882,65 +1897,128 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
         if quality_metrics:
             try:
                 quality_metrics_dict = json.loads(quality_metrics)
+                    
                 for quality_metric, quality_metric_values in quality_metrics_dict.items():
-                    value_of_quality_metric = quality_metric_values['values']['value of quality metric']
-                    ground_truth_dataset = quality_metric_values['values']['ground truth dataset']
-                    confidence_term = quality_metric_values['values']['confidence term']
-                    confidence_value = quality_metric_values['values']['confidence value']
-                    thematic_representativity = quality_metric_values['values']['thematic representativity']
-                    spatial_representativity = quality_metric_values['values']['spatial representativity']
-                    temporal_representativity = quality_metric_values['values']['temporal representativity']
-                    name_of_quality_source = quality_metric_values['values']['name of quality source']
-                    type_of_quality_source = quality_metric_values['values']['type of quality source']
-                    link_to_quality_source = quality_metric_values['values']['link to quality source']
+                    if isinstance(quality_metric_values['values'],list):
+                        for value in quality_metric_values['values']:
+                            value_of_quality_metric = value['value of quality metric']
+                            ground_truth_dataset = value['ground truth dataset']
+                            confidence_term = value['confidence term']
+                            confidence_value = value['confidence value']
+                            thematic_representativity = value['thematic representativity']
+                            spatial_representativity = value['spatial representativity']
+                            temporal_representativity = value['temporal representativity']
+                            name_of_quality_source = value['name of quality source']
+                            type_of_quality_source = value['type of quality source']
+                            link_to_quality_source = value['link to quality source']
 
-                    current_quality_metric_ref = BNode()
-                    g.add((dataset_ref, DQV.hasQualityMeasurement, current_quality_metric_ref))
+                            current_quality_metric_ref = BNode()
+                            g.add((dataset_ref, DQV.hasQualityMeasurement, current_quality_metric_ref))
 
-                    g.add((current_quality_metric_ref, RDF.type, DQV.QualityMeasurement))
-                    g.add((current_quality_metric_ref, DQV.isMeasurementOf, CleanedURIRef(quality_metric)))
-                    if value_of_quality_metric:
-                        g.add((current_quality_metric_ref, DQV.value, Literal(value_of_quality_metric)))
-                    if ground_truth_dataset:
-                        try:
-                            g.add((current_quality_metric_ref, GEOKURDCAT.hasGroundTruth,
-                                   CleanedURIRef(ground_truth_dataset)))
-                        except:
-                            g.add(
-                                (current_quality_metric_ref, GEOKURDCAT.hasGroundTruth, Literal(ground_truth_dataset)))
+                            g.add((current_quality_metric_ref, RDF.type, DQV.QualityMeasurement))
+                            g.add((current_quality_metric_ref, DQV.isMeasurementOf, CleanedURIRef(quality_metric)))
+                            if value_of_quality_metric:
+                                g.add((current_quality_metric_ref, DQV.value, Literal(value_of_quality_metric)))
+                            if ground_truth_dataset:
+                                try:
+                                    g.add((current_quality_metric_ref, GEOKURDCAT.hasGroundTruth,
+                                        CleanedURIRef(ground_truth_dataset)))
+                                except:
+                                    g.add(
+                                        (current_quality_metric_ref, GEOKURDCAT.hasGroundTruth, Literal(ground_truth_dataset)))
 
-                    confidence_ref = BNode()
-                    g.add((current_quality_metric_ref, GEOKURDCAT.hasConfidence, confidence_ref))
-                    g.add((confidence_ref, RDF.type, DQV.QualityMetadata))
-                    if confidence_term:
-                        g.add((confidence_ref, RDFS.label, Literal(confidence_term)))
-                    if confidence_value:
-                        g.add((confidence_ref, DQV.value, Literal(confidence_value)))
+                            confidence_ref = BNode()
+                            g.add((current_quality_metric_ref, GEOKURDCAT.hasConfidence, confidence_ref))
+                            g.add((confidence_ref, RDF.type, DQV.QualityMetadata))
+                            if confidence_term:
+                                g.add((confidence_ref, RDFS.label, Literal(confidence_term)))
+                            if confidence_value:
+                                g.add((confidence_ref, DQV.value, Literal(confidence_value)))
 
-                    representativity_ref = BNode()
-                    g.add((current_quality_metric_ref, GEOKURDCAT.hasRepresentativity, representativity_ref))
-                    g.add((representativity_ref, RDF.type, DQV.QualityMetadata))
-                    if thematic_representativity:
-                        g.add((representativity_ref, GEOKURDCAT.hasThematicRepresentativity,
-                               Literal(thematic_representativity)))
-                    if spatial_representativity:
-                        g.add((representativity_ref, GEOKURDCAT.hasSpatialRepresentativity,
-                               Literal(spatial_representativity)))
-                    if temporal_representativity:
-                        g.add((representativity_ref, GEOKURDCAT.hasTemporalRepresentativity,
-                               Literal(temporal_representativity)))
+                            representativity_ref = BNode()
+                            g.add((current_quality_metric_ref, GEOKURDCAT.hasRepresentativity, representativity_ref))
+                            g.add((representativity_ref, RDF.type, DQV.QualityMetadata))
+                            if thematic_representativity:
+                                g.add((representativity_ref, GEOKURDCAT.hasThematicRepresentativity,
+                                    Literal(thematic_representativity)))
+                            if spatial_representativity:
+                                g.add((representativity_ref, GEOKURDCAT.hasSpatialRepresentativity,
+                                    Literal(spatial_representativity)))
+                            if temporal_representativity:
+                                g.add((representativity_ref, GEOKURDCAT.hasTemporalRepresentativity,
+                                    Literal(temporal_representativity)))
 
-                    source_ref = BNode()
-                    g.add((current_quality_metric_ref, GEOKURDCAT.hasSource, source_ref))
-                    if name_of_quality_source:
-                        g.add((source_ref, RDFS.label, Literal(name_of_quality_source)))
-                    if type_of_quality_source:
-                        g.add((source_ref, RDFS.comment, Literal(type_of_quality_source)))
-                    if link_to_quality_source:
-                        try:
-                            g.add((source_ref, FOAF.page, CleanedURIRef(link_to_quality_source)))
-                        except:
-                            print("no URI at link to quali source")
+                            source_ref = BNode()
+                            g.add((current_quality_metric_ref, GEOKURDCAT.hasSource, source_ref))
+                            if name_of_quality_source:
+                                g.add((source_ref, RDFS.label, Literal(name_of_quality_source)))
+                            if type_of_quality_source:
+                                g.add((source_ref, RDFS.comment, Literal(type_of_quality_source)))
+                            if link_to_quality_source:
+                                try:
+                                    g.add((source_ref, FOAF.page, CleanedURIRef(link_to_quality_source)))
+                                except:
+                                    print("no URI at link to quali source")
+                    else:
+                        # the else block ensures backwards compatibility                    
+                        value_of_quality_metric = quality_metric_values['values']['value of quality metric']
+                        ground_truth_dataset = quality_metric_values['values']['ground truth dataset']
+                        confidence_term = quality_metric_values['values']['confidence term']
+                        confidence_value = quality_metric_values['values']['confidence value']
+                        thematic_representativity = quality_metric_values['values']['thematic representativity']
+                        spatial_representativity = quality_metric_values['values']['spatial representativity']
+                        temporal_representativity = quality_metric_values['values']['temporal representativity']
+                        name_of_quality_source = quality_metric_values['values']['name of quality source']
+                        type_of_quality_source = quality_metric_values['values']['type of quality source']
+                        link_to_quality_source = quality_metric_values['values']['link to quality source']
+
+                        current_quality_metric_ref = BNode()
+                        g.add((dataset_ref, DQV.hasQualityMeasurement, current_quality_metric_ref))
+
+                        g.add((current_quality_metric_ref, RDF.type, DQV.QualityMeasurement))
+                        g.add((current_quality_metric_ref, DQV.isMeasurementOf, CleanedURIRef(quality_metric)))
+                        if value_of_quality_metric:
+                            g.add((current_quality_metric_ref, DQV.value, Literal(value_of_quality_metric)))
+                        if ground_truth_dataset:
+                            try:
+                                g.add((current_quality_metric_ref, GEOKURDCAT.hasGroundTruth,
+                                    CleanedURIRef(ground_truth_dataset)))
+                            except:
+                                g.add(
+                                    (current_quality_metric_ref, GEOKURDCAT.hasGroundTruth, Literal(ground_truth_dataset)))
+
+                        confidence_ref = BNode()
+                        g.add((current_quality_metric_ref, GEOKURDCAT.hasConfidence, confidence_ref))
+                        g.add((confidence_ref, RDF.type, DQV.QualityMetadata))
+                        if confidence_term:
+                            g.add((confidence_ref, RDFS.label, Literal(confidence_term)))
+                        if confidence_value:
+                            g.add((confidence_ref, DQV.value, Literal(confidence_value)))
+
+                        representativity_ref = BNode()
+                        g.add((current_quality_metric_ref, GEOKURDCAT.hasRepresentativity, representativity_ref))
+                        g.add((representativity_ref, RDF.type, DQV.QualityMetadata))
+                        if thematic_representativity:
+                            g.add((representativity_ref, GEOKURDCAT.hasThematicRepresentativity,
+                                Literal(thematic_representativity)))
+                        if spatial_representativity:
+                            g.add((representativity_ref, GEOKURDCAT.hasSpatialRepresentativity,
+                                Literal(spatial_representativity)))
+                        if temporal_representativity:
+                            g.add((representativity_ref, GEOKURDCAT.hasTemporalRepresentativity,
+                                Literal(temporal_representativity)))
+
+                        source_ref = BNode()
+                        g.add((current_quality_metric_ref, GEOKURDCAT.hasSource, source_ref))
+                        if name_of_quality_source:
+                            g.add((source_ref, RDFS.label, Literal(name_of_quality_source)))
+                        if type_of_quality_source:
+                            g.add((source_ref, RDFS.comment, Literal(type_of_quality_source)))
+                        if link_to_quality_source:
+                            try:
+                                g.add((source_ref, FOAF.page, CleanedURIRef(link_to_quality_source)))
+                            except:
+                                print("no URI at link to quali source")
             except:
                 print("Error in Quality Block")
 
