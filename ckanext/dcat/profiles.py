@@ -1944,17 +1944,17 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
                                     g.add((current_quality_metric_ref, DCT.spatial, Literal(spatial_representativity)))
                             if temporal_representativity:
                                 if (uri_valid(CleanedURIRef(temporal_representativity))):
-                                    g.add((current_quality_metric_ref, GEOKURDCAT.hasTemporalRepresentativity,
+                                    g.add((current_quality_metric_ref, DCT.temporal,
                                            CleanedURIRef(temporal_representativity)))
                                 else:
-                                    g.add((current_quality_metric_ref, GEOKURDCAT.hasTemporalRepresentativity,
-                                           Literal(temporal_representativity)))
+                                    g.add(
+                                        (current_quality_metric_ref, DCT.temporal, Literal(temporal_representativity)))
                             if thematic_representativity:
                                 if (uri_valid(CleanedURIRef(thematic_representativity))):
-                                    g.add((current_quality_metric_ref, GEOKURDCAT.hasThematicRepresentativity,
+                                    g.add((current_quality_metric_ref, GEOKURDCAT.thematic,
                                            CleanedURIRef(thematic_representativity)))
                                 else:
-                                    g.add((current_quality_metric_ref, GEOKURDCAT.hasThematicRepresentativity,
+                                    g.add((current_quality_metric_ref, GEOKURDCAT.thematic,
                                            Literal(thematic_representativity)))
 
                             source_ref = BNode()
