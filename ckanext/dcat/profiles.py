@@ -1452,6 +1452,8 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
                     value_dict['temporal representativity'] = str(temporal_representativity)
                 for thematic_representativity in self.g.objects(quality_measurement, GEOKURDCAT.thematic):
                     value_dict['thematic representativity'] = str(thematic_representativity)
+                for ground_truth in self.g.objects(quality_measurement, GEOKURDCAT.groundTruth):
+                    value_dict['ground truth dataset'] = str(ground_truth)
 
                 # complex vals
                 for confidence_node in self.g.objects(quality_measurement, DQV.hasQualityMeasurement):
@@ -1467,8 +1469,6 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
                         value_dict['type of quality source'] = str(source_type)
                     for source_link in self.g.objects(source_node, FOAF.page):
                         value_dict['link to quality source'] = str(source_link)
-                    for ground_truth in self.g.objects(source_node, GEOKURDCAT.groundTruth):
-                        value_dict['ground truth dataset'] = str(ground_truth)
 
                 description_dict['values'].append(value_dict)
                 measurement_dict[str(metric)] = description_dict
@@ -1956,7 +1956,13 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
                                 else:
                                     g.add((current_quality_metric_ref, GEOKURDCAT.thematic,
                                            Literal(thematic_representativity)))
-
+                            if ground_truth_dataset:
+                                if (uri_valid(CleanedURIRef(ground_truth_dataset))):
+                                    g.add((current_quality_metric_ref, GEOKURDCAT.groundTruth,
+                                           CleanedURIRef(ground_truth_dataset)))
+                                else:
+                                    g.add((current_quality_metric_ref, GEOKURDCAT.groundTruth,
+                                           Literal(ground_truth_dataset)))
                             source_ref = BNode()
                             g.add((current_quality_metric_ref, GEOKURDCAT.source, source_ref))
                             if name_of_quality_source:
@@ -1971,11 +1977,6 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
                                     g.add((source_ref, FOAF.page, CleanedURIRef(link_to_quality_source)))
                                 else:
                                     print("no URI at link to quali source")
-                            if ground_truth_dataset:
-                                if (uri_valid(CleanedURIRef(ground_truth_dataset))):
-                                    g.add((source_ref, GEOKURDCAT.groundTruth, CleanedURIRef(ground_truth_dataset)))
-                                else:
-                                    g.add((source_ref, GEOKURDCAT.groundTruth, Literal(ground_truth_dataset)))
 
             except:
                 print("Error in Quality Block")
