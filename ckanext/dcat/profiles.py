@@ -1926,7 +1926,7 @@ class GeoKurDCATAPProfile(EuropeanDCATAPProfile):
 
                             if (confidence_value):
                                 confidence_ref = BNode()
-                                g.add((current_quality_metric_ref, GEOKURDCAT.hasQualityMeasurement, confidence_ref))
+                                g.add((current_quality_metric_ref, DQV.hasQualityMeasurement, confidence_ref))
                                 g.add((confidence_ref, RDF.type, DQV.QualityMeasurement))
                                 if confidence_term:
                                     if (uri_valid(CleanedURIRef(confidence_term))):
